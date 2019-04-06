@@ -9,11 +9,9 @@ namespace ConsoleApp {
 
         public ParserResponse TryParse(string input) 
         {
-            Init();
-
             Unit currentUnit=GetDefaultUnit();
             int amount=1;
-            string item;
+            string item="";
              try
              {
                  string lastNonSubectWord="";
@@ -28,19 +26,19 @@ namespace ConsoleApp {
                         //если не указан предмет - это хрень, игнорируем
 
                         //указано количество.
-                        int.TryParse(firstWord,amount);
+                        int.TryParse(firstWord,out amount);
 
                         //если дальше указана единциа измерения                        
                         var secondWord=words[1];
                         if(!string.IsNullOrWhiteSpace(secondWord))
                         {
-                            Unit=GetUnit(secondWord);
+                            currentUnit=GetUnit(secondWord);
                             lastNonSubectWord=secondWord;
                         }                        
                     }
                     else if(firstWord.IsUnit())
                     {
-                        Unit=GetUnit(firstWord);
+                        currentUnit=GetUnit(firstWord);
                         lastNonSubectWord=firstWord;
                     }
                  }
