@@ -70,7 +70,7 @@ namespace AliceInventory
         { 
             var req=GoogleRequest.FromJson(jsonString);
             var response= new GoolgeResponse();
-            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {req.QueryResult?.ToString()}!";
+            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {req.QueryResult?.QueryText}!";
             return new JsonResult(response);
         }
     }

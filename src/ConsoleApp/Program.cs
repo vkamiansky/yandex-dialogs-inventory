@@ -1,4 +1,5 @@
 using System;
+using QuickType;
 
 namespace ConsoleApp
 {
@@ -6,6 +7,20 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
+
+            var jsonString="{\"responseId\": \"f46297bb-ca55-4efa-8a0d-6d7ad59f2787\","+
+            "\"queryResult\": {\"queryText\": \"Привет привет\",\"action\": \"google\","+
+        "\"parameters\": {},\"allRequiredParamsPresent\": true, \"fulfillmentMessages\": ["+
+        "{\"text\": {\"text\": [\"\"]}}],\"intent\": {"+
+        "\"name\": \"projects/inventory-6d37b/agent/intents/95d5c853-aab6-4310-a12b-2801b4bbde65\","+
+        "\"displayName\": \"hello\"},\"intentDetectionConfidence\": 0.75,"+
+        "\"languageCode\": \"ru\"},\"originalDetectIntentRequest\": {"+
+        "\"payload\": {}},"+
+        "\"session\": \"projects/inventory-6d37b/agent/sessions/3dd0a0da-ae9d-dd8b-8948-c93b9c0401e4\"}";
+
+            
+            var req=GoogleRequest.FromJson(jsonString);
+
             var canExit = false;
             var session = new UserSession();
 
