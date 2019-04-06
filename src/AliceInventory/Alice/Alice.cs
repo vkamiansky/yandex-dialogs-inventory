@@ -45,21 +45,21 @@ namespace AliceInventory
             {
                 case 0:input="add 2 tigers";
                     break;
-                case 1:input="add 6 cars";
+                case 1:input="add 5 кг свинца";
                     break;
-                case 2:input="add 5 tanks";
+                case 2:input="добавить 10 грамм свинца";
                     break;
                 case 3:input="add 5 метров кабеля";
                     break;
                 case 4:input="add 50 см кабеля";
                     break;
-                default:input="add 5 кг свинца";
+                default:input="add cats";
                     break;
             }
-            var response=localSession.ProcessInput(input).TextResponse;
-/*             var response=localSession.ProcessInput("list").TextResponse;
+            localSession.ProcessInput(input);
+            var response=localSession.ProcessInput("list").TextResponse;
             return $"{System.DateTime.Now.ToLongTimeString()} {response}!";
-*/
+
 
             return $"Hello! {response}";
         }
