@@ -28,7 +28,7 @@ namespace AliceInventory
         //public AliceResponse HelloHook([FromBody] AliceRequest req) => req.Reply("Привет");
         public ActionResult<string> Get()
         {
-            return "Hello!";
+            return $"{System.DateTime.Now.ToLongTimeString()} Hello!";
         }
 
         [HttpGet("/alice/parse")]
