@@ -31,6 +31,13 @@ namespace AliceInventory
             return "Hello!";
         }
 
+        [HttpGet("/alice/parse")]
+
+        //public AliceResponse HelloHook([FromBody] AliceRequest req) => req.Reply("Привет");
+        public ActionResult<string> GetParsing()
+        {
+            return StringParser.GetReply("3 pieces of cake");
+        }
 
     }
 }

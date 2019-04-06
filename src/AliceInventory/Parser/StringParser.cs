@@ -7,12 +7,14 @@ namespace AliceInventory
 {
     public static class StringParser
     {
-        private static ListInitExpression<string> units =
-            {"штук", "Метров", "штуки", "Штука"};
-
         public static string GetReply(string input = "Hello!")
         {
-            // Split on one or more non-digit characters.
+                return GetNumbers(input);
+        }       
+
+        public static string GetNumbers(string input)
+        {
+             // Split on one or more non-digit characters.
             string[] numbers = Regex.Split(input, @"\D+");
             var ret=new List<string>();
             foreach (string value in numbers)
@@ -26,6 +28,6 @@ namespace AliceInventory
             var defaultAnswer="no numbers in string";
             var count=ret.Any() ? string.Concat(ret.ToArray()) :defaultAnswer;
             return $"{System.DateTime.Now.ToLongTimeString()} {count}";
-        }       
+        }
     }
 }
