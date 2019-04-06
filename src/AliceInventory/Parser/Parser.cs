@@ -9,6 +9,8 @@ namespace ConsoleApp {
 
         private static List<Unit> unitsList;
 
+        private static List<string> itemsCache=new List<string>();
+
         private static void InitUnitsList()
         {
             if(unitsList==null)
@@ -53,6 +55,29 @@ namespace ConsoleApp {
                         Multiplier=0.001,
                         MainUnit=m,
                         AlternativeNames=new List<string>{"миллиметра", "миллиметров"}});
+                    var litr=new Unit(){
+                        CommonName="литр",
+                        ShortName="л",
+                        AlternativeNames=new List<string>{"литра", "литров", "литр"}};
+                    unitsList.Add(new Unit(){
+                        CommonName="миллилитр",
+                        ShortName="мл",
+                        Multiplier=0.001,
+                        MainUnit=litr,
+                        AlternativeNames=new List<string>{"миллилитра", "миллилитров"}});
+                    unitsList.Add(new Unit(){
+                        CommonName="таблетка",
+                        ShortName="табл",
+                        Multiplier=1,
+                        MainUnit=null,
+                        AlternativeNames=new List<string>{"таблетки", "таблеток"}});
+                    unitsList.Add(new Unit(){
+                        CommonName="ампула",
+                        ShortName="ампул",
+                        Multiplier=1,
+                        MainUnit=null,
+                        AlternativeNames=new List<string>{"ампул", "ампулы"}});
+
                 }
                 catch(Exception ex)
                 {
@@ -135,19 +160,100 @@ namespace ConsoleApp {
                      //не указано ни количество, ни единицы
                      item=input;
                  }
-
-
              }   
              catch(Exception ex)
              {
 
              }
-
             return new ParserResponse {
-                ItemString = item.TrimStart(Separators).TrimStart(' '),
+                ItemString = GetItemFromString(item),
                 ItemCount = amount,
                 Unit = currentUnit,                
             };
+        }
+
+        private string GetItemByMultipleForm(string item, char ending)
+        {
+            var tempItem=item.TrimEnd(ending);
+            if(itemsCache.Contains(tempItem))
+            {
+                return tempItem;
+            }
+            else
+            {
+                itemsCache.Add(item);
+                return item;
+            }
+        }
+
+        private string GetItembySingleForm(string item)
+        {
+            if(itemsCache.Contains(item))
+            {
+                return item;
+            }
+            else if(itemsCache.Contains($"{item}s"))
+            {
+                return $"{item}s";
+            }
+            else if(itemsCache.Contains($"{item}ы"))
+            {
+                return $"{item}ы";
+            }
+            else if(itemsCache.Contains($"{item}и"))
+            {
+                return $"{item}и";
+            }
+            else if(itemsCache.Contains($"{item}ов"))
+            {
+                return $"{item}ов";
+            }
+            else if(itemsCache.Contains($"{item}ек"))
+            {
+                return $"{item}ек";
+            }
+            else
+            {
+                itemsCache.Add(item);
+                return item;
+            }
+        }
+
+        private string GetItemFromString(string input)
+        {
+            try
+            {
+                var item=input.TrimStart(Separators).TrimStart(' ');
+                if(itemsCache.Contains(item))
+                {
+                    return item;
+                }
+                else if(item.EndsWith("s"))
+                {
+                    return GetItemByMultipleForm(item, 's');
+                }
+                else if(item.EndsWith("ы"))
+                {
+                    return GetItemByMultipleForm(item, 'ы');
+                }
+                else if(item.EndsWith("и"))
+                {
+                    return GetItemByMultipleForm(item, 'и');
+                }
+                else if(item.EndsWith("а"))
+                {
+                    return GetItemByMultipleForm(item, 'а');
+                }
+                else 
+                {
+                    return GetItembySingleForm(item);
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+            return input;
         }
 
         private Unit GetUnit(string input)
