@@ -22,5 +22,12 @@ namespace AliceInventory
         [HttpPost("/alice")]
         public AliceResponse WebHook([FromBody] AliceRequest req) => req.Reply("Привет");
 
+        [HttpGet("/alice/hello")]
+
+        //public AliceResponse HelloHook([FromBody] AliceRequest req) => req.Reply("Привет");
+        public ActionResult<string> Get()
+        {
+            return "Hello!";
+        }
     }
 }
