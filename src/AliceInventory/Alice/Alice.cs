@@ -68,7 +68,7 @@ namespace AliceInventory
         public JsonResult GetGoogleResponse([FromBody] GoogleRequest req) 
         {
             var response= new GoolgeResponse();
-            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} Hello!";
+            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {req.queryResult.ToString()}!";
             return new JsonResult(response);
         }
     }
