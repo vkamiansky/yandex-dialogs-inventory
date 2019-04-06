@@ -31,13 +31,16 @@ namespace AliceInventory
            return $"{response.TextResponse}\n[VOICE:] {response.VoiceResponse}";
         }
 
+        private UserSession localSession=new UserSession();
 
         [HttpGet("/alice/hello")]
 
         //public AliceResponse HelloHook([FromBody] AliceRequest req) => req.Reply("Привет");
         public ActionResult<string> Get()
         {
-            return $"{System.DateTime.Now.ToLongTimeString()} {GetAliceReply("add 3 cats")}!";
+            localSession.ProcessInput("add 3 cats");
+            var response=localSession.ProcessInput("list").TextResponse;
+            return $"{System.DateTime.Now.ToLongTimeString()} {response}!";
         }
 
     }
