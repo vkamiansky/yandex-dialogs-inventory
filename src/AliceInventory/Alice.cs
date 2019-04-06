@@ -37,15 +37,7 @@ namespace AliceInventory
         //public AliceResponse HelloHook([FromBody] AliceRequest req) => req.Reply("Привет");
         public ActionResult<string> Get()
         {
-            return $"{System.DateTime.Now.ToLongTimeString()} Hello!";
-        }
-
-        [HttpGet("/alice/parse")]
-
-        //public AliceResponse HelloHook([FromBody] AliceRequest req) => req.Reply("Привет");
-        public ActionResult<string> GetParsing()
-        {
-            return StringParser.GetReply("3 pieces of cake");
+            return $"{System.DateTime.Now.ToLongTimeString()} {GetAliceReply("add 3 cats")}!";
         }
 
     }
