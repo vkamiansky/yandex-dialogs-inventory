@@ -9,6 +9,7 @@
       <PublishWithAspNetCoreTargetManifest>
         false
       </PublishWithAspNetCoreTargetManifest>
+      <UserSecretsId>1125d9e2-3d2a-4d9c-b6de-6f1411260722</UserSecretsId>
   </PropertyGroup>
    
   <ItemGroup>
