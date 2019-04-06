@@ -1,11 +1,15 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace AliceInventory
 {
     public static class StringParser
     {
+        private static ListInitExpression<string> units =
+            {"штук", "Метров", "штуки", "Штука"};
+
         public static string GetReply(string input = "Hello!")
         {
             // Split on one or more non-digit characters.
