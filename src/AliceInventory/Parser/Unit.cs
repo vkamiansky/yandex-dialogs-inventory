@@ -9,7 +9,7 @@ namespace ConsoleApp {
         public IEnumerable<string> AlternativeNames { get; set; }
 
         public override string ToString() {
-            return CommonName;
+            return ShortName;
         }
     }
 }

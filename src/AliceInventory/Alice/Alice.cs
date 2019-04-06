@@ -38,13 +38,26 @@ namespace AliceInventory
         //public AliceResponse HelloHook([FromBody] AliceRequest req) => req.Reply("Привет");
         public ActionResult<string> Get()
         {
-            localSession.ProcessInput("add 3 cats");
+            var input="add 3 cats";
+            var dice=System.DateTime.Now.Second%3;
+            switch(dice)
+            {
+                case 0:input="add 2 tigers";
+                    break;
+                case 1:input="add 6 cars";
+                    break;
+                case 2:input="add 5 tanks";
+                    break;
+                default:input="add 5 cats";
+                    break;
+            }
+            localSession.ProcessInput(input);
             var response=localSession.ProcessInput("list").TextResponse;
             return $"{System.DateTime.Now.ToLongTimeString()} {response}!";
         }
         
         [HttpPost("/google")]
-        public GoolgeResponse WebHook([FromBody] GoogleRequest req) 
+        public GoolgeResponse GetGoogleResponse([FromBody] GoogleRequest req) 
         {
             var response= new GoolgeResponse();
             response.fulfillmentText="{DateTime.Now.ToLongTimeString()} Hello!";

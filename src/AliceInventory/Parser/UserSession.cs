@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+using System;
 
 namespace ConsoleApp {
     public class UserSession {
@@ -51,7 +53,20 @@ namespace ConsoleApp {
             var response = Parser.TryParse(input);
             if (response != null)
             {
-                ItemList.Add(response);                
+                if(ItemList.Any(x=>string.Equals(
+                    x.ItemString, 
+                    response.ItemString, 
+                    StringComparison.CurrentCultureIgnoreCase )))   
+                {
+                    ItemList.First(x=>string.Equals(
+                    x.ItemString, 
+                    response.ItemString, 
+                    StringComparison.CurrentCultureIgnoreCase)).ItemCount+=response.ItemCount;
+                }           
+                else
+                {
+                    ItemList.Add(response);
+                }
                 return new ChatResponse() 
                 {
                     TextResponse = $"добавили {response.ItemString} - {response.ItemCount} {response.Unit.ShortName}; всего {ItemList.Count}",
@@ -64,8 +79,9 @@ namespace ConsoleApp {
         private ChatResponse ShowList() 
         {
             var sb = new StringBuilder();
+            int i=1;
             foreach (var item in ItemList) {
-                sb.Append($"{item.ItemString} - {item.ItemCount} {item.Unit}\n");
+                sb.Append($"{i++}. {item.ItemString} - {item.ItemCount} {item.Unit}\n");
             }
             return new ChatResponse() {
                 TextResponse = sb.ToString(),
