@@ -54,8 +54,8 @@ namespace ConsoleApp {
                 ItemList.Add(response);
                 return new ChatResponse() 
                 {
-                    TextResponse = $"добавили {response.ItemString}",
-                    VoiceResponse = "sдобавлено",
+                    TextResponse = $"добавили {response.ItemString} - {response.ItemCount} {response.Unit.ShortName}",
+                    VoiceResponse = "добавлено",
                 };
             }
             return null;

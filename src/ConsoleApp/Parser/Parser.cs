@@ -16,7 +16,7 @@ namespace ConsoleApp {
              {
                  string lastNonSubectWord="";
 
-                 var  words=input.Split(separators);
+                 var  words=input.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
                  var firstWord=words?.First();
                  if(!string.IsNullOrWhiteSpace(firstWord))
@@ -30,10 +30,14 @@ namespace ConsoleApp {
 
                         //если дальше указана единциа измерения                        
                         var secondWord=words[1];
-                        if(!string.IsNullOrWhiteSpace(secondWord))
+                        if(secondWord.IsUnit())
                         {
                             currentUnit=GetUnit(secondWord);
                             lastNonSubectWord=secondWord;
+                        }
+                        else
+                        {
+                            lastNonSubectWord=firstWord;
                         }                        
                     }
                     else if(firstWord.IsUnit())
@@ -42,8 +46,18 @@ namespace ConsoleApp {
                         lastNonSubectWord=firstWord;
                     }
                  }
+
                  if(!string.IsNullOrWhiteSpace(lastNonSubectWord))
                  {
+                     //находим положение последнего слова
+                     var lastNonSubjStart=input.IndexOf(lastNonSubectWord);
+
+                     //находим где заканчивается последнее слово
+                     var lastNonSubjEnd=lastNonSubjStart+lastNonSubectWord.Length;
+
+                     //берём остаток
+                     //убираем разделители и пробелы в начале
+                     item=input.Substring(lastNonSubjEnd);
 
                  }
                  else
@@ -59,7 +73,7 @@ namespace ConsoleApp {
              }
 
             return new ParserResponse {
-                ItemString = item,
+                ItemString = item.TrimStart(separators).TrimStart(' '),
                 ItemCount = amount,
                 Unit = currentUnit,
             };

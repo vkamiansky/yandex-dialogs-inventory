@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-
+using ConsoleApp;
 
 namespace AliceInventory
 {
@@ -21,8 +21,16 @@ namespace AliceInventory
             .Configure(app => app.UseMvc());
 
         [HttpPost("/alice")]
-        public AliceResponse WebHook([FromBody] AliceRequest req) => req.Reply( 
-            $"{System.DateTime.Now.ToLongTimeString()} Привет");
+        public AliceResponse WebHook([FromBody] AliceRequest req) =>
+        req.Reply($"{System.DateTime.Now.ToLongTimeString()} Привет");
+
+        private string GetAliceReply(string input)
+        {
+            var session = new UserSession();
+            ChatResponse response = session.ProcessInput(input);
+           return $"{response.TextResponse}\n[VOICE:] {response.VoiceResponse}";
+        }
+
 
         [HttpGet("/alice/hello")]
 
