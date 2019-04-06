@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using ConsoleApp;
+using System.Text;
 
 namespace AliceInventory
 {
@@ -38,8 +39,8 @@ namespace AliceInventory
         //public AliceResponse HelloHook([FromBody] AliceRequest req) => req.Reply("Привет");
         public ActionResult<string> Get()
         {
-            var input="add 3 cats";
-            var dice=System.DateTime.Now.Second%3;
+           var input="add 3 cats";
+            var dice=System.DateTime.Now.Second % 5;
             switch(dice)
             {
                 case 0:input="add 2 tigers";
@@ -48,12 +49,19 @@ namespace AliceInventory
                     break;
                 case 2:input="add 5 tanks";
                     break;
-                default:input="add 5 cats";
+                case 3:input="add 5 метров кабеля";
+                    break;
+                case 4:input="add 50 см кабеля";
+                    break;
+                default:input="add 5 кг свинца";
                     break;
             }
-            localSession.ProcessInput(input);
-            var response=localSession.ProcessInput("list").TextResponse;
+            var response=localSession.ProcessInput(input).TextResponse;
+/*             var response=localSession.ProcessInput("list").TextResponse;
             return $"{System.DateTime.Now.ToLongTimeString()} {response}!";
+*/
+
+            return $"Hello! {response}";
         }
         
         [HttpPost("/google")]

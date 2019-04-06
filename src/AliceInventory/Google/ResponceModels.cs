@@ -24,8 +24,8 @@ using Newtonsoft.Json.Linq;
         [JsonProperty("imageUri")]
         public string imageUri { get; set; }
 
-      //  [JsonProperty("buttons")]
-      //  public IList<Button> buttons { get; set; }
+       [JsonProperty("buttons")]
+       public IList<Button> buttons { get; set; }
     }
 
     public class OutputMessage
@@ -52,8 +52,8 @@ using Newtonsoft.Json.Linq;
     public class RichResponse
     {
 
-      //  [JsonProperty("items")]
-       // public IList<Item> items { get; set; }
+        [JsonProperty("items")]
+        public IList<Item> items { get; set; }
     }
 
     public class Google
@@ -62,8 +62,8 @@ using Newtonsoft.Json.Linq;
         [JsonProperty("expectUserResponse")]
         public bool expectUserResponse { get; set; }
 
-      //  [JsonProperty("richResponse")]
-      //  public RichResponse richResponse { get; set; }
+        [JsonProperty("richResponse")]
+        public RichResponse richResponse { get; set; }
     }
 
     public class Facebook
@@ -102,8 +102,8 @@ using Newtonsoft.Json.Linq;
         [JsonProperty("languageCode")]
         public string languageCode { get; set; }
 
-  //      [JsonProperty("parameters")]
-  //      public Parameters parameters { get; set; }
+        [JsonProperty("parameters")]
+        public Parameters parameters { get; set; }
     }
 
     public class GoolgeResponse
@@ -112,8 +112,8 @@ using Newtonsoft.Json.Linq;
         [JsonProperty("fulfillmentText")]
         public string fulfillmentText { get; set; }
 
-       // [JsonProperty("fulfillmentMessages")]
-       // public IList<OutputMessage> fulfillmentMessages { get; set; }
+        [JsonProperty("fulfillmentMessages")]
+        public IList<OutputMessage> fulfillmentMessages { get; set; }
 
         [JsonProperty("source")]
         public string source { get; set; }
@@ -121,8 +121,8 @@ using Newtonsoft.Json.Linq;
         [JsonProperty("payload")]
         public Payload payload { get; set; }
 
-       // [JsonProperty("outputContexts")]
-       // public IList<OutputContext> outputContexts { get; set; }
+        [JsonProperty("outputContexts")]
+        public IList<OutputContext> outputContexts { get; set; }
 
         [JsonProperty("followupEventInput")]
         public FollowupEventInput followupEventInput { get; set; }
