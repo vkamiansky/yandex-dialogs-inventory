@@ -22,7 +22,7 @@ namespace AliceInventory
 
         [HttpPost("/alice")]
         public AliceResponse WebHook([FromBody] AliceRequest req) =>
-        req.Reply($"{System.DateTime.Now.ToLongTimeString()} Привет");
+        req.Reply(GetAliceReply(req.Request.OriginalUtterance));
 
         private string GetAliceReply(string input)
         {
