@@ -16,8 +16,15 @@ namespace ConsoleApp
                 var input = Console.ReadLine();
                 //Console.WriteLine($"Вы ввели: {input}");
                 var response = session.ProcessInput(input);
-                Console.WriteLine($"[VOICE] {response.VoiceResponse}");
-                Console.WriteLine(response.TextResponse);
+                if(response==null)
+                { 
+                    Console.WriteLine("Unable to process");
+                }
+                else
+                {
+                     Console.WriteLine($"[VOICE] {response?.VoiceResponse}");
+                     Console.WriteLine(response?.TextResponse);
+                }
                 canExit = (input == "quit" || input == "exit" || input == "q");
             }
         }

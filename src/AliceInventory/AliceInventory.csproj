@@ -5,6 +5,11 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
+  <PropertyGroup>
+      <PublishWithAspNetCoreTargetManifest>
+        false
+      </PublishWithAspNetCoreTargetManifest>
+  </PropertyGroup>
    
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />

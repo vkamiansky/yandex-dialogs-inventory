@@ -46,18 +46,23 @@ namespace ConsoleApp {
             return response;
         }
 
-        private ChatResponse AddItem(string input) {
-            
+        private ChatResponse AddItem(string input) 
+        {            
             var response = Parser.TryParse(input);
-            ItemList.Add(response);
-
-            return new ChatResponse() {
-                TextResponse = $"добавили {response.ItemString}",
-                VoiceResponse = "sдобавлено",
-            };
-
+            if (response != null)
+            {
+                ItemList.Add(response);
+                return new ChatResponse() 
+                {
+                    TextResponse = $"добавили {response.ItemString}",
+                    VoiceResponse = "sдобавлено",
+                };
+            }
+            return null;
         }
-        private ChatResponse ShowList() {
+
+        private ChatResponse ShowList() 
+        {
             var sb = new StringBuilder();
             foreach (var item in ItemList) {
                 sb.Append($"{item.ItemString} - {item.ItemCount} {item.Unit}\n");
