@@ -19,7 +19,9 @@ namespace AliceInventory
                     ret.Add($"Number: {i}, ");
                 }
             }
-            return ret.Any()? string.Concat(ret.ToArray()) : "no numbers in string";
+            var defaultAnswer="no numbers in string";
+            var count=ret.Any() ? string.Concat(ret.ToArray()) :defaultAnswer;
+            return $"{System.DateTime.Now.ToLongTimeString()} {count}";
         }       
     }
 }
