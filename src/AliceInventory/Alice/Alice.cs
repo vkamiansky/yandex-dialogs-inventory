@@ -69,7 +69,7 @@ namespace AliceInventory
         {
             var input=req.queryResult.queryText;
             var response= new GoolgeResponse();
-            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {localSession.ProcessInput(input).TextResponse}";
+            response.fulfillmentText = input;//$"{DateTime.Now.ToLongTimeString()} {localSession.ProcessInput(input).TextResponse}";
             return new JsonResult(response);
         }
     }
