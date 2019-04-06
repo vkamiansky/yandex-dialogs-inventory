@@ -13,6 +13,9 @@ namespace ConsoleApp
            session.ProcessInput("добавить таблетка аспирин");
            session.ProcessInput("add 3 таблетки аспирина");
            session.ProcessInput("add 5 ампул адреналина");
+           session.ProcessInput("add 50 миллиграммов глюкозы");
+           session.ProcessInput("add грамм глюкозы");
+           session.ProcessInput("add 3 грамма глюкозы");
            session.ProcessInput("add ампула адреналина");
            session.ProcessInput("добавить 3 ампулы адреналина");
            session.ProcessInput("add 500 миллилитров физраствора");
@@ -29,8 +32,11 @@ namespace ConsoleApp
            session.ProcessInput("добавить 50 метров кабеля");
            session.ProcessInput("add 150 сантиметров кабеля");
            session.ProcessInput("add 5000 миллиметров кабеля");
-           session.ProcessInput("add 3 tiger");
-           session.ProcessInput("add tiger");
+           session.ProcessInput("добавить таблетка амоксиклава по 1000 мг");
+           session.ProcessInput("add 3 таблетки амоксиклава по 1000 мг");
+           session.ProcessInput("добавить автомат АК-47");
+           session.ProcessInput("добавить 10 штук автомат АК-47");
+           session.ProcessInput("добавить автомат АК-74");
            Console.WriteLine(session.ProcessInput("list").TextResponse);
 
             //while (!canExit) {;//Console.ReadLine();

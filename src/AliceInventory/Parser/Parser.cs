@@ -223,7 +223,7 @@ namespace ConsoleApp {
         {
             try
             {
-                var item=input.TrimStart(Separators).TrimStart(' ');
+                var item=input.Trim(Separators).Trim(' ');
                 if(itemsCache.Contains(item))
                 {
                     return item;
