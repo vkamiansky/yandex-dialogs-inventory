@@ -21,7 +21,8 @@ namespace AliceInventory
             .Configure(app => app.UseMvc());
 
         [HttpPost("/alice")]
-        public AliceResponse WebHook([FromBody] AliceRequest req) => req.Reply("Привет");
+        public AliceResponse WebHook([FromBody] AliceRequest req) => req.Reply( 
+            $"{System.DateTime.Now.ToLongTimeString()} Привет");
 
         [HttpGet("/alice/hello")]
 
