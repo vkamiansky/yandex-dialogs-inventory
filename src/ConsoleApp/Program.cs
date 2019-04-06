@@ -1,5 +1,7 @@
 using System;
 using QuickType;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ConsoleApp
 {
@@ -20,6 +22,9 @@ namespace ConsoleApp
 
             
             var req=GoogleRequest.FromJson(jsonString);
+
+            dynamic data = JObject.Parse(jsonString);
+            var reqText=data.queryResult.queryText.Value;
 
             var canExit = false;
             var session = new UserSession();

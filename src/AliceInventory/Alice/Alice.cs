@@ -67,13 +67,12 @@ namespace AliceInventory
         }
         
         [HttpPost("/google")]
-        public JsonResult GetGoogleResponse(string jsonString) 
+        public JsonResult GetGoogleResponse(string json) 
         { 
-            JObject obj = JObject.Parse(jsonString);
-            
-        JToken token = obj["queryResult"]["queryText"];
+            dynamic data = JObject.Parse(json);
+            var req=data.queryResult.queryText.Value;
             var response= new GoolgeResponse();
-            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {token.ToString()}!";
+            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {req}!";
             return new JsonResult(response);
         }
     }
