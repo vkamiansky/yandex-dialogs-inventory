@@ -28,7 +28,7 @@ namespace AliceInventory
         //public AliceResponse HelloHook([FromBody] AliceRequest req) => req.Reply("Привет");
         public ActionResult<string> Get()
         {
-            return StringParser.GetReply("There are 4 numbers in this string: 32424, 12312, and 22.");
+            return "Hello!";
         }
 
 
