@@ -67,9 +67,8 @@ namespace AliceInventory
         [HttpPost("/google")]
         public JsonResult GetGoogleResponse([FromBody] GoogleRequest req) 
         {
-            var input=req.queryResult.queryText;
             var response= new GoolgeResponse();
-            response.fulfillmentText = input;//$"{DateTime.Now.ToLongTimeString()} {localSession.ProcessInput(input).TextResponse}";
+            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} Hello!";
             return new JsonResult(response);
         }
     }
