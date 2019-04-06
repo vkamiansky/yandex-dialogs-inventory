@@ -6,35 +6,52 @@ namespace ConsoleApp {
     public class Parser {
 
         private char[] separators={' ',',','.'};
-        private static List<string> unitnames=null;
 
-        private static void Init()
+        public ParserResponse TryParse(string input) 
         {
-            if(unitnames==null)
-            {
-                unitnames=new List<string>();
-                unitnames.Add("Штука");
-            }
-        }
+            Init();
 
-        public ParserResponse TryParse(string input) {
-
+            Unit currentUnit=GetDefaultUnit();
+            int amount=1;
+            string item;
              try
              {
-                 Init();
+                 string lastNonSubectWord="";
+
                  var  words=input.Split(separators);
 
-                 var first=words.First();
-                 if(first!=null )
+                 var firstWord=words?.First();
+                 if(!string.IsNullOrWhiteSpace(firstWord))
                  {
-                    if(first.IsNumber())
+                    if(firstWord.IsNumber() && words.Length>1)
                     {
-                        //указано количество
-                    }
-                    else if(first.IsUnit())
-                    {
+                        //если не указан предмет - это хрень, игнорируем
 
+                        //указано количество.
+                        int.TryParse(firstWord,amount);
+
+                        //если дальше указана единциа измерения                        
+                        var secondWord=words[1];
+                        if(!string.IsNullOrWhiteSpace(secondWord))
+                        {
+                            Unit=GetUnit(secondWord);
+                            lastNonSubectWord=secondWord;
+                        }                        
                     }
+                    else if(firstWord.IsUnit())
+                    {
+                        Unit=GetUnit(firstWord);
+                        lastNonSubectWord=firstWord;
+                    }
+                 }
+                 if(!string.IsNullOrWhiteSpace(lastNonSubectWord))
+                 {
+
+                 }
+                 else
+                 {
+                     //не указано ни количество, ни единицы
+                     item=input;
                  }
 
              }   
@@ -44,10 +61,17 @@ namespace ConsoleApp {
              }
 
             return new ParserResponse {
-                ItemString = "Какой-то предмет",
-                ItemCount = 1,
-                Unit =  GetDefaultUnit(),
+                ItemString = item,
+                ItemCount = amount,
+                Unit = currentUnit,
             };
+        }
+
+        private Unit GetUnit(string input)
+        {
+
+
+            return GetDefaultUnit();
         }
         public static Unit GetDefaultUnit()
         { 
