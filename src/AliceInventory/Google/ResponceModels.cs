@@ -106,7 +106,7 @@ using Newtonsoft.Json.Linq;
         public Parameters parameters { get; set; }
     }
 
-    public class Example
+    public class GoolgeResponse
     {
 
         [JsonProperty("fulfillmentText")]

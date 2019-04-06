@@ -31,7 +31,7 @@ namespace AliceInventory
            return $"{response.TextResponse}\n[VOICE:] {response.VoiceResponse}";
         }
 
-        private UserSession localSession=new UserSession();
+        private static UserSession localSession=new UserSession();
 
         [HttpGet("/alice/hello")]
 
@@ -42,6 +42,15 @@ namespace AliceInventory
             var response=localSession.ProcessInput("list").TextResponse;
             return $"{System.DateTime.Now.ToLongTimeString()} {response}!";
         }
+        
+        [HttpPost("/google")]
+        public GoolgeResponse WebHook([FromBody] GoogleRequest req) 
+        {
+            var response= new GoolgeResponse();
+            response.fulfillmentText="{DateTime.Now.ToLongTimeString()} Hello!";
+            return response;
+        }
+
 
     }
 }

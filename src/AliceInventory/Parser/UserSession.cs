@@ -51,10 +51,10 @@ namespace ConsoleApp {
             var response = Parser.TryParse(input);
             if (response != null)
             {
-                ItemList.Add(response);
+                ItemList.Add(response);                
                 return new ChatResponse() 
                 {
-                    TextResponse = $"добавили {response.ItemString} - {response.ItemCount} {response.Unit.ShortName}",
+                    TextResponse = $"добавили {response.ItemString} - {response.ItemCount} {response.Unit.ShortName}; всего {ItemList.Count}",
                     VoiceResponse = "добавлено",
                 };
             }
