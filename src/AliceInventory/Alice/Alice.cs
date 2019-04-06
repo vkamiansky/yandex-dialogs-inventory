@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using ConsoleApp;
 using System.Text;
+using QuickType;
 
 namespace AliceInventory
 {
@@ -65,10 +66,11 @@ namespace AliceInventory
         }
         
         [HttpPost("/google")]
-        public JsonResult GetGoogleResponse([FromBody] GoogleRequest req) 
-        {
+        public JsonResult GetGoogleResponse(string jsonString) 
+        { 
+            var req=GoogleRequest.FromJson(jsonString);
             var response= new GoolgeResponse();
-            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {req.queryResult.ToString()}!";
+            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {req.QueryResult?.ToString()}!";
             return new JsonResult(response);
         }
     }

@@ -2,7 +2,26 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+public class Parameters
+{
+    
+    [JsonProperty("parameters")]
+    public Dictionary<string, string> parameters { get; set; }
+}
 
+
+public class OutputContext
+{
+    
+    [JsonProperty("displayName")]
+    public string name { get; set; }
+    
+    [JsonProperty("displayName")]
+    public int lifespanCount { get; set; }
+    
+    [JsonProperty("displayName")]
+    public Parameters parameters { get; set; }
+}
     public class Button
     {
 
