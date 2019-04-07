@@ -72,14 +72,15 @@ namespace AliceInventory
             //dynamic data = JObject.Parse(json);
             //var req=data.queryResult.queryText.Value;
 
-            var queryBegin="\",\"queryResult\":{\"queryText\":\"";
-            var queryEnd="\",\"action\":\"google\",";
+            var queryBegin="\"queryText\":";
+            var queryEnd="\",";
 
             if(json.Contains(queryBegin) && json.Contains(queryEnd))
             {
                 var queryStartPosition=json.IndexOf(queryBegin)+queryBegin.Length;
-                var queryEndPosition=json.IndexOf(queryEnd);
-               var queryText=json.Substring(queryStartPosition, queryEndPosition-queryStartPosition);
+                var queryWithEnding=json.Substring(queryStartPosition);
+                var queryEndPosition=json.IndexOf(queryWithEnding);
+               var queryText=queryWithEnding.Substring(0,queryEndPosition);
 
                 var response= new GoolgeResponse();
                 var resp=localSession.ProcessInput(queryText).TextResponse;

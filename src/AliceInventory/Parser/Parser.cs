@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace ConsoleApp {
     public class Parser {
 
-        public static char[] Separators={' ',',','.', '\n'};
+        public static char[] Separators={' ',',','.', '\n','\"'};
 
         private static List<Unit> unitsList;
 
