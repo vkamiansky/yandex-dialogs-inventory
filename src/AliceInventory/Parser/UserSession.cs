@@ -77,7 +77,7 @@ namespace ConsoleApp {
                 }
                 return new ChatResponse() 
                 {
-                    TextResponse = $"добавили {response.ItemString} - {response.ItemCount} {response.Unit.ShortName}; всего {ItemList.Count}",
+                    TextResponse = $"добавили {response.ItemString} - {response.ItemCount} {response.Unit.ShortName}",
                     VoiceResponse = "добавлено",
                 };
             }
