@@ -66,33 +66,23 @@ namespace AliceInventory
             return $"Hello! {response}";
         }
         
+        public class GoogleQuery
+        {
+            public GoogleQueryResult queryResult {get;set;}
+        }
+        public class GoogleQueryResult
+        {
+            public string queryText {get;set;}
+        }
+
         [HttpPost("/google")]
-        public JsonResult GetGoogleResponse(string json) 
+        public JsonResult GetGoogleResponse([FromBody] GoogleQuery json) 
         { 
-            //dynamic data = JObject.Parse(json);
-            //var req=data.queryResult.queryText.Value;
-
-            var queryBegin="\"queryText\":";
-            var queryEnd="\",";
-
-            if(json.Contains(queryBegin) && json.Contains(queryEnd))
-            {
-                var queryStartPosition=json.IndexOf(queryBegin)+queryBegin.Length;
-                var queryWithEnding=json.Substring(queryStartPosition);
-                var queryEndPosition=json.IndexOf(queryWithEnding);
-               var queryText=queryWithEnding.Substring(0,queryEndPosition);
-
-                var response= new GoolgeResponse();
-                var resp=localSession.ProcessInput(queryText).TextResponse;
-                response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {resp}!";
-                return new JsonResult(response);
-            }
-            else
-            {                
-                var response= new GoolgeResponse();
-                response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} Команда не распознана";
-                return new JsonResult(response);
-            }
+            var req=json.queryResult.queryText;
+            var response= new GoolgeResponse();
+            var resp=localSession.ProcessInput(req).TextResponse;
+            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {resp}!";
+            return new JsonResult(response);
         }
     }
 }
