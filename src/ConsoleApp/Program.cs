@@ -41,6 +41,8 @@ var json="{\"responseId\":\"639d66f8-6232-4d86-873b-8881c84a3f4d\",\"queryResult
                 var session = new UserSession();
 
                 Console.WriteLine("Учёт-Бот на месте, дайте команду");
+                session.ProcessInput("Учёт материалов добавить таблетка аспирин");
+                session.ProcessInput("добавить таблетка аспирин");
                 session.ProcessInput("добавить таблетка аспирин");
                 session.ProcessInput("add 3 таблетки аспирина");
                 session.ProcessInput("add 5 ампул адреналина");
@@ -58,8 +60,10 @@ var json="{\"responseId\":\"639d66f8-6232-4d86-873b-8881c84a3f4d\",\"queryResult
                 session.ProcessInput("add 15 машин");
                 session.ProcessInput("add dog");
                 session.ProcessInput("add 4 dogs");
-                session.ProcessInput("add 100 граммов железа");
-                session.ProcessInput("add 5 килограмм железа");
+                session.ProcessInput("add 100 граммов золота");
+                session.ProcessInput("add 100 грамм золота");
+                session.ProcessInput("add 5 килограмм золота");
+                session.ProcessInput("add 4 килограмма золота");
                 session.ProcessInput("добавить 50 метров кабеля");
                 session.ProcessInput("add 150 сантиметров кабеля");
                 session.ProcessInput("add 5000 миллиметров кабеля");

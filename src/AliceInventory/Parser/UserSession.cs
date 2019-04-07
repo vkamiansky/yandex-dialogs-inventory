@@ -15,15 +15,23 @@ namespace ConsoleApp {
             ItemList =  new List<ParserResponse>();
         }
 
-        public ChatResponse ProcessInput(string input) {
+        public ChatResponse ProcessInput(string input)
+         {
+             var clearedInput=input
+                .Replace("Учёт материалов", "")
+                .Replace("учёт материалов", "")
+                .Replace("Учет материалов", "")
+                .Replace("учет материалов", "")
+                .TrimStart(' ')
+                .TrimStart(Parser.Separators);
 
-            var command = TryGetCommand(input);
+            var command = TryGetCommand(clearedInput);
             var response = new ChatResponse();
 
             switch (command) {
                 case "добавить":
                 case "add":
-                    response = AddItem(input.Replace(command, string.Empty));
+                    response = AddItem(clearedInput.Replace(command, string.Empty));
                     break;
                 case "покажи":
                 case "показать":
