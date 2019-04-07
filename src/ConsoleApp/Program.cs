@@ -41,6 +41,9 @@ var json="{\"responseId\":\"639d66f8-6232-4d86-873b-8881c84a3f4d\",\"queryResult
                 var session = new UserSession();
 
                 Console.WriteLine("Учёт-Бот на месте, дайте команду");
+                session.ProcessInput("add кот");
+                session.ProcessInput("добавить кот");
+                session.ProcessInput("add 2 кота");
                 session.ProcessInput("Учёт материалов добавить таблетка аспирин");
                 session.ProcessInput("добавить таблетка аспирин");
                 session.ProcessInput("добавить таблетка аспирин");
@@ -53,9 +56,6 @@ var json="{\"responseId\":\"639d66f8-6232-4d86-873b-8881c84a3f4d\",\"queryResult
                 session.ProcessInput("добавить 3 ампулы адреналина");
                 session.ProcessInput("add 500 миллилитров физраствора");
                 session.ProcessInput("add 150 миллилитров физраствора");
-                session.ProcessInput("add кот");
-                session.ProcessInput("добавить кот");
-                session.ProcessInput("add 2 кота");
                 session.ProcessInput("добавить 3 машины");
                 session.ProcessInput("add 15 машин");
                 session.ProcessInput("add dog");
