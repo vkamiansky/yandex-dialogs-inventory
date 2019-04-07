@@ -69,11 +69,29 @@ namespace AliceInventory
         [HttpPost("/google")]
         public JsonResult GetGoogleResponse(string json) 
         { 
-            dynamic data = JObject.Parse(json);
-            var req=data.queryResult.queryText.Value;
-            var response= new GoolgeResponse();
-            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {req}!";
-            return new JsonResult(response);
+            //dynamic data = JObject.Parse(json);
+            //var req=data.queryResult.queryText.Value;
+
+            var queryBegin="\",\"queryResult\":{\"queryText\":\"";
+            var queryEnd="\",\"action\":\"google\",";
+
+            if(json.Contains(queryBegin) && json.Contains(queryEnd))
+            {
+                var queryStartPosition=json.IndexOf(queryBegin)+queryBegin.Length;
+                var queryEndPosition=json.IndexOf(queryEnd);
+               var queryText=json.Substring(queryStartPosition, queryEndPosition-queryStartPosition);
+
+                var response= new GoolgeResponse();
+                var resp=localSession.ProcessInput(queryText).TextResponse;
+                response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {resp}!";
+                return new JsonResult(response);
+            }
+            else
+            {                
+                var response= new GoolgeResponse();
+                response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} Команда не распознана";
+                return new JsonResult(response);
+            }
         }
     }
 }
