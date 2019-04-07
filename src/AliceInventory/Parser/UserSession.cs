@@ -45,6 +45,7 @@ namespace ConsoleApp {
                 case "очистить":
                 case "сбросить":
                 case "clear":
+                case "шухер":
                 case "reset":
                     response = ClearList();
                     break;

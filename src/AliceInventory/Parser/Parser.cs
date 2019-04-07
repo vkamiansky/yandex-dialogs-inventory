@@ -59,6 +59,7 @@ namespace ConsoleApp {
                         CommonName="литр",
                         ShortName="л",
                         AlternativeNames=new List<string>{"литра", "литров", "литр"}};
+                    unitsList.Add(litr);
                     unitsList.Add(new Unit(){
                         CommonName="миллилитр",
                         ShortName="мл",
