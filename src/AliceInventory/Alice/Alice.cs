@@ -80,7 +80,7 @@ namespace AliceInventory
             var req=json.queryResult.queryText;
             var response= new GoolgeResponse();
             var resp=localSession.ProcessInput(req).TextResponse;
-            response.fulfillmentText = $"{DateTime.Now.ToLongTimeString()} {resp}!";
+            response.fulfillmentText = $"{resp}!";
             return new JsonResult(response);
         }
     }
