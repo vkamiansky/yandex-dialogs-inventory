@@ -29,8 +29,7 @@ namespace AliceInventory
 
         private string GetAliceReply(string input)
         {
-            var session = new UserSession();
-            ChatResponse response = session.ProcessInput(input);
+            ChatResponse response = localSession.ProcessInput(input);
            return $"{response.TextResponse}\n[VOICE:] {response.VoiceResponse}";
         }
 
