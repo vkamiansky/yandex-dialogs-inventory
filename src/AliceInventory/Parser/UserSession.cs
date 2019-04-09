@@ -10,6 +10,8 @@ namespace ConsoleApp {
 
         private List<ParserResponse> ItemList { get; set; }
 
+        private Stack<string> history =new Stack<string>();
+
         public UserSession() {
             Parser = new Parser();
             ItemList =  new List<ParserResponse>();
@@ -26,6 +28,7 @@ namespace ConsoleApp {
                 .TrimStart(Parser.Separators);
 
             var command = TryGetCommand(clearedInput);
+            history.Push(clearedInput);
             var response = new ChatResponse();
 
             switch (command) {
@@ -47,6 +50,9 @@ namespace ConsoleApp {
                 case "clear":
                 case "шухер":
                 case "reset":
+                case "подтвердить":
+                case "подтверждаю":
+                case "да":
                     response = ClearList();
                     break;
                 default:
@@ -54,6 +60,8 @@ namespace ConsoleApp {
                     response.VoiceResponse = "команда не распознана";
                     break;
             }
+
+            history.Push(command);
             return response;
         }
 
@@ -98,12 +106,28 @@ namespace ConsoleApp {
             };
         }
 
-        private ChatResponse ClearList() {
-            ItemList.Clear();
-            return new ChatResponse() {
-                TextResponse = "список очищен",
-                VoiceResponse = "список очищен",
-            };
+        private ChatResponse ClearList() 
+        {
+            switch(history.Peek())
+            {
+                case "очистить":
+                case "сбросить":
+                case "clear":
+                case "шухер":
+                case "reset":
+                    ItemList.Clear();
+                    return new ChatResponse() 
+                    {
+                        TextResponse = "список очищен",
+                        VoiceResponse = "список очищен",
+                    };
+                default: 
+                    return new ChatResponse() 
+                    {
+                        TextResponse = "Подтвердите очистку списка",
+                        VoiceResponse = "Подтвердите очистку списка",
+                    };
+            }
         }
 
         private string TryGetCommand(string input) {

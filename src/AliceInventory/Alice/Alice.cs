@@ -25,15 +25,15 @@ namespace AliceInventory
 
         [HttpPost("/alice")]
         public AliceResponse WebHook([FromBody] AliceRequest req) =>
-        req.Reply(GetAliceReply(req.Request.OriginalUtterance));
+        req.Reply(GetAliceReply(req.Request.OriginalUtterance, req.Session.UserId));
 
-        private string GetAliceReply(string input)
+        private string GetAliceReply(string input, string clientId)
         {
-            ChatResponse response = localSession.ProcessInput(input);
+            ChatResponse response = sessionManager.GetSession(clientId).ProcessInput(input);
            return $"{response.TextResponse}\n[VOICE:] {response.VoiceResponse}";
         }
 
-        private static UserSession localSession=new UserSession();
+        private static SessionManager sessionManager=new SessionManager();
 
         [HttpGet("/alice/hello")]
 
@@ -57,8 +57,8 @@ namespace AliceInventory
                 default:input="add cats";
                     break;
             }
-            localSession.ProcessInput(input);
-            var response=localSession.ProcessInput("list").TextResponse;
+            sessionManager.GetSession("").ProcessInput(input);
+            var response=sessionManager.GetSession("").ProcessInput("list").TextResponse;
             return $"{System.DateTime.Now.ToLongTimeString()} {response}!";
 
 
@@ -79,7 +79,7 @@ namespace AliceInventory
         { 
             var req=json.queryResult.queryText;
             var response= new GoolgeResponse();
-            var resp=localSession.ProcessInput(req).TextResponse;
+            var resp=sessionManager.GetSession("clientId").ProcessInput(req).TextResponse;
             response.fulfillmentText = $"{resp}!";
             return new JsonResult(response);
         }
