@@ -11,3 +11,4 @@ build:
 
 after_build:
   - docker build -t aliceinventory.dll ./src/AliceInventory/
+  - docker tag aliceinventory.dll vkamiansky/aliceskills:aliceinventory
