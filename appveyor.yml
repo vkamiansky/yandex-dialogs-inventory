@@ -3,10 +3,8 @@ configuration: Release
 image: Ubuntu
 
 before_build:
-  - dotnet restore AliceInventory
+  - dotnet restore ./src/AliceInventory/AliceInventory.csproj
   
 build:
-  verbosity: minimal
-
-after_build:
-  - dotnet test
+  verbosity: normal
+  project: /src/AliceInventory/AliceInventory.csproj
