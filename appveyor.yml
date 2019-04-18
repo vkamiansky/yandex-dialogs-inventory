@@ -1,0 +1,12 @@
+configuration: Release
+
+image: Ubuntu
+
+before_build:
+  - dotnet restore AliceInventory
+  
+build:
+  verbosity: minimal
+
+after_build:
+  - dotnet test
