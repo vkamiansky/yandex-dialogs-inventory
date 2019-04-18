@@ -4,7 +4,10 @@ image: Ubuntu
 
 before_build:
   - dotnet restore ./src/AliceInventory/AliceInventory.csproj
-  
+
 build:
   verbosity: normal
   project: ./src/AliceInventory/AliceInventory.csproj
+
+after_build:
+  - docker build -t aliceinventory.dll ./src/AliceInventory/
