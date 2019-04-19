@@ -14,11 +14,10 @@ before_build:
 build:
   verbosity: normal
   project: ./src/AliceInventory/AliceInventory.csproj
-
+  
 after_build:
-  - docker build -t aliceinventory.dll ./src/AliceInventory/
-  - docker tag aliceinventory.dll vkamiansky/aliceskills:aliceinventory
-
-deploy_script:
-  - docker login -u $env:DOCKER_USER -p $env:DOCKER_PASS
-  - docker push vkamiansky/aliceskills:aliceinventory
+- ps: >-
+    docker build -t aliceinventory.dll ./src/AliceInventory/
+    docker tag aliceinventory.dll vkamiansky/aliceskills:aliceinventory
+    docker login -u $env:DOCKER_USER -p $env:DOCKER_PASS
+    docker push vkamiansky/aliceskills:aliceinventory
