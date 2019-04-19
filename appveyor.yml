@@ -18,6 +18,9 @@ build:
 after_build:
 - ps: >-
     docker build -t aliceinventory.dll ./src/AliceInventory/
+    
     docker tag aliceinventory.dll vkamiansky/aliceskills:aliceinventory
+    
     docker login -u $env:DOCKER_USER -p $env:DOCKER_PASS
+    
     docker push vkamiansky/aliceskills:aliceinventory
