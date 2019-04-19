@@ -1,6 +1,6 @@
 configuration: Release
 
-image: Ubuntu
+image: Visual Studio 2017
 
 environment:
   DOCKER_USER:
