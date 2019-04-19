@@ -2,6 +2,12 @@ configuration: Release
 
 image: Ubuntu
 
+environment:
+  DOCKER_USER:
+    secure: TUkS9BRix2EaX6263HzABg==
+  DOCKER_PASS:
+    secure: Q1RiZsWAMyXDY9VF6erhkg==
+
 before_build:
   - dotnet restore ./src/AliceInventory/AliceInventory.csproj
 
@@ -12,3 +18,5 @@ build:
 after_build:
   - docker build -t aliceinventory.dll ./src/AliceInventory/
   - docker tag aliceinventory.dll vkamiansky/aliceskills:aliceinventory
+  - docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+  - docker push vkamiansky/aliceskills:aliceinventory
