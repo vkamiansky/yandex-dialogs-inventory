@@ -5,6 +5,8 @@ environment:
     secure: TUkS9BRix2EaX6263HzABg==
   DOCKER_PASS:
     secure: Q1RiZsWAMyXDY9VF6erhkg==
+  DOCKER_RESTART_PASS:
+    secure: RgakURjBhPGLXPHCnYOK+rgef4IwdmyONEt56FnUFzQ=
 
 image: Ubuntu
 
@@ -25,4 +27,4 @@ after_build:
     
     docker push vkamiansky/aliceskills:aliceinventory
     
-    echo "KEY" | nc -q 0 84.201.130.31 5003
+    echo "$env:DOCKER_RESTART_PASS" | nc -q 0 84.201.130.31 5003
