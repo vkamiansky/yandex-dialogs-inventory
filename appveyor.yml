@@ -11,13 +11,13 @@ environment:
 image: Ubuntu
 
 before_build:
-  - dotnet restore ./src/AliceInventory/AliceInventory.csproj
+- dotnet restore ./src/AliceInventory/AliceInventory.csproj
 
 build:
   verbosity: normal
   project: ./src/AliceInventory/AliceInventory.csproj
   
-deploy:
+deploy_script:
 - ps: >-
     docker build -t aliceinventory.dll ./src/AliceInventory/
     
