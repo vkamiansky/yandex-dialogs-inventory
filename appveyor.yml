@@ -33,8 +33,12 @@ deploy_script:
         docker push vkamiansky/aliceskills:aliceinventory
     
         echo "$env:DOCKER_RESTART_PASS" | nc -q 0 84.201.130.31 5003
+        
+        Write-Host "Success"
     }
     else
     {
         Write-Host "No deployment scenario. Branch:" $env:APPVEYOR_REPO_BRANCH
+        
     }
+    
