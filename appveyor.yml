@@ -19,12 +19,22 @@ build:
   
 deploy_script:
 - ps: >-
-    docker build -t aliceinventory.dll ./src/AliceInventory/
     
-    docker tag aliceinventory.dll vkamiansky/aliceskills:aliceinventory
+    if("$env:APPVEYOR_REPO_BRANCH" -eq "master")
+    {
+        Write-Host "Deployment scenario. Branch:" $env:APPVEYOR_REPO_BRANCH
+        
+        docker build -t aliceinventory.dll ./src/AliceInventory/
     
-    docker login -u $env:DOCKER_USER -p $env:DOCKER_PASS
+        docker tag aliceinventory.dll vkamiansky/aliceskills:aliceinventory
     
-    docker push vkamiansky/aliceskills:aliceinventory
+        docker login -u $env:DOCKER_USER -p $env:DOCKER_PASS
     
-    echo "$env:DOCKER_RESTART_PASS" | nc -q 0 84.201.130.31 5003
+        docker push vkamiansky/aliceskills:aliceinventory
+    
+        echo "$env:DOCKER_RESTART_PASS" | nc -q 0 84.201.130.31 5003
+    }
+    else
+    {
+        Write-Host "No deployment scenario. Branch:" $env:APPVEYOR_REPO_BRANCH
+    }
