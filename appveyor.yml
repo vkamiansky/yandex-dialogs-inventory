@@ -17,7 +17,7 @@ build:
   verbosity: normal
   project: ./src/AliceInventory/AliceInventory.csproj
   
-after_build:
+deploy:
 - ps: >-
     docker build -t aliceinventory.dll ./src/AliceInventory/
     
