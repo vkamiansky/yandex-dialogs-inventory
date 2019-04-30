@@ -37,7 +37,8 @@ namespace AliceInventory
 
         [HttpGet("/alice/hello")]
 
-        //public AliceResponse HelloHook([FromBody] AliceRequest req) => req.Reply("Привет");
+        public AliceResponse HelloHook([FromBody] AliceRequest req) => req.Reply("Привет");
+        
         public ActionResult<string> Get()
         {
            var input="add 3 cats";
