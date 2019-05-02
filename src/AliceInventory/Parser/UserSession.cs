@@ -19,6 +19,8 @@ namespace ConsoleApp {
 
         public ChatResponse ProcessInput(string input)
          {
+            return new ChatResponse() { TextResponse = "Test responce", VoiceResponse = "Voice responce" };
+
              var clearedInput=input
                 .Replace("Учёт материалов", "")
                 .Replace("учёт материалов", "")
