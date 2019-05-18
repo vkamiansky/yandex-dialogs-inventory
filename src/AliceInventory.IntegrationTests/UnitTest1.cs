@@ -9,8 +9,8 @@ using System.Net.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-
-namespace TestApi.IntegrationTests
+using  AliceInventory;
+namespace AliceInventory.IntegrationTests
 {
     public class UnitTest1
     {
@@ -19,7 +19,7 @@ namespace TestApi.IntegrationTests
 
         public UnitTest1()
         {
-            _server = new TestServer(WebHost.CreateDefaultBuilder().UseStartup<TestApi.Startup>());
+            _server = new TestServer(WebHost.CreateDefaultBuilder().UseStartup<AliceInventory.Startup>());
             _client = _server.CreateClient();
         }
 
