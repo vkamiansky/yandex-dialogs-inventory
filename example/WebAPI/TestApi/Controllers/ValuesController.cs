@@ -26,9 +26,10 @@ namespace TestApi.Controllers
 
         // POST api/values
         [HttpPost]
-        public ActionResult<string> Post([FromBody] string value)
+        public ActionResult<string> Post([FromBody] UserInput value)
         {
-            return "OK";
+            
+            return value.request.Command;
         }
 
         // PUT api/values/5
