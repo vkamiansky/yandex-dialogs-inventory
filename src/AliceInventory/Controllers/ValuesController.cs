@@ -16,8 +16,21 @@ namespace AliceInventory.Controllers
         [HttpPost]
         public ActionResult<string> Post([FromBody] AliceRequest request)
         {
-            var responce = new AliceResponse() {Response = new ResponseModel() {Text = request.Request.Command}};
-            return JsonConvert.SerializeObject(responce);
+            var response = new AliceResponse()
+            {
+                Response = new ResponseModel()
+                {
+                    Text = request.Request.Command
+                },
+                Session = new SessionModel()
+                {
+                    SessionId = request.Session.SessionId,
+                    MessageId = request.Session.MessageId,
+                    UserId = request.Session.UserId
+                }
+            };
+
+            return JsonConvert.SerializeObject(response);
         }
     }
 }
