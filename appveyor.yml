@@ -17,7 +17,7 @@ build_script:
 - dotnet build ./src/AliceInventory.sln -v m
 
 test_script:
-- dotnet test -v m
+- dotnet test ./src/AliceInventory.sln -v m
 
 deploy_script:
 - ps: >-
