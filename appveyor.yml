@@ -14,10 +14,10 @@ before_build:
 - dotnet restore ./src/AliceInventory.sln
 
 build_script:
-- dotnet build ./src/AliceInventory.sln -v m
+- dotnet build ./src/AliceInventory.sln -v m --no-restore
 
 test_script:
-- dotnet test ./src/AliceInventory.sln -v m
+- dotnet test ./src/AliceInventory.sln -v m --no-build
 
 deploy_script:
 - ps: >-
