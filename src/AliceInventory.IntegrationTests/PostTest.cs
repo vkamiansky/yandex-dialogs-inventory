@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using Xunit;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -30,9 +30,7 @@ namespace AliceInventory.IntegrationTests
             _server = new TestServer(WebHost.CreateDefaultBuilder().UseStartup<AliceInventory.Startup>());
             _client = _server.CreateClient();
         }
-
-        //private string jsonExample = "{\"meta\":{\"locale\":\"ru-RU\",\"timezone\":\"Europe/Moscow\",\"client_id\": \"ru.yandex.searchplugin/5.80 (Samsung Galaxy; Android 4.4)\",    \"interfaces\": {      \"screen\": { }    }  },  \"request\": {    \"command\": \"*TEXT*\",    \"original_utterance\": \"закажи пиццу на улицу льва толстого, 16 на завтра\",    \"type\": \"SimpleUtterance\",    \"markup\": {      \"dangerous_context\": true    },    \"payload\": {},    \"nlu\": {      \"tokens\": [        \"закажи\",        \"пиццу\",        \"на\",        \"льва\",        \"толстого\",        \"16\",        \"на\",        \"завтра\"      ],      \"entities\": [        {          \"tokens\": {            \"start\": 2,            \"end\": 6          },          \"type\": \"YANDEX.GEO\",          \"value\": {            \"house_number\": \"16\",            \"street\": \"льва толстого\"          }        },        {          \"tokens\": {            \"start\": 3,            \"end\": 5          },          \"type\": \"YANDEX.FIO\",          \"value\": {            \"first_name\": \"лев\",            \"last_name\": \"толстой\"          }        },        {          \"tokens\": {            \"start\": 5,            \"end\": 6          },          \"type\": \"YANDEX.NUMBER\",          \"value\": 16        },        {          \"tokens\": {            \"start\": 6,            \"end\": 8          },          \"type\": \"YANDEX.DATETIME\",          \"value\": {            \"day\": 1,            \"day_is_relative\": true          }        }      ]    }  },  \"session\": {    \"new\": true,    \"message_id\": 4,    \"session_id\": \"2eac4854-fce721f3-b845abba-20d60\",    \"skill_id\": \"3ad36498-f5rd-4079-a14b-788652932056\",    \"user_id\": \"AC9WC3DF6FCE052E45A4566A48E6B7193774B84814CE49A922E163B8B29881DC\"  },  \"version\": \"1.0\"}";
-
+        
         private StringContent CreateJsonContent(string text)
         {
             AliceRequest response = new AliceRequest() { Request = new RequestModel() { Command = text }};
@@ -41,72 +39,72 @@ namespace AliceInventory.IntegrationTests
         }
         
         [Theory, Order(1)]
-        [InlineData("Добавь 3 яблока", new []{ "Теперь яблок 3 шт" })]
-        [InlineData("Добавь 1 яблоко", new []{ "Теперь яблок 4 шт" })]
-        [InlineData("Ещё 7 груши", new []{ "Теперь груш 7 шт" })]
-        [InlineData("Прибавь 8 литров воды", new []{ "Теперь воды 8 литров" })]
-        public async Task Adding(string request, string[] responces)
+        [InlineData("Р”РѕР±Р°РІСЊ 3 СЏР±Р»РѕРєР°", new []{ "РўРµРїРµСЂСЊ СЏР±Р»РѕРє 3 С€С‚" })]
+        [InlineData("Р”РѕР±Р°РІСЊ 1 СЏР±Р»РѕРєРѕ", new []{ "РўРµРїРµСЂСЊ СЏР±Р»РѕРє 4 С€С‚" })]
+        [InlineData("Р•С‰С‘ 7 РіСЂСѓС€Рё", new []{ "РўРµРїРµСЂСЊ РіСЂСѓС€ 7 С€С‚" })]
+        [InlineData("РџСЂРёР±Р°РІСЊ 8 Р»РёС‚СЂРѕРІ РІРѕРґС‹", new []{ "РўРµРїРµСЂСЊ РІРѕРґС‹ 8 Р»РёС‚СЂРѕРІ" })]
+        public async Task Adding(string request, string[] responses)
         {
             var content = CreateJsonContent(request);
             var result = await _client.PostAsync("/api/values", content);
             var jsonResult = await result.Content.ReadAsStringAsync();
             var aliceAnswer = JsonConvert.DeserializeObject<AliceResponse>(jsonResult).Response.Text;
 
-            Assert.Contains(responces, expected => expected == aliceAnswer);
+            Assert.Contains(responses, expected => expected == aliceAnswer);
         }
 
         [Theory, Order(2)]
-        [InlineData("Убери 2 яблока", new []{ "Теперь яблок 2 шт" })]
-        [InlineData("Вычти 1 грушу", new []{ "Теперь груш 6 шт" })]
-        [InlineData("Убери 1 литр воды", new []{ "Теперь воды 7 литров" })]
-        public async Task Removing(string request, string[] responces)
+        [InlineData("РЈР±РµСЂРё 2 СЏР±Р»РѕРєР°", new []{ "РўРµРїРµСЂСЊ СЏР±Р»РѕРє 2 С€С‚" })]
+        [InlineData("Р’С‹С‡С‚Рё 1 РіСЂСѓС€Сѓ", new []{ "РўРµРїРµСЂСЊ РіСЂСѓС€ 6 С€С‚" })]
+        [InlineData("РЈР±РµСЂРё 1 Р»РёС‚СЂ РІРѕРґС‹", new []{ "РўРµРїРµСЂСЊ РІРѕРґС‹ 7 Р»РёС‚СЂРѕРІ" })]
+        public async Task Removing(string request, string[] responses)
         {
             var content = CreateJsonContent(request);
             var result = await _client.PostAsync("/api/values", content);
             var jsonResult = await result.Content.ReadAsStringAsync();
             var aliceAnswer = JsonConvert.DeserializeObject<AliceResponse>(jsonResult).Response.Text;
 
-            Assert.Contains(responces, expected => expected == aliceAnswer);
+            Assert.Contains(responses, expected => expected == aliceAnswer);
         }
         [Theory, Order(3)]
-        [InlineData("Теперь яблок 3", new []{ "Теперь яблок 3 шт" })]
-        [InlineData("Теперь груш 5", new []{ "Теперь груш 5 шт" })]
-        [InlineData("Теперь воды 3 литра", new []{ "Теперь воды 3 л" })]
-        [InlineData("Теперь песка 3 килограмма", new []{ "Теперь песка 3 кг" })]
-        public async Task Setting(string request, string[] responces)
+        [InlineData("РўРµРїРµСЂСЊ СЏР±Р»РѕРє 3", new []{ "РўРµРїРµСЂСЊ СЏР±Р»РѕРє 3 С€С‚" })]
+        [InlineData("РўРµРїРµСЂСЊ РіСЂСѓС€ 5", new []{ "РўРµРїРµСЂСЊ РіСЂСѓС€ 5 С€С‚" })]
+        [InlineData("РўРµРїРµСЂСЊ РІРѕРґС‹ 3 Р»РёС‚СЂР°", new []{ "РўРµРїРµСЂСЊ РІРѕРґС‹ 3 Р»" })]
+        [InlineData("РўРµРїРµСЂСЊ РїРµСЃРєР° 3 РєРёР»РѕРіСЂР°РјРјР°", new []{ "РўРµРїРµСЂСЊ РїРµСЃРєР° 3 РєРі" })]
+        public async Task Setting(string request, string[] responses)
         {
             var content = CreateJsonContent(request);
             var result = await _client.PostAsync("/api/values", content);
             var jsonResult = await result.Content.ReadAsStringAsync();
             var aliceAnswer = JsonConvert.DeserializeObject<AliceResponse>(jsonResult).Response.Text;
 
-            Assert.Contains(responces, expected => expected == aliceAnswer);
+            Assert.Contains(responses, expected => expected == aliceAnswer);
         }
 
         [Theory, Order(4)]
-        [InlineData("Сколько песка", new []{ "Песок: 3 кг" })]
-        [InlineData("Сколько воды", new []{ "Вода: 3 л" })]
-        [InlineData("Сколько яблок", new []{ "Яблоки: 3 шт" })]
-        public async Task Showing(string request, string[] responces)
+        [InlineData("РЎРєРѕР»СЊРєРѕ РїРµСЃРєР°", new []{ "РџРµСЃРѕРє: 3 РєРі" })]
+        [InlineData("РЎРєРѕР»СЊРєРѕ РІРѕРґС‹", new []{ "Р’РѕРґР°: 3 Р»" })]
+        [InlineData("РЎРєРѕР»СЊРєРѕ СЏР±Р»РѕРє", new []{ "РЇР±Р»РѕРєРё: 3 С€С‚" })]
+        public async Task Showing(string request, string[] responses)
         {
             var content = CreateJsonContent(request);
             var result = await _client.PostAsync("/api/values", content);
             var jsonResult = await result.Content.ReadAsStringAsync();
             var aliceAnswer = JsonConvert.DeserializeObject<AliceResponse>(jsonResult).Response.Text;
 
-            Assert.Contains(responces, expected => expected == aliceAnswer);
+            Assert.Contains(responses, expected => expected == aliceAnswer);
         }
 
         [Theory, Order(5)]
-        [InlineData("Покажи отчёт", new []{ "Отчёт:\nЯблоки: 3 шт\nГруши: 5 шт\nВода: 3 л\nПесок: 3 кг" })]
-        public async Task ShowingAll(string request, string[] responces)
+        [InlineData("РџРѕРєР°Р¶Рё РѕС‚С‡С‘С‚", new []{ "РћС‚С‡С‘С‚:\nРЇР±Р»РѕРєРё: 3 С€С‚\nР“СЂСѓС€Рё: 5 С€С‚\nР’РѕРґР°: 3 Р»\nРџРµСЃРѕРє: 3 РєРі" })]
+        public async Task ShowingAll(string request, string[] responses)
         {
             var content = CreateJsonContent(request);
             var result = await _client.PostAsync("/api/values", content);
             var jsonResult = await result.Content.ReadAsStringAsync();
             var aliceAnswer = JsonConvert.DeserializeObject<AliceResponse>(jsonResult).Response.Text;
 
-            Assert.Contains(responces, expected => expected == aliceAnswer);
+            Assert.Contains(responses, expected => expected == aliceAnswer);
         }
     }
 }
