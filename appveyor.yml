@@ -11,12 +11,14 @@ environment:
 image: Ubuntu
 
 before_build:
-- dotnet restore ./src/AliceInventory/AliceInventory.csproj
+- dotnet restore ./src/AliceInventory.sln
 
-build:
-  verbosity: normal
-  project: ./src/AliceInventory/AliceInventory.csproj
-  
+build_script:
+- dotnet build ./src/AliceInventory.sln -v m
+
+test_script:
+- dotnet test -v m
+
 deploy_script:
 - ps: >-
     
