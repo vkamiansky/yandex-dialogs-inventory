@@ -1,52 +1,28 @@
+﻿using System;
 using System.Collections.Generic;
-using System;
 using System.Linq;
+using System.Text;
 
-namespace ConsoleApp {
-    public class Unit {
-        public string CommonName { get; set; }
+namespace ConsoleApp
+{
+    public class Unit
+    {
+        public string UnitName { get; set; }
 
-        public string ShortName { get; set; }
-
-        public List<string> AlternativeNames { get; set; }
-
-        public double Multiplier {get;set;}
-        public Unit MainUnit{get;set;}
-
-        public override string ToString() {
-            return ShortName;
-        }
-
-        public bool Matches(string input)
+        public Unit(string unitName)
         {
-            var clearedInput=input!=null?input.Trim(Parser.Separators).Trim(' '):input;
-            if(string.Equals(
-                this.CommonName,
-                clearedInput,
-                StringComparison.CurrentCultureIgnoreCase))
-            {
-                return true;
-            }
-
-            if(string.Equals(
-                this.ShortName,
-                clearedInput,
-                StringComparison.CurrentCultureIgnoreCase))
-            {
-                return true;
-            }
-            
-            if(this.AlternativeNames!=null &&
-                this.AlternativeNames.Any(alt=>
-                    string.Equals(
-                    alt,
-                    clearedInput,
-                    StringComparison.CurrentCultureIgnoreCase)))
-            {
-                return true;
-            }
-
-            return false;
+            UnitName = unitName;
         }
+        //not sure, perhaps this method implements some part of parser analysis funcion TryParse()
+        public List<string> GetSynonyms()
+        {
+            return new List<string>();
+        }
+
+        public override string ToString()
+        {
+            return UnitName;
+        }
+       
     }
 }
