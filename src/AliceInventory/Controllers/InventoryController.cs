@@ -10,16 +10,18 @@ namespace AliceInventory.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class InventoryController : ControllerBase
     {
+        // GET api/inventory
         [HttpGet]
         public string Get()
         {
             return "Server is working...";
         }
 
-        // POST api/values
+        // POST api/inventory/alice
         [HttpPost]
+        [Route("alice")]
         public ActionResult<AliceResponse> Post([FromBody] AliceRequest request)
         {
             var response = new AliceResponse()

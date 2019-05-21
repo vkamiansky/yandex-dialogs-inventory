@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 
 namespace AliceInventory.IntegrationTests
 {
-    public class PostTest
+    public class InventoryControllerTest
     {
         private static readonly TimeSpan TimeLimit = TimeSpan.FromSeconds(1.5f);
         private static readonly MetaModel MetaExample = new MetaModel()
@@ -29,7 +29,7 @@ namespace AliceInventory.IntegrationTests
         private readonly TestServer _server;
         private readonly HttpClient _client;
 
-        public PostTest()
+        public InventoryControllerTest()
         {
             _server = new TestServer(WebHost.CreateDefaultBuilder().UseStartup<AliceInventory.Startup>());
             _client = _server.CreateClient();
@@ -41,7 +41,7 @@ namespace AliceInventory.IntegrationTests
             var requestContent = new StringContent(requestJson, Encoding.Default, "application/json");
 
             var startTime = DateTime.Now;
-            var responseContent = await client.PostAsync("/api/values", requestContent);
+            var responseContent = await client.PostAsync("/api/inventory/alice", requestContent);
             var endTime = DateTime.Now;
             Assert.InRange(endTime - startTime, TimeSpan.Zero, TimeLimit);
 
@@ -56,7 +56,16 @@ namespace AliceInventory.IntegrationTests
                 return null;
             }
         }
-        
+
+        [Fact]
+        public async Task ServerRunningTest()
+        {
+            var response = await _client.GetAsync("/api/inventory/");
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            Assert.Equal("Server is working...", responseString);
+        }
+
         [Fact]
         public async Task JsonVerification()
         {
