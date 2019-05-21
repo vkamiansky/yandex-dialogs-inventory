@@ -12,13 +12,26 @@ namespace AliceInventory.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        [HttpGet]
+        public string Get()
+        {
+            return "Server is working...";
+        }
 
         // POST api/values
         [HttpPost]
-        public ActionResult<string> Post([FromBody] AliceRequest request)
+        public ActionResult<AliceResponse> Post([FromBody] AliceRequest request)
         {
-            var responce = new AliceResponse() { Response = new ResponseModel() {Text = request.Request.Command}, Session = request.Session, Version = request.Version };
-            return JsonConvert.SerializeObject(responce);
+            var response = new AliceResponse()
+            {
+                Response = new ResponseModel()
+                {
+                    Text = request.Request.Command
+                }, 
+                Session = request.Session,
+                Version = request.Version
+            };
+            return response;
         }
     }
 }
