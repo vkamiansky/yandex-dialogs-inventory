@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -16,7 +17,7 @@ namespace AliceInventory.Controllers
         [HttpPost]
         public ActionResult<string> Post([FromBody] AliceRequest request)
         {
-            var responce = new AliceResponse() {Response = new ResponseModel() {Text = request.Request.Command}};
+            var responce = new AliceResponse() { Response = new ResponseModel() {Text = request.Request.Command}, Session = request.Session, Version = request.Version };
             return JsonConvert.SerializeObject(responce);
         }
     }
