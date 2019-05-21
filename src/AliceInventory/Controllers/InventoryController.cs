@@ -10,7 +10,7 @@ namespace AliceInventory.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class InventoryController : ControllerBase
     {
         [HttpGet]
         public string Get()
