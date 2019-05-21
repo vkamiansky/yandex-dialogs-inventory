@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.28822.285
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AliceInventory", "AliceInventory\AliceInventory.csproj", "{0B43AA87-C11A-4792-A8CD-C4CFE76C34CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{3D59B588-D979-4092-AAEE-062F8E32F712}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AliceInventory.IntegrationTests", "AliceInventory.IntegrationTests\AliceInventory.IntegrationTests.csproj", "{1F5734DC-9D9A-4DB6-8FD8-1B8A6A2000C2}"
 EndProject
 Global
@@ -31,18 +29,6 @@ Global
 		{0B43AA87-C11A-4792-A8CD-C4CFE76C34CC}.Release|x64.Build.0 = Release|Any CPU
 		{0B43AA87-C11A-4792-A8CD-C4CFE76C34CC}.Release|x86.ActiveCfg = Release|Any CPU
 		{0B43AA87-C11A-4792-A8CD-C4CFE76C34CC}.Release|x86.Build.0 = Release|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Debug|x64.Build.0 = Debug|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Debug|x86.Build.0 = Debug|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Release|x64.ActiveCfg = Release|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Release|x64.Build.0 = Release|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Release|x86.ActiveCfg = Release|Any CPU
-		{3D59B588-D979-4092-AAEE-062F8E32F712}.Release|x86.Build.0 = Release|Any CPU
 		{1F5734DC-9D9A-4DB6-8FD8-1B8A6A2000C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1F5734DC-9D9A-4DB6-8FD8-1B8A6A2000C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F5734DC-9D9A-4DB6-8FD8-1B8A6A2000C2}.Debug|x64.ActiveCfg = Debug|Any CPU

@@ -11,36 +11,39 @@ environment:
 image: Ubuntu
 
 before_build:
-- dotnet restore ./src/AliceInventory/AliceInventory.csproj
+- dotnet restore ./src/AliceInventory.sln
 
-build:
-  verbosity: normal
-  project: ./src/AliceInventory/AliceInventory.csproj
-  
+build_script:
+- dotnet build ./src/AliceInventory.sln -v m --no-restore
+
+test_script:
+- dotnet test ./src/AliceInventory.sln -v m --no-build
+
 deploy_script:
 - ps: >-
-    
-    if("$env:APPVEYOR_REPO_BRANCH" -eq "master")
+
+    if(("$env:APPVEYOR_REPO_BRANCH" -eq "master") -and ("$env:APPVEYOR_REPO_TAG" -eq $true))
     {
         Write-Host "Deployment scenario. Branch:" $env:APPVEYOR_REPO_BRANCH
-        
+
+        Write-Host "Branch tag:" $env:APPVEYOR_REPO_TAG_NAME
+
         docker build -t aliceinventory.dll ./src/AliceInventory/
-    
+
         docker tag aliceinventory.dll vkamiansky/aliceskills:aliceinventory
-    
+
         docker login -u $env:DOCKER_USER -p $env:DOCKER_PASS
-    
+
         docker push vkamiansky/aliceskills:aliceinventory
-    
+
         echo "$env:DOCKER_RESTART_PASS" | nc -q 0 84.201.130.31 5003
-        
+
         Write-Host "Success"
     }
     else
     {
         Write-Host "No deployment scenario. Branch:" $env:APPVEYOR_REPO_BRANCH
-        
     }
-    
+
     exit 0
-    
+
