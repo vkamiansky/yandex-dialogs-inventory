@@ -41,7 +41,7 @@ namespace AliceInventory.IntegrationTests
             var requestContent = new StringContent(requestJson, Encoding.Default, "application/json");
 
             var startTime = DateTime.Now;
-            var responseContent = await client.PostAsync("/api/values", requestContent);
+            var responseContent = await client.PostAsync("/api/inventory/alice", requestContent);
             var endTime = DateTime.Now;
             Assert.InRange(endTime - startTime, TimeSpan.Zero, TimeLimit);
 
