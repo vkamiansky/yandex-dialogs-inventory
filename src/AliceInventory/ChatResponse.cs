@@ -1,5 +1,6 @@
-namespace ConsoleApp {
-    
+
+namespace ConsoleApp
+{
     public class ChatResponse: Entry {
 
         public string TextResponse { get; set; }
@@ -11,7 +12,13 @@ namespace ConsoleApp {
             Add,
             deleteLast,
             readAll,
-            clearAll
+            clearAll,
+            exit
+        }
+
+        public ChatResponse()
+        {
+
         }
 
         // Copy constructor

@@ -2,7 +2,7 @@
 
 namespace ConsoleApp
 {
-    class Storage: IStorageInterface
+    public class Storage: IDataStorage
     {
         HashSet<Entry> storage; //contains unique elements of Entries of user list
         public void Add(Entry newEntry)
