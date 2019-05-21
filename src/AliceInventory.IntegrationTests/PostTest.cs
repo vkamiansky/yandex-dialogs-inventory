@@ -65,8 +65,8 @@ namespace AliceInventory.IntegrationTests
                 Meta = MetaExample,
                 Request = new RequestModel()
                 {
-                    Command = "не пустой текст",
-                    OriginalUtterance = "Не пустой текст",
+                    Command = "РЅРµ РїСѓСЃС‚РѕР№ С‚РµРєСЃС‚",
+                    OriginalUtterance = "РќРµ РїСѓСЃС‚РѕР№ С‚РµРєСЃС‚",
                     Type = RequestType.SimpleUtterance
                 },
                 Session = new SessionModel()
