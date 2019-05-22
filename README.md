@@ -4,4 +4,4 @@
 
 [![Gitter](https://badges.gitter.im/FirstLine-Software-Practice/community.svg)](https://gitter.im/FirstLine-Software-Practice/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Inventory helper skill using Yandex Alice. Originally from FLS Hackathon 2019. Developed during FLS coding boot camp.  
+Inventory helper skill using Yandex Alice. Originally from FLS Hackathon 2019. Developed as part of FLS coding boot camp.  
