@@ -5,16 +5,34 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (console)",
+            "name": ".NET Core Launch (web)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "",
-            "program": "${workspaceFolder}/src/ConsoleApp/bin/Debug/netcoreapp2.2/ConsoleApp.dll",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/AliceInventory/bin/Debug/netcoreapp2.2/AliceInventory.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/src/AliceInventory",
             "stopAtEntry": false,
-            "console": "internalConsole"
+            "launchBrowser": {
+                "enabled": true,
+                "args": "${auto-detect-url}/api/inventory",
+                "windows": {
+                    "command": "cmd.exe",
+                    "args": "/C start ${auto-detect-url}/api/inventory",
+                },
+                "linux": {
+                    "command": "xdg-open",
+                },
+                "osx": {
+                    "command": "open",
+                },
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
         }
-
     ]
 }
