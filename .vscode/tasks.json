@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/example/WebAPI/TestApi/TestApi.csproj"
+                "${workspaceFolder}/src/AliceInventory/AliceInventory.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -17,7 +17,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/example/WebAPI/TestApi/TestApi.csproj"
+                "${workspaceFolder}/src/AliceInventory/AliceInventory.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -28,7 +28,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/example/WebAPI/TestApi/TestApi.csproj"
+                "${workspaceFolder}/src/AliceInventory/AliceInventory.csproj"
             ],
             "problemMatcher": "$tsc"
         }
