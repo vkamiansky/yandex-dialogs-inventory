@@ -1,15 +1,15 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AliceInventory.Models
+namespace AliceInventory.Controllers
 {
     public class AliceResponse
     {
         [JsonProperty("response")]
-        public ResponseModel Response { get; set; }
+        public Response Response { get; set; }
 
         [JsonProperty("session")]
-        public SessionModel Session { get; set; }
+        public Session Session { get; set; }
 
         [JsonProperty("version")]
         public string Version { get; set; } = "1.0";

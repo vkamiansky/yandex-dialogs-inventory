@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AliceInventory.Models
+namespace AliceInventory.Controllers
 {
-    public class ResponseModel
+    public class Response
     {
         [JsonProperty("text")]
         public string Text { get; set; }
@@ -15,6 +15,6 @@ namespace AliceInventory.Models
         public bool EndSession { get; set; }
 
         [JsonProperty("buttons")]
-        public ButtonModel[] Buttons { get; set; }
+        public Button[] Buttons { get; set; }
     }
 }

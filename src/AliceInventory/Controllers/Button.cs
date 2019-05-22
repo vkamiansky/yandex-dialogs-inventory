@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AliceInventory.Models
+namespace AliceInventory.Controllers
 {
-    public class ButtonModel
+    public class Button
     {
         [JsonProperty("title")]
         public string Title { get; set; }

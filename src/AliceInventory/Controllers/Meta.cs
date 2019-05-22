@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AliceInventory.Models
+namespace AliceInventory.Controllers
 {
-    public class MetaModel
+    public class Meta
     {
         [JsonProperty("locale")]
         public string Locale { get; set; }

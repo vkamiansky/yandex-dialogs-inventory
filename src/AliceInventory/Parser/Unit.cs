@@ -9,6 +9,10 @@ namespace ConsoleApp
     {
         public string UnitName { get; set; }
 
+        public Unit()
+        {
+
+        }
         public Unit(string unitName)
         {
             UnitName = unitName;
