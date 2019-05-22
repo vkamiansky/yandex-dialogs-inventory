@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AliceInventory.Models
+namespace AliceInventory.Controllers
 {
-    public class SessionModel
+    public class Session
     {
         [JsonProperty("new")]
         public bool New { get; set; }

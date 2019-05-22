@@ -26,7 +26,7 @@ namespace AliceInventory.Controllers
         {
             var response = new AliceResponse()
             {
-                Response = new ResponseModel()
+                Response = new Response()
                 {
                     Text = request.Request.Command
                 }, 

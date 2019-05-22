@@ -11,7 +11,7 @@ using System.Net.Http.Headers;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
-using AliceInventory;
+using AliceInventory.Controllers;
 using Newtonsoft.Json;
 
 namespace AliceInventory.IntegrationTests
@@ -19,7 +19,7 @@ namespace AliceInventory.IntegrationTests
     public class InventoryControllerTest
     {
         private static readonly TimeSpan TimeLimit = TimeSpan.FromSeconds(1.5f);
-        private static readonly MetaModel MetaExample = new MetaModel()
+        private static readonly Meta MetaExample = new Meta()
         {
             Locale = "ru-RU",
             Timezone = "Europe/Moscow",
@@ -72,13 +72,13 @@ namespace AliceInventory.IntegrationTests
             var request = new AliceRequest()
             {
                 Meta = MetaExample,
-                Request = new RequestModel()
+                Request = new Request()
                 {
                     Command = "не пустой текст",
                     OriginalUtterance = "Не пустой текст",
                     Type = RequestType.SimpleUtterance
                 },
-                Session = new SessionModel()
+                Session = new Session()
                 {
                     New = true,
                     MessageId = 0,

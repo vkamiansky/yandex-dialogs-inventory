@@ -1,14 +1,14 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AliceInventory.Models
+namespace AliceInventory.Controllers
 {
     public enum RequestType
     {
         SimpleUtterance,
         ButtonPressed
     }
-    public class RequestModel
+    public class Request
     {
         [JsonProperty("command")]
         public string Command { get; set; }
