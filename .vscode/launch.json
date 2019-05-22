@@ -14,7 +14,18 @@
             "cwd": "${workspaceFolder}/src/AliceInventory",
             "stopAtEntry": false,
             "launchBrowser": {
-                "enabled": true
+                "enabled": true,
+                "args": "${auto-detect-url}/api/inventory",
+                "windows": {
+                    "command": "cmd.exe",
+                    "args": "/C start ${auto-detect-url}/api/inventory",
+                },
+                "linux": {
+                    "command": "xdg-open",
+                },
+                "osx": {
+                    "command": "open",
+                },
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
