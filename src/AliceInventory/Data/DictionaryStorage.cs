@@ -14,20 +14,14 @@ namespace AliceInventory.Data
 
         public void Add(string userId, Entry item)
         {
-            if (storage.ContainsKey(userId))
-            {
-                if (storage[userId].ContainsKey(item.Name))
-                {
-
-                }
-                else
-                {
-                    InitializeEntries(userId, item);
-                }
-            }
-            else
+            if (!storage.ContainsKey(userId))
             {
                 storage.Add(userId, new Dictionary<string, HashSet<Entry>>());
+                InitializeEntries(userId, item);
+            }
+
+            if (!storage[userId].ContainsKey(item.Name))
+            {
                 InitializeEntries(userId, item);
             }
         }
