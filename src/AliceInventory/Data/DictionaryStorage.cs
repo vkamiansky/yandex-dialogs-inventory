@@ -16,7 +16,16 @@ namespace AliceInventory.Data
         {
             if (storage.ContainsKey(userId))
             {
+                if (storage[userId].ContainsKey(item.Name))
+                {
 
+                }
+                else
+                {
+                    HashSet<Entry> entries = new HashSet<Entry>();
+                    entries.Add(item);
+                    storage[userId].Add(item.Name, entries);
+                }
             }
             else
             {
