@@ -22,14 +22,13 @@ namespace AliceInventory.Data
                 }
                 else
                 {
-                    HashSet<Entry> entries = new HashSet<Entry>();
-                    entries.Add(item);
-                    storage[userId].Add(item.Name, entries);
+                    InitializeEntries(userId, item);
                 }
             }
             else
             {
                 storage.Add(userId, new Dictionary<string, HashSet<Entry>>());
+                InitializeEntries(userId, item);
             }
         }
 
@@ -46,6 +45,13 @@ namespace AliceInventory.Data
         public void Clear(string userId)
         {
             throw new NotImplementedException();
+        }
+
+        private void InitializeEntries(string userId, Entry item)
+        {
+            HashSet<Entry> entries = new HashSet<Entry>();
+            entries.Add(item);
+            storage[userId].Add(item.Name, entries);
         }
     }
 }
