@@ -49,7 +49,8 @@ namespace AliceInventory.Data
 
         public void Clear(string userId)
         {
-            throw new NotImplementedException();
+            if (storage.ContainsKey(userId))
+                storage[userId].Clear();
         }
     }
 }
