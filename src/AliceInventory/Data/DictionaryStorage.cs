@@ -14,7 +14,14 @@ namespace AliceInventory.Data
 
         public void Add(string userId, Entry item)
         {
-            throw new NotImplementedException();
+            if (storage.ContainsKey(userId))
+            {
+
+            }
+            else
+            {
+                storage.Add(userId, new Dictionary<string, HashSet<Entry>>());
+            }
         }
 
         public void Delete(string userId, Entry item)
