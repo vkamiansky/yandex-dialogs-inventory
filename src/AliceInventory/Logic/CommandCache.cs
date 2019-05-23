@@ -19,7 +19,10 @@ namespace AliceInventory.Logic
 
         public void Set(string userId, ProcessingCommand command)
         {
-            throw new NotImplementedException();
+            if (usersCommands.ContainsKey(userId))
+                usersCommands[userId] = command;
+            else
+                usersCommands.Add(userId, command);
         }
     }
 }
