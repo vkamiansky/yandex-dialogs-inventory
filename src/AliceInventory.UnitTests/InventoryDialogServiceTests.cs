@@ -34,8 +34,8 @@ namespace AliceInventory.UnitTests
 
             var parserMock = new Mock<Logic.IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == input1)
-            )).Returns(processingCommand1);
+                    It.Is<string>(y => y == input1)))
+                .Returns(processingCommand1);
 
             var commandCacheMock = new Mock<Logic.ICommandCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x => x.Set(
