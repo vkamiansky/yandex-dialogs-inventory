@@ -30,7 +30,16 @@ namespace AliceInventory.Data
 
         public void Delete(string userId, Entry item)
         {
-            throw new NotImplementedException();
+            if (storage.ContainsKey(userId) &&
+                storage[userId].ContainsKey(item.Name) &&
+                storage[userId][item.Name].ContainsKey(item.Unit))
+            {
+                Entry deletingItem = storage[userId][item.Name][item.Unit];
+                deletingItem.Count -= item.Count;
+
+                if (deletingItem.Count <= 0)
+                    storage[userId][item.Name].Remove(item.Unit);
+            }
         }
 
         public Entry[] ReadAll(string userId)
