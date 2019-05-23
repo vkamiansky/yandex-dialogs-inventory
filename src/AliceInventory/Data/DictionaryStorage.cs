@@ -20,11 +20,9 @@ namespace AliceInventory.Data
             var userEntries = storage[userId];
 
             if (!userEntries.ContainsKey(item.Name))
-            {
-                Dictionary<UnitOfMeasure, Entry> entries = new Dictionary<UnitOfMeasure, Entry>();
-                entries.Add(item.Unit, item);
-                userEntries.Add(item.Name, entries);
-            }
+                userEntries.Add(item.Name, new Dictionary<UnitOfMeasure, Entry>());
+
+            userEntries[item.Name].Add(item.Unit, item);
         }
 
         public void Delete(string userId, Entry item)
