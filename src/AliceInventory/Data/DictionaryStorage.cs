@@ -15,14 +15,15 @@ namespace AliceInventory.Data
         public void Add(string userId, Entry item)
         {
             if (!storage.ContainsKey(userId))
-            {
                 storage.Add(userId, new Dictionary<string, HashSet<Entry>>());
-                InitializeEntries(userId, item);
-            }
 
-            if (!storage[userId].ContainsKey(item.Name))
+            Dictionary<string, HashSet<Entry>> userEntries = storage[userId];
+
+            if (!userEntries.ContainsKey(item.Name))
             {
-                InitializeEntries(userId, item);
+                HashSet<Entry> entries = new HashSet<Entry>();
+                entries.Add(item);
+                userEntries.Add(item.Name, entries);
             }
         }
 
@@ -39,13 +40,6 @@ namespace AliceInventory.Data
         public void Clear(string userId)
         {
             throw new NotImplementedException();
-        }
-
-        private void InitializeEntries(string userId, Entry item)
-        {
-            HashSet<Entry> entries = new HashSet<Entry>();
-            entries.Add(item);
-            storage[userId].Add(item.Name, entries);
         }
     }
 }
