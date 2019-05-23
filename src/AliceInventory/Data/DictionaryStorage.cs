@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace AliceInventory.Data
@@ -44,7 +45,12 @@ namespace AliceInventory.Data
 
         public Entry[] ReadAll(string userId)
         {
-            throw new NotImplementedException();
+            if (!storage.ContainsKey(userId))
+                return null;
+
+            Entry[] entries = storage[userId].SelectMany(userEntries => userEntries.Value.Values).ToArray();
+            
+            return entries;
         }
 
         public void Clear(string userId)
