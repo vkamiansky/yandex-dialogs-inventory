@@ -16,13 +16,16 @@ namespace AliceInventory.Data
         {
             if (!storage.ContainsKey(userId))
                 storage.Add(userId, new Dictionary<string, Dictionary<UnitOfMeasure, Entry>>());
-
             var userEntries = storage[userId];
 
             if (!userEntries.ContainsKey(item.Name))
                 userEntries.Add(item.Name, new Dictionary<UnitOfMeasure, Entry>());
+            var entriesItem = userEntries[item.Name];
 
-            userEntries[item.Name].Add(item.Unit, item);
+            if (!entriesItem.ContainsKey(item.Unit))
+                entriesItem.Add(item.Unit, item);
+            else
+                entriesItem[item.Unit].Count += item.Count;
         }
 
         public void Delete(string userId, Entry item)
