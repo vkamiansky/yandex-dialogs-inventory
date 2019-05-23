@@ -5,24 +5,24 @@ namespace AliceInventory.Data
 {
     public class DictionaryStorage : IInventoryStorage
     {
-        private Dictionary<string, Dictionary<string, HashSet<Entry>>> storage;
+        private Dictionary<string, Dictionary<string, Dictionary<UnitOfMeasure, Entry>>> storage;
 
         public DictionaryStorage()
         {
-            storage = new Dictionary<string, Dictionary<string, HashSet<Entry>>>();
+            storage = new Dictionary<string, Dictionary<string, Dictionary<UnitOfMeasure, Entry>>>();
         }
 
         public void Add(string userId, Entry item)
         {
             if (!storage.ContainsKey(userId))
-                storage.Add(userId, new Dictionary<string, HashSet<Entry>>());
+                storage.Add(userId, new Dictionary<string, Dictionary<UnitOfMeasure, Entry>>());
 
-            Dictionary<string, HashSet<Entry>> userEntries = storage[userId];
+            var userEntries = storage[userId];
 
             if (!userEntries.ContainsKey(item.Name))
             {
-                HashSet<Entry> entries = new HashSet<Entry>();
-                entries.Add(item);
+                Dictionary<UnitOfMeasure, Entry> entries = new Dictionary<UnitOfMeasure, Entry>();
+                entries.Add(item.Unit, item);
                 userEntries.Add(item.Name, entries);
             }
         }
