@@ -14,7 +14,7 @@ namespace AliceInventory.Logic
 
         public ProcessingCommand Get(string userId)
         {
-            throw new NotImplementedException();
+            return usersCommands.ContainsKey(userId) ? usersCommands[userId] : null;
         }
 
         public void Set(string userId, ProcessingCommand command)
