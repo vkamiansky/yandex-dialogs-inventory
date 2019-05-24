@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using AliceInventory.Logic;
+
 
 namespace AliceInventory
 {
@@ -26,8 +26,10 @@ namespace AliceInventory
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ICommandCache, CommandCache>();
-            services.AddSingleton<IInventoryDialogService, InventoryDialogService>();
+            services.AddSingleton<Logic.ICommandCache, Logic.CommandCache>();
+            services.AddSingleton<Logic.IInputParserService, Logic.InputParserService>();
+            services.AddSingleton<Data.IInventoryStorage, Data.DictionaryStorage>();
+            services.AddSingleton<Logic.IInventoryDialogService, Logic.InventoryDialogService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
