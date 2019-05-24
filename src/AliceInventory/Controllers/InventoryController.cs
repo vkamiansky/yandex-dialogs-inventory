@@ -38,7 +38,7 @@ namespace AliceInventory.Controllers
         [Route("alice")]
         public ActionResult<AliceResponse> Post([FromBody] AliceRequest request)
         {
-            /*var response = new AliceResponse()
+            var response = new AliceResponse()
             {
                 Response = new Response()
                 {
@@ -46,15 +46,16 @@ namespace AliceInventory.Controllers
                 }, 
                 Session = request.Session,
                 Version = request.Version
-            }; */
+            };
+            return response;
 
-            if (request.Session.New)
+            /*if (request.Session.New)
             {
             // надо вернуть AliceResponse-приветствие
             }
             var answer = InventoryDialogService.ProcessInput(request.Session.UserId,request.Request.Command);
             
-            return Converter.MakeAliceResponse(request,answer);
+            return Converter.MakeAliceResponse(request,answer); */
         }
     }
 }
