@@ -13,5 +13,6 @@ namespace AliceInventory.Logic
         SendMail,
         Help,
         Exit,
+        Error,
     }
 }
