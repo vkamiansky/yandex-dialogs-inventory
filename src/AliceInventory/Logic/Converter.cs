@@ -63,10 +63,12 @@ namespace AliceInventory.Logic
 
         public static AliceResponse MakeAliceResponse(AliceRequest request, ProcessingResult answer)
         {
-            AliceResponse response = new AliceResponse();
+            var response = new AliceResponse();
+            response.Response = new Response();
+            response.Session = new Session();
             Entry entry = answer.Data as Entry;
             //set buttons
-            response.Response.Buttons = new Button[]
+            /* response.Response.Buttons = new Button[]
             {
                     new Button() {Title = "Помощь", Payload = "", Url = null, Hide = true},
 
@@ -76,35 +78,34 @@ namespace AliceInventory.Logic
 
                     new Button() {Title = "Что ты еще умеешь?", Payload = "", Url = null, Hide = true}
 
-            };
+            };*/
 
             //set flag to stop dialog
             if (answer.Result == InputProcessingResult.ExitRequested)
             {
-                response.Response.EndSession = true;
+                //response.Response.EndSession = true;
             }
             else response.Response.EndSession = false;
 
-            /*if (request.Session.New)
+            if (request.Session.New)
             {
                 answer.Result = InputProcessingResult.GreetingRequested;
-            }*/
+            }
 
             // set processingResult message to Alice
-
             switch (answer.Result)
             {
                 case InputProcessingResult.GreetingRequested:
                     response.Response.Text = "Привет.Давай создадим список вещей";
                     break;
                 case InputProcessingResult.Added:
-                    response.Response.Text = "Добавила " + entry.Name + " " + entry.Count + " " + entry.Unit;
+                    response.Response.Text = "Добавила "; //+ entry.Name + " " + entry.Count + " " + entry.Unit;
                     break;
                 case InputProcessingResult.AddCanceled:
                     response.Response.Text = "Отменила добавление";
                     break;
                 case InputProcessingResult.Deleted:
-                    response.Response.Text = "Удалила " + entry.Name + " " + entry.Count + " " + entry.Unit;
+                    response.Response.Text = "Удалила ";//+ entry.Name + " " + entry.Count + " " + entry.Unit;
                     break;
                 case InputProcessingResult.ClearRequested:
                     response.Response.Text = "Вы точно хотите удалить все предметы из инвентаря?";
@@ -133,7 +134,6 @@ namespace AliceInventory.Logic
 
 
             //response.Response.Tts
-
             response.Session.MessageId = request.Session.MessageId;
             response.Session.SessionId = request.Session.SessionId;
             response.Session.UserId = request.Session.UserId;

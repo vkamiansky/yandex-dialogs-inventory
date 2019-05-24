@@ -56,8 +56,8 @@ namespace AliceInventory.Controllers
                 }, 
                 Session = request.Session,
                 Version = request.Version
-            };*/
-            //return response;
+            };
+            return response;*/
             var answer = _inventoryDialogService.ProcessInput(request.Session.UserId, request.Request.Command);
 
             return Logic.Converter.MakeAliceResponse(request, answer);
