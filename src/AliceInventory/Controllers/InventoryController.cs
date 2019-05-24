@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using AliceInventory.Logic;
-using AliceInventory.Data;
 
 namespace AliceInventory.Controllers
 {
@@ -30,6 +28,13 @@ namespace AliceInventory.Controllers
         public string Get()
         {
             return "Server is working...";
+        }
+
+        // HEAD api/inventory
+        [HttpHead]
+        public ActionResult Head()
+        { 
+            return Ok(); 
         }
 
         // POST api/inventory/alice
