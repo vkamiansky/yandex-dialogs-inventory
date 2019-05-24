@@ -13,12 +13,12 @@ using System.Text;
 using System.Threading.Tasks;
 using AliceInventory.Controllers;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace AliceInventory.IntegrationTests
 {
     public class InventoryControllerTest
     {
-        private static readonly TimeSpan TimeLimit = TimeSpan.FromSeconds(1.5f);
         private static readonly Meta MetaExample = new Meta()
         {
             Locale = "ru-RU",
@@ -39,11 +39,8 @@ namespace AliceInventory.IntegrationTests
         {
             var requestJson = JsonConvert.SerializeObject(request);
             var requestContent = new StringContent(requestJson, Encoding.Default, "application/json");
-
-            var startTime = DateTime.Now;
+            
             var responseContent = await client.PostAsync("/api/inventory/alice", requestContent);
-            var endTime = DateTime.Now;
-            Assert.InRange(endTime - startTime, TimeSpan.Zero, TimeLimit);
 
             var responseJson = await responseContent.Content.ReadAsStringAsync();
 
@@ -60,10 +57,21 @@ namespace AliceInventory.IntegrationTests
         [Fact]
         public async Task ServerRunningTest()
         {
-            var response = await _client.GetAsync("/api/inventory/");
-            var responseString = await response.Content.ReadAsStringAsync();
+            using(var response = await _client.GetAsync("/api/inventory/"))
+            {
+                var responseString = await response.Content.ReadAsStringAsync();
+                Assert.Equal("Server is working...", responseString);
+            }
+        }
 
-            Assert.Equal("Server is working...", responseString);
+        [Fact]
+        public async Task ServerAvailableTest()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Head, "/api/inventory/");
+            using(HttpResponseMessage response = await _client.SendAsync(request))
+            {
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);   
+            }
         }
 
         [Fact]
