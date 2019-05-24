@@ -60,7 +60,12 @@ namespace AliceInventory.Logic
             UnitOfMeasure unit = ParseUnitOfMeasure(tokens[2]);
 
             if (isCount)
-                entry = new Entry(name, count, unit);
+                entry = new Entry
+                {
+                    Name = name,
+                    Count = count,
+                    Unit = unit
+                };
 
             return entry;
         }
@@ -79,6 +84,7 @@ namespace AliceInventory.Logic
                 case "штук":
                 case "штуку":
                 case "штуковин":
+                
                     return UnitOfMeasure.Unit;
                 case "литр":
                 case "литра":
