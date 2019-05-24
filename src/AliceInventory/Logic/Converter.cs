@@ -90,7 +90,7 @@ namespace AliceInventory.Logic
             // set processingResult message to Alice
             switch(answer.Result)
             {
-                case InputProcessingResult.ShowGreeting: 
+                case InputProcessingResult.GreetingRequested: 
                     response.Response.Text="Привет.Давай создадим список вещей";
                     break;
                 case InputProcessingResult.Added:
@@ -102,12 +102,6 @@ namespace AliceInventory.Logic
                 case InputProcessingResult.Deleted:
                     response.Response.Text="Удалила "+answer.Data.Name+" "+answer.Data.Count+" "+answer.Data.Unit;
                     break;
-                case InputProcessingResult.DeleteCanceled:
-                    response.Response.Text="Отменила удаление";
-                    break;
-                case InputProcessingResult.EntryNotFoundError:
-                    response.Response.Text="У вас ничего нет";
-                    break;
                 case InputProcessingResult.ClearRequested:
                     response.Response.Text="Вы точно хотите удалить все предметы из инвентаря?";
                     break;
@@ -117,17 +111,18 @@ namespace AliceInventory.Logic
                 case InputProcessingResult.ListRead:
                     response.Response.Text="Это все что у вас есть";
                     break;
-                case InputProcessingResult.ListEmpty:
-                     response.Response.Text="Инвентарь пуст";
-                    break;
                 case InputProcessingResult.MailSent:
-                     response.Response.Text="Отправила на почту";
+                    response.Response.Text="Отправила на почту";
+                    break;
+                case InputProcessingResult.HelpRequested:
+                    response.Response.Text="А вот и помощь";
+                    // здесь видимо добавить возможность помощи возврата
                     break;
                 case InputProcessingResult.Error:
-                     response.Response.Text="Ошибка";
+                    response.Response.Text="Ошибка";
                     break;
-                case InputProcessingResult.ShowParting:
-                    response.Response.Text="До новых встреч";
+                case InputProcessingResult.ExitRequested:
+                    response.Response.Text="Досвидос";
                     break;
             }
 
