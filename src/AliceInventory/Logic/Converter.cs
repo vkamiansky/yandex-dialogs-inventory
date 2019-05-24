@@ -82,7 +82,7 @@ namespace AliceInventory.Logic
             response.Response.Text="Вот что я могу: </n> Добавлять объекты </n> Удалять объекты </n> Отображать список объектов </n> ";
 
             //set flag to stop dialog
-            if(answer.Result==InputProcessingResult.ShowParting)
+            if(answer.Result==InputProcessingResult.ExitRequested)
             {
                response.Response.EndSession=true; 
             }
@@ -110,6 +110,7 @@ namespace AliceInventory.Logic
                     break;
                 case InputProcessingResult.ListRead:
                     response.Response.Text="Это все что у вас есть";
+                    //а здесь где-то список вещичек
                     break;
                 case InputProcessingResult.MailSent:
                     response.Response.Text="Отправила на почту";
