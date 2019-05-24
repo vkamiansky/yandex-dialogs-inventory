@@ -18,7 +18,7 @@ namespace AliceInventory.Logic
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Add;
                     else
-                        resultProcessingCommand.Command = InputProcessingCommand.Error;
+                        resultProcessingCommand.Command = InputProcessingCommand.SayUnknownCommand;
                     
                     resultProcessingCommand.Data = entry;
                     break;
@@ -29,7 +29,7 @@ namespace AliceInventory.Logic
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Delete;
                     else
-                        resultProcessingCommand.Command = InputProcessingCommand.Error;
+                        resultProcessingCommand.Command = InputProcessingCommand.SayUnknownCommand;
 
                     resultProcessingCommand.Data = entry;
                     break;
@@ -43,7 +43,7 @@ namespace AliceInventory.Logic
                     break;
 
                 default:
-                    resultProcessingCommand.Command = InputProcessingCommand.Error;
+                    resultProcessingCommand.Command = InputProcessingCommand.SayUnknownCommand;
                     break;
             }
 
