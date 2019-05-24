@@ -57,10 +57,9 @@ namespace AliceInventory.IntegrationTests
         [Fact]
         public async Task ServerRunningTest()
         {
-            var response = await _client.GetAsync("/api/inventory/");
-            var responseString = await response.Content.ReadAsStringAsync();
-            using(response = await _client.GetAsync("/api/inventory/"))
+            using(var response = await _client.GetAsync("/api/inventory/"))
             {
+                var responseString = await response.Content.ReadAsStringAsync();
                 Assert.Equal("Server is working...", responseString);
             }
         }
@@ -69,10 +68,9 @@ namespace AliceInventory.IntegrationTests
         public async Task ServerAvailableTest()
         {
             var request = new HttpRequestMessage(HttpMethod.Head, "/api/inventory/");
-            HttpResponseMessage response;
-            using(response = await _client.SendAsync(request))
+            using(HttpResponseMessage response = await _client.SendAsync(request))
             {
-                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);   
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);   
             }
         }
 
