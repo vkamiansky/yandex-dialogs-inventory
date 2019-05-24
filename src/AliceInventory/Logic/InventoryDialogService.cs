@@ -54,7 +54,7 @@ namespace AliceInventory.Logic
                     commandResult = new ProcessingResult
                     {
                         Result = InputProcessingResult.Error,
-                        Data = "Command was not processed properly",
+                        Data = null,
                     };
                     break;
             }
