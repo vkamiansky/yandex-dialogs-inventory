@@ -1,5 +1,6 @@
 using System;
 using AliceInventory;
+using AliceInventory.Controllers;
 
 namespace AliceInventory.Logic
 {
@@ -58,6 +59,29 @@ namespace AliceInventory.Logic
                 default:
                     return Data.UnitOfMeasure.Unit;
             }
+        }
+
+        public static AliceResponse MakeAliceResponse(AliceRequest request,ProcessingResult answer)
+        {
+            AliceResponse response = new AliceResponse();
+
+            //response.Response.Buttons
+
+            /*if(answer.Result==InputProcessingResult.Exited){
+               response.Response.EndSession=true; 
+            }
+            else response.Response.EndSession=false; */
+            
+            //response.Response.Text = answer.Data
+            
+            //response.Response.Tts
+
+            response.Session.MessageId = request.Session.MessageId;
+            response.Session.SessionId = request.Session.SessionId;
+            response.Session.UserId = request.Session.UserId;
+
+            response.Version = request.Version;
+            return response;
         }
     }
 }

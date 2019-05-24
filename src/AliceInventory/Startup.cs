@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using AliceInventory.Logic;
+using AliceInventory.Data;
 
 namespace AliceInventory
 {
@@ -27,7 +28,8 @@ namespace AliceInventory
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<ICommandCache, CommandCache>();
-            services.AddSingleton<IInventoryDialogService, InventoryDialogService>();
+            //services.AddSingleton<IInventoryDialogService, InventoryDialogService>
+                //(new InventoryStorage(),new InputParserService(),new CommandCache());
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
