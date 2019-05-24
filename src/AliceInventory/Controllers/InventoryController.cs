@@ -48,18 +48,17 @@ namespace AliceInventory.Controllers
         [Route("alice")]
         public ActionResult<AliceResponse> Post([FromBody] AliceRequest request)
         {
-            /*var response = new AliceResponse()
-            {
-                Response = new Response()
-                {
-                    Text = request.Request.Command
-                }, 
-                Session = request.Session,
-                Version = request.Version
-            };
-            return response;*/
+            // var response = new AliceResponse()
+            // {
+            //     Response = new Response()
+            //     {
+            //         Text = request.Request.Command
+            //     }, 
+            //     Session = request.Session,
+            //     Version = request.Version
+            // };
+            // return response;
             var answer = _inventoryDialogService.ProcessInput(request.Session.UserId, request.Request.Command);
-
             return Logic.Converter.MakeAliceResponse(request, answer);
         }
     }
