@@ -37,9 +37,9 @@ namespace AliceInventory.Data
         {
             bool isSuccessful = true;
 
-            if (storage.ContainsKey(userId) &&
-                storage[userId].ContainsKey(item.Name) &&
-                storage[userId][item.Name].ContainsKey(item.Unit))
+            if (storage.ContainsKey(userId)
+                && storage[userId].ContainsKey(item.Name) 
+                && storage[userId][item.Name].ContainsKey(item.Unit))
             {
                 Entry deletingItem = storage[userId][item.Name][item.Unit];
                 deletingItem.Count -= item.Count;
