@@ -13,8 +13,10 @@ namespace AliceInventory.Data
             storage = new Dictionary<string, Dictionary<string, Dictionary<UnitOfMeasure, Entry>>>();
         }
 
-        public void Add(string userId, Entry item)
+        public bool Add(string userId, Entry item)
         {
+            bool isSuccessful = true;
+
             if (!storage.ContainsKey(userId))
                 storage.Add(userId, new Dictionary<string, Dictionary<UnitOfMeasure, Entry>>());
             var userEntries = storage[userId];
@@ -27,10 +29,14 @@ namespace AliceInventory.Data
                 entriesItem.Add(item.Unit, item);
             else
                 entriesItem[item.Unit].Count += item.Count;
+
+            return isSuccessful;
         }
 
-        public void Delete(string userId, Entry item)
+        public bool Delete(string userId, Entry item)
         {
+            bool isSuccessful = true;
+
             if (storage.ContainsKey(userId) &&
                 storage[userId].ContainsKey(item.Name) &&
                 storage[userId][item.Name].ContainsKey(item.Unit))
@@ -41,6 +47,10 @@ namespace AliceInventory.Data
                 if (deletingItem.Count <= 0)
                     storage[userId][item.Name].Remove(item.Unit);
             }
+            else
+                isSuccessful = false;
+
+            return isSuccessful;
         }
 
         public Entry[] ReadAll(string userId)
@@ -53,10 +63,16 @@ namespace AliceInventory.Data
             return entries;
         }
 
-        public void Clear(string userId)
+        public bool Clear(string userId)
         {
+            bool isSuccessful = true;
+
             if (storage.ContainsKey(userId))
                 storage[userId].Clear();
+            else
+                isSuccessful = false;
+
+            return isSuccessful;
         }
     }
 }
