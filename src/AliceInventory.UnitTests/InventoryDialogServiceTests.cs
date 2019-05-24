@@ -30,7 +30,8 @@ namespace AliceInventory.UnitTests
                 It.Is<Data.Entry>(y =>
                     Logic.Converter.ToLogic(y.Unit) == logicEntryStub1.Unit
                     && y.Name == logicEntryStub1.Name
-                    && y.Count == logicEntryStub1.Count)));
+                    && y.Count == logicEntryStub1.Count)))
+                .Returns(true);
 
             var parserMock = new Mock<Logic.IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
