@@ -89,7 +89,7 @@ namespace AliceInventory.Logic
             // set processingResult message to Alice
             switch(answer.Result)
             {
-                case ProcessingResult.Greeting: 
+                case ProcessingResult.ShowGreeting: 
                     response.Response.Text="Привет.Давай создадим список вещей";
                     break;
                 case ProcessingCommand.Added:
@@ -103,12 +103,6 @@ namespace AliceInventory.Logic
                     break;
                 case ProcessingResult.DeleteCanceled:
                     response.Response.Text="Отменила удаление";
-                    break;
-                case ProcessingResult.DeleteEntryFromList:
-                    response.Response.Text="Удалила все "+answer.Data.Name+" из списка";
-                    break;
-                case ProcessingResult.DeleteEntryFromListCanceled:
-                     response.Response.Text="Отменила удаление всех "+answer.Data.Name+" из списка";
                     break;
                 case ProcessingResult.EntryNotFoundError:
                     response.Response.Text="У вас ничего нет";
@@ -128,13 +122,10 @@ namespace AliceInventory.Logic
                 case ProcessingResult.MailSent:
                      response.Response.Text="Отправила на почту";
                     break;
-                case ProcessingResult.MailSendError:
-                     response.Response.Text="Не смогла отправить сообщение на почту";
-                    break;
                 case ProcessingResult.Error:
                      response.Response.Text="Ошибка";
                     break;
-                case ProcessingResult.Parting:
+                case ProcessingResult.ShowParting:
                     response.Response.Text="До новых встреч";
                     break;
             }
