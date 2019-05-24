@@ -37,7 +37,6 @@ namespace AliceInventory.Controllers
             return Ok(); 
         }
 
-
         // POST api/inventory/alice
         [HttpPost]
         [Route("alice")]
