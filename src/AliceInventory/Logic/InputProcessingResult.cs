@@ -9,15 +9,12 @@ namespace AliceInventory.Logic
         AddCanceled,
         Deleted,
         DeleteCanceled,
-        DeleteEntryFromList,
-        DeleteEntryFromListCanceled,
         EntryNotFoundError,
         ClearRequested,
         Cleared,
         ListRead,
         ListEmpty,
         MailSent,
-        MailSendError,
         Error,
         Parting
     }
