@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AliceInventory", "AliceInve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AliceInventory.IntegrationTests", "AliceInventory.IntegrationTests\AliceInventory.IntegrationTests.csproj", "{1F5734DC-9D9A-4DB6-8FD8-1B8A6A2000C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AliceInventory.UnitTests", "AliceInventory.UnitTests\AliceInventory.UnitTests.csproj", "{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,18 @@ Global
 		{EC3BB7D2-8343-46B0-AB7A-41B27AFC5926}.Release|x64.Build.0 = Release|Any CPU
 		{EC3BB7D2-8343-46B0-AB7A-41B27AFC5926}.Release|x86.ActiveCfg = Release|Any CPU
 		{EC3BB7D2-8343-46B0-AB7A-41B27AFC5926}.Release|x86.Build.0 = Release|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Debug|x64.Build.0 = Debug|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Debug|x86.Build.0 = Debug|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Release|x64.ActiveCfg = Release|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Release|x64.Build.0 = Release|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Release|x86.ActiveCfg = Release|Any CPU
+		{5C829623-DC0D-4E2C-B0AF-201DBBEBE7DF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
