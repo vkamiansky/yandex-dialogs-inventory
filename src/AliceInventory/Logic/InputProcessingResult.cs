@@ -4,19 +4,16 @@ namespace AliceInventory.Logic
 {
     public enum InputProcessingResult
     {
-        ShowGreeting,
+        GreetingRequested,
         Added,
         AddCanceled,
         Deleted,
-        DeleteCanceled,
-        EntryNotFoundError,
         ClearRequested,
         Cleared,
         ListRead,
-        ListEmpty,
         MailSent,
-        ShowHelp,
+        HelpRequested,
         Error,
-        ShowParting
+        ExitRequested
     }
 }
