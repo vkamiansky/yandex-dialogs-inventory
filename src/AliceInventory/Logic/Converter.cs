@@ -65,14 +65,80 @@ namespace AliceInventory.Logic
         {
             AliceResponse response = new AliceResponse();
 
-            //response.Response.Buttons
+            //set buttons
+            response.Response.Buttons= new Button[] 
+            {
+                    new Button() {Title = "Помощь", Payload = "", Url = null, Hide = true},
 
-            /*if(answer.Result==InputProcessingResult.Exited){
+                    new Button() {Title = "Like", Payload = "", Url = null, Hide = false},
+
+                    new Button() {Title = "Dislike", Payload = "", Url = null, Hide = true},
+
+                    new Button() {Title = "Что ты еще умеешь?", Payload = "", Url = null, Hide = true}
+
+            };
+
+            response.Response.Text="Вот что я могу: </n> Добавлять объекты </n> Удалять объекты </n> Отображать список объектов </n> ";
+
+            //set flag to stop dialog
+            if(answer.Result==InputProcessingResult.Parting)
+            {
                response.Response.EndSession=true; 
             }
-            else response.Response.EndSession=false; */
-            
-            //response.Response.Text = answer.Data
+            else response.Response.EndSession=false;
+            // set processingResult message to Alice
+            switch(answer.Result)
+            {
+                case ProcessingResult.Greeting: 
+                    response.Response.Text="Привет.Давай создадим список вещей";
+                    break;
+                case ProcessingCommand.Added:
+                    response.Response.Text="Добавила "+answer.Data.Name+" "+answer.Data.Count+" "+answer.Data.Unit;
+                    break;
+                case ProcessingResult.AddCanceled:
+                    response.Response.Text="Отменила добавление";
+                    break;
+                case ProcessingResult.Deleted:
+                    response.Response.Text="Удалила "+answer.Data.Name+" "+answer.Data.Count" "+answer.Data.Unit;
+                    break;
+                case ProcessingResult.DeleteCanceled:
+                    response.Response.Text="Отменила удаление";
+                    break;
+                case ProcessingResult.DeleteEntryFromList:
+                    response.Response.Text="Удалила все "+answer.Data.Name+" из списка";
+                    break;
+                case ProcessingResult.DeleteEntryFromListCanceled:
+                     response.Response.Text="Отменила удаление всех "+answer.Data.Name+" из списка";
+                    break;
+                case ProcessingResult.EntryNotFoundError:
+                    response.Response.Text="У вас ничего нет";
+                    break;
+                case ProcessingResult.ClearRequested:
+                    response.Response.Text="Вы точно хотите удалить все предметы из инвентаря?";
+                    break;
+                case ProcessingResult.Cleared:
+                    response.Response.Text="Теперь инвентарь пуст";
+                    break;
+                case ProcessingResult.ListRead:
+                    response.Response.Text="Это все что у вас есть";
+                    break;
+                case ProcessingResult.ListEmpty:
+                     response.Response.Text="Инвентарь пуст";
+                    break;
+                case ProcessingResult.MailSent:
+                     response.Response.Text="Отправила на почту";
+                    break;
+                case ProcessingResult.MailSendError:
+                     response.Response.Text="Не смогла отправить сообщение на почту";
+                    break;
+                case ProcessingResult.Error:
+                     response.Response.Text="Ошибка";
+                    break;
+                case ProcessingResult.Parting:
+                    response.Response.Text="До новых встреч";
+                    break;
+            }
+
             
             //response.Response.Tts
 
