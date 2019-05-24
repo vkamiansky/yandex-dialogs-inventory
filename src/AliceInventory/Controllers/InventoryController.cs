@@ -15,6 +15,12 @@ namespace AliceInventory.Controllers
     [ApiController]
     public class InventoryController : ControllerBase
     {
+        private Logic.IInventoryDialogService _inventoryDialogService { set; get; }
+
+        public InventoryController(Logic.IInventoryDialogService _inventoryDialogService)
+        {
+            this._inventoryDialogService = _inventoryDialogService;
+        }
         static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
@@ -42,7 +48,7 @@ namespace AliceInventory.Controllers
         [Route("alice")]
         public ActionResult<AliceResponse> Post([FromBody] AliceRequest request)
         {
-            var response = new AliceResponse()
+            /*var response = new AliceResponse()
             {
                 Response = new Response()
                 {
@@ -50,8 +56,11 @@ namespace AliceInventory.Controllers
                 }, 
                 Session = request.Session,
                 Version = request.Version
-            };
-            return response;
+            };*/
+            //return response;
+            var answer = _inventoryDialogService.ProcessInput(request.Session.UserId, request.Request.Command);
+
+            return Logic.Converter.MakeAliceResponse(request, answer);
         }
     }
 }
