@@ -4,7 +4,7 @@ namespace AliceInventory.Logic
 {
     public enum InputProcessingCommand
     {
-        RequestGreeting,
+        SayHello,
         Accept,
         Decline,
         Cancel,
@@ -15,5 +15,6 @@ namespace AliceInventory.Logic
         SendMail,
         RequestHelp,
         RequestExit,
+        SayUnknownCommand,
     }
 }
