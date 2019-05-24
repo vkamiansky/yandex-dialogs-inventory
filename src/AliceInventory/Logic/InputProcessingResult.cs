@@ -4,7 +4,7 @@ namespace AliceInventory.Logic
 {
     public enum InputProcessingResult
     {
-        Greeting,
+        ShowGreeting,
         Added,
         AddCanceled,
         Deleted,
@@ -15,7 +15,8 @@ namespace AliceInventory.Logic
         ListRead,
         ListEmpty,
         MailSent,
+        ShowHelp,
         Error,
-        Parting
+        ShowParting
     }
 }
