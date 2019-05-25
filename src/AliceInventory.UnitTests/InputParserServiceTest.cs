@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Xunit;
 using AliceInventory.Logic;
 
@@ -20,7 +21,7 @@ namespace AliceInventory.UnitTests
             UnitOfMeasure entryUnitOfMeasure)
         {
             InputParserService sut = new InputParserService();
-            ProcessingCommand parsedCommand = sut.ParseInput(input);
+            ProcessingCommand parsedCommand = sut.ParseInput(input, CultureInfo.CurrentCulture);
 
             Assert.Equal(command, parsedCommand.Command);
 
@@ -42,10 +43,44 @@ namespace AliceInventory.UnitTests
             InputProcessingCommand command)
         {
             InputParserService sut = new InputParserService();
-            ProcessingCommand parsedCommand = sut.ParseInput(input);
+            ProcessingCommand parsedCommand = sut.ParseInput(input, CultureInfo.CurrentCulture);
 
             Assert.Equal(command, parsedCommand.Command);
             Assert.Null(parsedCommand.Data);
+        }
+
+        [Theory]
+        [InlineData("добавь предмет ,1 кг", 0.1)]
+        [InlineData("добавь предмет 0,1 кг", 0.1)]
+        [InlineData("добавь предмет 1,1 кг", 1.1)]
+        public void CommandParsingCultureRu(
+            string input,
+            double entryCount)
+        {
+            InputParserService sut = new InputParserService();
+            CultureInfo clientCulture = new CultureInfo("ru-RU");
+            ProcessingCommand parsedCommand = sut.ParseInput(input, clientCulture);
+
+            var data = parsedCommand.Data as Entry;
+
+            Assert.Equal(entryCount, data?.Count);
+        }
+
+        [Theory]
+        [InlineData("добавь предмет .1 кг", 0.1)]
+        [InlineData("добавь предмет 0.1 кг", 0.1)]
+        [InlineData("добавь предмет 1.1 кг", 1.1)]
+        public void CommandParsingCultureEng(
+            string input,
+            double entryCount)
+        {
+            InputParserService sut = new InputParserService();
+            CultureInfo clientCulture = new CultureInfo("en-US");
+            ProcessingCommand parsedCommand = sut.ParseInput(input, clientCulture);
+
+            var data = parsedCommand.Data as Entry;
+
+            Assert.Equal(entryCount, data?.Count);
         }
     }
 }

@@ -1,10 +1,11 @@
 using System;
+using System.Globalization;
 
 namespace AliceInventory.Logic
 {
     public class InputParserService : IInputParserService
     {
-        public ProcessingCommand ParseInput(string input)
+        public ProcessingCommand ParseInput(string input, CultureInfo culture)
         {
             ProcessingCommand resultProcessingCommand = new ProcessingCommand();
             string[] tokens = input.ToLower().Split(" ");
@@ -13,7 +14,7 @@ namespace AliceInventory.Logic
             switch (tokens[0])
             {
                 case "добавь":
-                    entry = ParseEntry(tokens[1], tokens[2], tokens[3]);
+                    entry = ParseEntry(culture, tokens[1], tokens[2], tokens[3]);
 
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Add;
@@ -24,7 +25,7 @@ namespace AliceInventory.Logic
                     break;
 
                 case "удали":
-                    entry = ParseEntry(tokens[1], tokens[2], tokens[3]);
+                    entry = ParseEntry(culture, tokens[1], tokens[2], tokens[3]);
 
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Delete;
@@ -50,13 +51,13 @@ namespace AliceInventory.Logic
             return resultProcessingCommand;
         }
 
-        private Entry ParseEntry(params string[] tokens)
+        private Entry ParseEntry(CultureInfo culture, params string[] tokens)
         {
             Entry entry = null;
 
             string name = tokens[0];
             double count;
-            bool isCount = double.TryParse(tokens[1], out count);
+            bool isCount = double.TryParse(tokens[1], NumberStyles.Any, culture, out count);
             UnitOfMeasure unit = ParseUnitOfMeasure(tokens[2]);
 
             if (isCount)
