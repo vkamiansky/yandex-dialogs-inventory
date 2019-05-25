@@ -107,7 +107,7 @@ namespace AliceInventory.Logic
                     return UnitOfMeasure.L;
 
                 default:
-                    return UnitOfMeasure.Unit;
+                    return UnitOfMeasure.Unknown;
             }
         }
     }
