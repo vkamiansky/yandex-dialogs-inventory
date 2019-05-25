@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace AliceInventory.Logic
 {
@@ -8,13 +9,13 @@ namespace AliceInventory.Logic
         public ProcessingCommand ParseInput(string input, CultureInfo culture)
         {
             ProcessingCommand resultProcessingCommand = new ProcessingCommand();
-            string[] tokens = input.ToLower().Split(" ");
+            Queue<string> tokens = new Queue<string>(input.ToLower().Split(" "));
 
             Entry entry = null;
-            switch (tokens[0])
+            switch (tokens.Dequeue())
             {
                 case "добавь":
-                    entry = ParseEntry(culture, tokens[1], tokens[2], tokens[3]);
+                    entry = ParseEntry(culture, tokens.Dequeue(), tokens.Dequeue(), tokens.Dequeue());
 
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Add;
@@ -25,7 +26,7 @@ namespace AliceInventory.Logic
                     break;
 
                 case "удали":
-                    entry = ParseEntry(culture, tokens[1], tokens[2], tokens[3]);
+                    entry = ParseEntry(culture, tokens.Dequeue(), tokens.Dequeue(), tokens.Dequeue());
 
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Delete;
