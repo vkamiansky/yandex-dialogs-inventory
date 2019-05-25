@@ -11,12 +11,12 @@ namespace AliceInventory.Logic
             ProcessingCommand resultProcessingCommand = new ProcessingCommand();
             Queue<string> tokens = new Queue<string>(input.ToLower().Split(" "));
 
-            Entry entry = null;
-            switch (tokens.Dequeue())
-            {
-                case "добавь":
-                    entry = ExtractEntry(culture, tokens);
+            InputProcessingCommand command = ExtractCommand(tokens);
+            Entry entry = ExtractEntry(culture, tokens);
 
+            switch (command)
+            {
+                case InputProcessingCommand.Add:
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Add;
                     else
@@ -25,9 +25,7 @@ namespace AliceInventory.Logic
                     resultProcessingCommand.Data = entry;
                     break;
 
-                case "удали":
-                    entry = ExtractEntry(culture, tokens);
-
+                case InputProcessingCommand.Delete:
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Delete;
                     else
@@ -36,11 +34,11 @@ namespace AliceInventory.Logic
                     resultProcessingCommand.Data = entry;
                     break;
 
-                case "очисти":
+                case InputProcessingCommand.Clear:
                     resultProcessingCommand.Command = InputProcessingCommand.Clear;
                     break;
 
-                case "покажи":
+                case InputProcessingCommand.ReadList:
                     resultProcessingCommand.Command = InputProcessingCommand.ReadList;
                     break;
 
@@ -50,6 +48,33 @@ namespace AliceInventory.Logic
             }
 
             return resultProcessingCommand;
+        }
+
+        private InputProcessingCommand ExtractCommand(Queue<string> tokens)
+        {
+            if (tokens.Count == 0)
+                return InputProcessingCommand.SayUnknownCommand;
+
+            switch (tokens.Dequeue())
+            {
+                case "привет":
+                    return InputProcessingCommand.SayHello;
+
+                case "добавь":
+                    return InputProcessingCommand.Add;
+
+                case "удали":
+                    return InputProcessingCommand.Delete;
+
+                case "очисти":
+                    return InputProcessingCommand.Clear;
+
+                case "покажи":
+                    return InputProcessingCommand.ReadList;
+
+                default:
+                    return InputProcessingCommand.SayUnknownCommand;
+            }
         }
 
         private Entry ExtractEntry(CultureInfo culture, Queue<string> tokens)
