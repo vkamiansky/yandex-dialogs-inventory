@@ -85,7 +85,10 @@ namespace AliceInventory.Logic
                 case "штук":
                 case "штуку":
                 case "штуковин":
-                
+                case "единиц":
+                case "единица":
+                case "единицу":
+                case "единицы":
                     return UnitOfMeasure.Unit;
                 case "литр":
                 case "литра":
