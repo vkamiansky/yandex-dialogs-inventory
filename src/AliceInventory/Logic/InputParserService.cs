@@ -15,7 +15,7 @@ namespace AliceInventory.Logic
             switch (tokens.Dequeue())
             {
                 case "добавь":
-                    entry = ParseEntry(culture, tokens.Dequeue(), tokens.Dequeue(), tokens.Dequeue());
+                    entry = ParseEntry(culture, tokens);
 
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Add;
@@ -26,7 +26,7 @@ namespace AliceInventory.Logic
                     break;
 
                 case "удали":
-                    entry = ParseEntry(culture, tokens.Dequeue(), tokens.Dequeue(), tokens.Dequeue());
+                    entry = ParseEntry(culture, tokens);
 
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Delete;
@@ -52,14 +52,14 @@ namespace AliceInventory.Logic
             return resultProcessingCommand;
         }
 
-        private Entry ParseEntry(CultureInfo culture, params string[] tokens)
+        private Entry ParseEntry(CultureInfo culture, Queue<string> tokens)
         {
             Entry entry = null;
 
-            string name = tokens[0];
+            string name = tokens.Dequeue();
             double count;
-            bool isCount = double.TryParse(tokens[1], NumberStyles.Any, culture, out count);
-            UnitOfMeasure unit = ParseUnitOfMeasure(tokens[2]);
+            bool isCount = double.TryParse(tokens.Dequeue(), NumberStyles.Any, culture, out count);
+            UnitOfMeasure unit = ParseUnitOfMeasure(tokens.Dequeue());
 
             if (isCount && count > 0)
                 entry = new Entry
