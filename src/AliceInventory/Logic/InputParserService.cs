@@ -8,7 +8,6 @@ namespace AliceInventory.Logic
     {
         public ProcessingCommand ParseInput(string input, CultureInfo culture)
         {
-            ProcessingCommand resultProcessingCommand = new ProcessingCommand();
             Queue<string> tokens = new Queue<string>(input.ToLower().Split(" "));
 
             InputProcessingCommand command = ExtractCommand(tokens);
@@ -17,37 +16,21 @@ namespace AliceInventory.Logic
             switch (command)
             {
                 case InputProcessingCommand.Add:
-                    if (entry != null)
-                        resultProcessingCommand.Command = InputProcessingCommand.Add;
-                    else
-                        resultProcessingCommand.Command = InputProcessingCommand.SayIllegalArguments;
-                    
-                    resultProcessingCommand.Data = entry;
+                    if (entry == null)
+                        command = InputProcessingCommand.SayIllegalArguments;
                     break;
 
                 case InputProcessingCommand.Delete:
-                    if (entry != null)
-                        resultProcessingCommand.Command = InputProcessingCommand.Delete;
-                    else
-                        resultProcessingCommand.Command = InputProcessingCommand.SayIllegalArguments;
-
-                    resultProcessingCommand.Data = entry;
-                    break;
-
-                case InputProcessingCommand.Clear:
-                    resultProcessingCommand.Command = InputProcessingCommand.Clear;
-                    break;
-
-                case InputProcessingCommand.ReadList:
-                    resultProcessingCommand.Command = InputProcessingCommand.ReadList;
-                    break;
-
-                default:
-                    resultProcessingCommand.Command = InputProcessingCommand.SayUnknownCommand;
+                    if (entry == null)
+                        command = InputProcessingCommand.SayIllegalArguments;
                     break;
             }
 
-            return resultProcessingCommand;
+            return new ProcessingCommand
+            {
+                Command = command,
+                Data = entry,
+            };
         }
 
         private InputProcessingCommand ExtractCommand(Queue<string> tokens)
