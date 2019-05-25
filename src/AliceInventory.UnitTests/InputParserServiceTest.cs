@@ -10,8 +10,6 @@ namespace AliceInventory.UnitTests
         [Theory]
         [InlineData("добавь яблоко 1 килограмм", InputProcessingCommand.Add, "яблоко", 1, UnitOfMeasure.Kg)]
         [InlineData("добавь арбуз 3 штуки", InputProcessingCommand.Add, "арбуз", 3, UnitOfMeasure.Unit)]
-        [InlineData("добавь арбуз 1 штуки", InputProcessingCommand.Add, "арбуз", 1, UnitOfMeasure.Unit)]
-        [InlineData("добавь молоко 0.5 литра", InputProcessingCommand.Add, "молоко", 0.5, UnitOfMeasure.L)]
         [InlineData("удали яблоко 1 килограмм", InputProcessingCommand.Delete, "яблоко", 1, UnitOfMeasure.Kg)]
         public void CommandParsingNotNullEntryTest(
             string input,
@@ -33,6 +31,7 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
+        [InlineData("добавь арбуз -2 штуки", InputProcessingCommand.SayUnknownCommand)]
         [InlineData("покажи", InputProcessingCommand.ReadList)]
         [InlineData("покажи всё", InputProcessingCommand.ReadList)]
         [InlineData("очисти", InputProcessingCommand.Clear)]

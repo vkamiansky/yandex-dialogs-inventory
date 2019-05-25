@@ -60,7 +60,7 @@ namespace AliceInventory.Logic
             bool isCount = double.TryParse(tokens[1], NumberStyles.Any, culture, out count);
             UnitOfMeasure unit = ParseUnitOfMeasure(tokens[2]);
 
-            if (isCount)
+            if (isCount && count > 0)
                 entry = new Entry
                 {
                     Name = name,
