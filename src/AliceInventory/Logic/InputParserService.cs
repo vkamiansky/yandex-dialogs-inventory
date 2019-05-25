@@ -11,16 +11,13 @@ namespace AliceInventory.Logic
             Queue<string> tokens = new Queue<string>(input.ToLower().Split(" "));
 
             InputProcessingCommand command = ExtractCommand(tokens);
-            Entry entry = ExtractEntry(culture, tokens);
 
+            Entry entry = null;
             switch (command)
             {
                 case InputProcessingCommand.Add:
-                    if (entry == null)
-                        command = InputProcessingCommand.SayIllegalArguments;
-                    break;
-
                 case InputProcessingCommand.Delete:
+                    entry = ExtractEntry(culture, tokens);
                     if (entry == null)
                         command = InputProcessingCommand.SayIllegalArguments;
                     break;
@@ -62,20 +59,52 @@ namespace AliceInventory.Logic
 
         private Entry ExtractEntry(CultureInfo culture, Queue<string> tokens)
         {
+            int maxTokensCount = 3;
+
+            string name = null;
+            double count = 1;
+            bool isCountExist = false;
+            UnitOfMeasure unitOfMeasure = UnitOfMeasure.Unit;
+            bool isUnitOfMeasureExist = false;
+
+            for (int i = 0; i < maxTokensCount; i++)
+            {
+                string token;
+                if (!tokens.TryDequeue(out token))
+                    break;
+
+                if (!isCountExist
+                    && double.TryParse(token, NumberStyles.Any, culture, out count))
+                {
+                    isCountExist = true;
+                    continue;
+                }
+
+                if (!isUnitOfMeasureExist)
+                {
+                    unitOfMeasure = ParseUnitOfMeasure(token);
+                    if (unitOfMeasure != UnitOfMeasure.Unknown)
+                    {
+                        isUnitOfMeasureExist = true;
+                        continue;
+                    }
+                    unitOfMeasure = UnitOfMeasure.Unit;
+                }
+
+                name = token;
+            }
+
             Entry entry = null;
-
-            string name = tokens.Dequeue();
-            double count;
-            bool isCount = double.TryParse(tokens.Dequeue(), NumberStyles.Any, culture, out count);
-            UnitOfMeasure unit = ParseUnitOfMeasure(tokens.Dequeue());
-
-            if (isCount && count > 0)
+            if (name != null
+                && count > 0)
+            {
                 entry = new Entry
                 {
                     Name = name,
                     Count = count,
-                    Unit = unit
+                    Unit = unitOfMeasure
                 };
+            }
 
             return entry;
         }
