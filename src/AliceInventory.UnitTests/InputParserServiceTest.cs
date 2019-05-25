@@ -31,7 +31,8 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("добавь арбуз -2 штуки", InputProcessingCommand.SayUnknownCommand)]
+        [InlineData("добавь предмет -2 штуки", InputProcessingCommand.SayIllegalArguments)]
+        [InlineData("удали предмет 0 штук", InputProcessingCommand.SayIllegalArguments)]
         [InlineData("покажи", InputProcessingCommand.ReadList)]
         [InlineData("покажи всё", InputProcessingCommand.ReadList)]
         [InlineData("очисти", InputProcessingCommand.Clear)]

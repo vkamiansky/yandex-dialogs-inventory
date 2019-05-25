@@ -19,7 +19,7 @@ namespace AliceInventory.Logic
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Add;
                     else
-                        resultProcessingCommand.Command = InputProcessingCommand.SayUnknownCommand;
+                        resultProcessingCommand.Command = InputProcessingCommand.SayIllegalArguments;
                     
                     resultProcessingCommand.Data = entry;
                     break;
@@ -30,7 +30,7 @@ namespace AliceInventory.Logic
                     if (entry != null)
                         resultProcessingCommand.Command = InputProcessingCommand.Delete;
                     else
-                        resultProcessingCommand.Command = InputProcessingCommand.SayUnknownCommand;
+                        resultProcessingCommand.Command = InputProcessingCommand.SayIllegalArguments;
 
                     resultProcessingCommand.Data = entry;
                     break;
@@ -80,6 +80,7 @@ namespace AliceInventory.Logic
                 case "килограмма":
                 case "килограммов":
                     return UnitOfMeasure.Kg;
+
                 case "штука":
                 case "штуки":
                 case "штук":
@@ -90,10 +91,12 @@ namespace AliceInventory.Logic
                 case "единицу":
                 case "единицы":
                     return UnitOfMeasure.Unit;
+
                 case "литр":
                 case "литра":
                 case "литров":
                     return UnitOfMeasure.L;
+
                 default:
                     return UnitOfMeasure.Unit;
             }
