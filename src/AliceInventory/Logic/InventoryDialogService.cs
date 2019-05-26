@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using AliceInventory.Data;
 
 namespace AliceInventory.Logic
@@ -16,9 +17,9 @@ namespace AliceInventory.Logic
             this.commandCache = commandCache;
         }
 
-        public ProcessingResult ProcessInput(string userId, string input)
+        public ProcessingResult ProcessInput(string userId, string input, CultureInfo culture)
         {
-            ProcessingCommand command = parser.ParseInput(input);
+            ProcessingCommand command = parser.ParseInput(input, culture);
             var logicItem = command.Data as Entry;
             var dataItem = logicItem.ToData();
 
