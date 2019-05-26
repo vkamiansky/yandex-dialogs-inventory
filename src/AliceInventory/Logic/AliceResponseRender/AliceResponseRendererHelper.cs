@@ -12,17 +12,20 @@ namespace AliceInventory.Logic.AliceResponseRender
     {
         private static readonly TextAndSpeechTemplate[] GreetingRequestTemplates = 
         {
-            new TextAndSpeechTemplate("Здравствуй!\nДанный навык предназначен для работы со списком предметов. Просто скажи, что ты хочешь записать, и я сделаю это за тебя"), 
+            new TextAndSpeechTemplate("Здравствуй, я рюкзак! Добавь в меня 5 яблок, а потом ещё 6. Почему бы ещё и немного груш не положить? Собери свой рюкзак и узнай \"Что в итоге?\" насчиталось. Так я работаю :)\nНо ты всегда можешь сказать Помощь"), 
         };
         private static readonly TextAndSpeechTemplate[] AddedTemplates = 
         {
             new TextAndSpeechTemplate("Добавлено {0} {1} {2} "),
             new TextAndSpeechTemplate("Добавила {0} {1} {2} "),
+            new TextAndSpeechTemplate("Плюс {0} {1} {2} "),
         };
         private static readonly TextAndSpeechTemplate[] AddCanceledTemplates = 
         {
             new TextAndSpeechTemplate("Отменено добавление {0} {1} {2}"),
             new TextAndSpeechTemplate("Отменила добавление {0} {1} {2}"),
+            new TextAndSpeechTemplate("Убрала {0} {1} {2}"),
+            new TextAndSpeechTemplate("Убрано {0} {1} {2}"),
         };
         private static readonly TextAndSpeechTemplate[] DeletedTemplates = 
         {
@@ -39,7 +42,7 @@ namespace AliceInventory.Logic.AliceResponseRender
         };
         private static readonly TextAndSpeechTemplate[] ListReadTemplates = 
         {
-            new TextAndSpeechTemplate(""), 
+            new TextAndSpeechTemplate("Ваш список:\n{0}"), 
         };
         private static readonly TextAndSpeechTemplate[] MailSentTemplates = 
         {
@@ -49,7 +52,7 @@ namespace AliceInventory.Logic.AliceResponseRender
         };
         private static readonly TextAndSpeechTemplate[] HelpRequestTemplates = 
         {
-            new TextAndSpeechTemplate("Я запишу в список все, что вы произнесете.\n Просто скажите мне название и количество.\nЕсли вы захотите удалить что-то, просто скажите что и сколлько.\n Если понадобится, скажите очистить весь список и я это сделаю. Могу отправить список вам на E-mail."), 
+            new TextAndSpeechTemplate("Примеры:\nДобавь 5 килограмм яблок\nУдали 3 груши\nОчисти всё\nОтправь на Email\nНо не обязательно говорить именно яблоки и груши, говори как хочешь, а я постараюсь понять"), 
         };
         private static readonly TextAndSpeechTemplate[] ExitRequestTemplates = 
         {
@@ -65,37 +68,37 @@ namespace AliceInventory.Logic.AliceResponseRender
         private static readonly Button HelpButton = new Button()
         {
             Title = "Что ты умеешь?",
-            Payload = "",
+            Payload = "Help",
             Hide = true
         };
         private static readonly Button ReadListButton = new Button()
         {
             Title = "Показать всё",
-            Payload = "",
+            Payload = "ReadList",
             Hide = true
         };
         private static readonly Button ExitButton = new Button()
         {
             Title = "Закончить",
-            Payload = "",
+            Payload = "Exit",
             Hide = true
         };
         private static readonly Button CancelButton = new Button()
         {
             Title = "Отмена",
-            Payload = "",
+            Payload = "Cancel",
             Hide = false
         };
         private static readonly Button YesButton = new Button()
         {
             Title = "Да",
-            Payload = "",
+            Payload = "Yes",
             Hide = false
         };
         private static readonly Button NoButton = new Button()
         {
             Title = "Нет",
-            Payload = "",
+            Payload = "No",
             Hide = false
         };
 
