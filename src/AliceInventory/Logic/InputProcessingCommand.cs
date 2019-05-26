@@ -16,5 +16,6 @@ namespace AliceInventory.Logic
         RequestHelp,
         RequestExit,
         SayUnknownCommand,
+        SayIllegalArguments,
     }
 }

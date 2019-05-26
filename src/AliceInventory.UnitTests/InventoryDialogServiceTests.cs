@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Xunit;
 using Moq;
 using AliceInventory;
@@ -35,7 +36,8 @@ namespace AliceInventory.UnitTests
 
             var parserMock = new Mock<Logic.IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
-                    It.Is<string>(y => y == input1)))
+                    It.Is<string>(y => y == input1),
+                    It.IsAny<CultureInfo>()))
                 .Returns(processingCommand1);
 
             var commandCacheMock = new Mock<Logic.ICommandCache>(MockBehavior.Strict);
@@ -50,7 +52,7 @@ namespace AliceInventory.UnitTests
                 parserMock.Object,
                 commandCacheMock.Object);
 
-            var result = sut.ProcessInput(userId1, input1);
+            var result = sut.ProcessInput(userId1, input1, CultureInfo.CurrentCulture);
 
             Assert.Equal(Logic.InputProcessingResult.Added, result.Result);
             Assert.Equal(logicEntryStub1, result.Data);
@@ -61,7 +63,7 @@ namespace AliceInventory.UnitTests
                     It.IsAny<Data.Entry>()), Times.Once);
 
             parserMock.Verify(x =>
-                x.ParseInput(It.IsAny<string>()), Times.Once);
+                x.ParseInput(It.IsAny<string>(), It.IsAny<CultureInfo>()), Times.Once);
 
             commandCacheMock.Verify(x =>
                 x.Set(
@@ -97,7 +99,8 @@ namespace AliceInventory.UnitTests
 
             var parserMock = new Mock<Logic.IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
-                    It.Is<string>(y => y == input)))
+                    It.Is<string>(y => y == input),
+                    It.IsAny<CultureInfo>()))
                 .Returns(processingCommand);
 
             var commandCacheMock = new Mock<Logic.ICommandCache>(MockBehavior.Strict);
@@ -112,7 +115,7 @@ namespace AliceInventory.UnitTests
                 parserMock.Object,
                 commandCacheMock.Object);
 
-            var result = sut.ProcessInput(userId, input);
+            var result = sut.ProcessInput(userId, input, CultureInfo.CurrentCulture);
 
             Assert.Equal(Logic.InputProcessingResult.Deleted, result.Result);
             Assert.Equal(logicEntryStub, result.Data);
@@ -123,7 +126,7 @@ namespace AliceInventory.UnitTests
                     It.IsAny<Data.Entry>()), Times.Once);
 
             parserMock.Verify(x =>
-                x.ParseInput(It.IsAny<string>()), Times.Once);
+                x.ParseInput(It.IsAny<string>(), It.IsAny<CultureInfo>()), Times.Once);
 
             commandCacheMock.Verify(x =>
                 x.Set(
