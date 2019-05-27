@@ -7,6 +7,5 @@ namespace AliceInventory.Logic
         Unit,
         Kg,
         L,
-        Unknown,
     }
 }
