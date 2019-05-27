@@ -19,6 +19,14 @@ namespace AliceInventory.Logic
 
         public ProcessingResult ProcessInput(string userId, string input, CultureInfo culture)
         {
+            if (string.IsNullOrEmpty(input))
+            {
+                return new ProcessingResult()
+                {
+                    Result = InputProcessingResult.GreetingRequested,
+                };
+            }
+
             ProcessingCommand command = parser.ParseInput(input, culture);
             var logicItem = command.Data as Entry;
             var dataItem = logicItem.ToData();
