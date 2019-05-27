@@ -54,7 +54,7 @@ namespace AliceInventory.Controllers
                 : request.Request.Command;
 
             var answer = InventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
-            return AliceResponseRendererHelper.CreateResponse(answer, request.Session);
+            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session);
         }
     }
 }

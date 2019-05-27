@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace AliceInventory.Logic.AliceResponseRender
 {
-    
-    class TextAndSpeechTemplate
+    public class TextAndSpeechTemplate
     {
         public string TextTemplate { get; }
         public string SpeechTemplate { get; }
@@ -23,13 +23,14 @@ namespace AliceInventory.Logic.AliceResponseRender
             SpeechTemplate = tts;
         }
 
-        public TextAndSpeech Format(params object[] parts)
+        public string FormatText(IFormatProvider provider, params object[] parts)
         {
-            return new TextAndSpeech()
-            {
-                Text = string.Format(TextTemplate, parts),
-                Speech = string.Format(SpeechTemplate, parts)
-            };
+            return string.Format(provider, TextTemplate, parts);
+        }
+        
+        public string FormatSpeech(IFormatProvider provider, params object[] parts)
+        {
+            return string.Format(provider, SpeechTemplate, parts);
         }
     }
 }

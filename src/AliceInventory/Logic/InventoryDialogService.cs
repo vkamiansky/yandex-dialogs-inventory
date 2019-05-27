@@ -24,6 +24,7 @@ namespace AliceInventory.Logic
                 return new ProcessingResult()
                 {
                     Result = InputProcessingResult.GreetingRequested,
+                    CultureInfo = culture
                 };
             }
 
@@ -31,40 +32,28 @@ namespace AliceInventory.Logic
             var logicItem = command.Data as Entry;
             var dataItem = logicItem.ToData();
 
-            ProcessingResult commandResult;
+            ProcessingResult commandResult = new ProcessingResult() { CultureInfo = culture };
+
             switch (command.Command)
             {
                 case InputProcessingCommand.Add:
                     storage.Add(userId, dataItem);
-                    commandResult = new ProcessingResult
-                    {
-                        Result = InputProcessingResult.Added,
-                        Data = logicItem,
-                    };
+                    commandResult.Result = InputProcessingResult.Added;
+                    commandResult.Data = logicItem;
                     break;
 
                 case InputProcessingCommand.Delete:
                     storage.Delete(userId, dataItem);
-                    commandResult = new ProcessingResult
-                    {
-                        Result = InputProcessingResult.Deleted,
-                        Data = logicItem,
-                    };
+                    commandResult.Result = InputProcessingResult.Deleted;
+                    commandResult.Data = logicItem;
                     break;
 
                 case InputProcessingCommand.Cancel:
-                    commandResult = new ProcessingResult
-                    {
-                        Result = InputProcessingResult.AddCanceled,
-                    };
+                    commandResult.Result = InputProcessingResult.AddCanceled;
                     break;
 
                 default:
-                    commandResult = new ProcessingResult
-                    {
-                        Result = InputProcessingResult.Error,
-                        Data = "Command was not processed properly",
-                    };
+                    commandResult.Result = InputProcessingResult.Error;
                     break;
             }
             commandCache.Set(userId, command);

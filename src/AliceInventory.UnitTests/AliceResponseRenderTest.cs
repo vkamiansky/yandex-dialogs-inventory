@@ -69,7 +69,7 @@ namespace AliceInventory.UnitTests
                     break;
             }
 
-            var jsonResponse = AliceResponseRendererHelper.CreateResponse(result, sessionExample);
+            var jsonResponse = AliceResponseRendererHelper.CreateAliceResponse(result, sessionExample);
             
             var response = jsonResponse.Response;
             _output.WriteLine($"Text: {response.Text}\nTts: {response.Tts}\nButtons: {response.Buttons.Length}\nEndSession: {response.EndSession}");
