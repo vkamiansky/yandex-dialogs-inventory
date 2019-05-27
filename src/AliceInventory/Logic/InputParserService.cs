@@ -9,10 +9,19 @@ namespace AliceInventory.Logic
         public ProcessingCommand ParseInput(string input, CultureInfo culture)
         {
             if (string.IsNullOrEmpty(input))
+            {
                 return new ProcessingCommand
                 {
                     Command = InputProcessingCommand.SayHello,
                 };
+            }
+            else if (input.Contains("что ты можешь"))
+            {
+                return new ProcessingCommand
+                {
+                    Command = InputProcessingCommand.RequestHelp,
+                };
+            }
 
             Queue<string> tokens = new Queue<string>(input.ToLower().Split(" ", StringSplitOptions.RemoveEmptyEntries));
 
@@ -23,6 +32,8 @@ namespace AliceInventory.Logic
             {
                 case InputProcessingCommand.Add:
                 case InputProcessingCommand.Delete:
+                case InputProcessingCommand.SendMail:
+                case InputProcessingCommand.SayIllegalArguments:
                     entry = ExtractEntry(culture, tokens);
                     if (entry == null)
                         command = InputProcessingCommand.SayIllegalArguments;
@@ -133,9 +144,9 @@ namespace AliceInventory.Logic
                 case "помощь":
                 case "хелп":
                 case "спасай":
-                case "спасайте":                
+                case "спасайте":
                 case "выручай":
-                case "выручайте":                
+                case "выручайте":
                     return InputProcessingCommand.RequestHelp;
 
                 case "выход":
