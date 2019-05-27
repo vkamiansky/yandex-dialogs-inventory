@@ -82,13 +82,9 @@ namespace AliceInventory.Logic
 
                 if (!isUnitOfMeasureExist)
                 {
-                    unitOfMeasure = ParseUnitOfMeasure(token);
-                    if (unitOfMeasure != UnitOfMeasure.Unknown)
-                    {
-                        isUnitOfMeasureExist = true;
+                    isUnitOfMeasureExist = TryParseUnitOfMeasure(token, out unitOfMeasure);
+                    if (isUnitOfMeasureExist)
                         continue;
-                    }
-                    unitOfMeasure = UnitOfMeasure.Unit;
                 }
 
                 name = token;
@@ -109,7 +105,7 @@ namespace AliceInventory.Logic
             return entry;
         }
 
-        private UnitOfMeasure ParseUnitOfMeasure(string unitOfMeasure)
+        private bool TryParseUnitOfMeasure(string unitOfMeasure, out UnitOfMeasure result)
         {
             switch (unitOfMeasure)
             {
@@ -117,7 +113,8 @@ namespace AliceInventory.Logic
                 case "килограмм":
                 case "килограмма":
                 case "килограммов":
-                    return UnitOfMeasure.Kg;
+                    result = UnitOfMeasure.Kg;
+                    return true;
 
                 case "штука":
                 case "штуки":
@@ -128,15 +125,18 @@ namespace AliceInventory.Logic
                 case "единица":
                 case "единицу":
                 case "единицы":
-                    return UnitOfMeasure.Unit;
+                    result = UnitOfMeasure.Unit;
+                    return true;
 
                 case "литр":
                 case "литра":
                 case "литров":
-                    return UnitOfMeasure.L;
+                    result = UnitOfMeasure.L;
+                    return true;
 
                 default:
-                    return UnitOfMeasure.Unknown;
+                    result = UnitOfMeasure.Unit;
+                    return false;
             }
         }
     }
