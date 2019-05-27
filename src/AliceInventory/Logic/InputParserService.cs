@@ -65,7 +65,7 @@ namespace AliceInventory.Logic
 
         private Entry ExtractEntry(CultureInfo culture, Queue<string> tokens)
         {
-            int maxTokensCount = 3;
+            int tokensCount = (tokens.Count > 3) ? 3 : tokens.Count;
 
             string name = null;
             double count = 1;
@@ -73,26 +73,22 @@ namespace AliceInventory.Logic
             UnitOfMeasure unitOfMeasure = UnitOfMeasure.Unit;
             bool isUnitOfMeasureExist = false;
 
-            for (int i = 0; i < maxTokensCount; i++)
+            for (int i = 0; i < tokensCount; i++)
             {
-                string token;
-                if (!tokens.TryDequeue(out token))
-                    break;
+                string token = tokens.Dequeue();
 
-                if (!isCountExist
-                    && double.TryParse(token, NumberStyles.Any, culture, out count))
+                if (!isCountExist)
                 {
-                    isCountExist = true;
-                    continue;
+                    if (isCountExist = double.TryParse(token, NumberStyles.Any, culture, out count))
+                        continue;
+                    else
+                        count = 1;
                 }
-
                 if (!isUnitOfMeasureExist)
                 {
-                    isUnitOfMeasureExist = TryParseUnitOfMeasure(token, out unitOfMeasure);
-                    if (isUnitOfMeasureExist)
+                    if (isUnitOfMeasureExist = TryParseUnitOfMeasure(token, out unitOfMeasure))
                         continue;
                 }
-
                 name = token;
             }
 
