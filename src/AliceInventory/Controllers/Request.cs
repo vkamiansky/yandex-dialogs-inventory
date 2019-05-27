@@ -20,6 +20,6 @@ namespace AliceInventory.Controllers
         public string OriginalUtterance { get; set; }
 
         [JsonProperty("payload")]
-        public JObject Payload { get; set; }
+        public string Payload { get; set; }
     }
 }

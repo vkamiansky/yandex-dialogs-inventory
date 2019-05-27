@@ -29,7 +29,7 @@ namespace AliceInventory.UnitTests
             storageMock.Setup(x => x.Add(
                 It.Is<string>(y => y == userId1),
                 It.Is<Data.Entry>(y =>
-                    Logic.Converter.ToLogic(y.Unit) == logicEntryStub1.Unit
+                    Logic.Extensions.ToLogic(y.Unit) == logicEntryStub1.Unit
                     && y.Name == logicEntryStub1.Name
                     && y.Count == logicEntryStub1.Count)))
                 .Returns(true);
@@ -92,7 +92,7 @@ namespace AliceInventory.UnitTests
             storageMock.Setup(x => x.Delete(
                 It.Is<string>(y => y == userId),
                 It.Is<Data.Entry>(y =>
-                    Logic.Converter.ToLogic(y.Unit) == logicEntryStub.Unit
+                    Logic.Extensions.ToLogic(y.Unit) == logicEntryStub.Unit
                     && y.Name == logicEntryStub.Name
                     && y.Count == logicEntryStub.Count)))
                 .Returns(true);
