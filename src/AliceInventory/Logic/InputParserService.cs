@@ -8,7 +8,13 @@ namespace AliceInventory.Logic
     {
         public ProcessingCommand ParseInput(string input, CultureInfo culture)
         {
-            Queue<string> tokens = new Queue<string>(input.ToLower().Split(" "));
+            if (string.IsNullOrEmpty(input))
+                return new ProcessingCommand
+                {
+                    Command = InputProcessingCommand.SayHello,
+                };
+
+            Queue<string> tokens = new Queue<string>(input.ToLower().Split(" ", StringSplitOptions.RemoveEmptyEntries));
 
             InputProcessingCommand command = ExtractCommand(tokens);
 
