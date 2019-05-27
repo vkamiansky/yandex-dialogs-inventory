@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace AliceInventory.Logic
 {
@@ -7,71 +8,104 @@ namespace AliceInventory.Logic
     {
         public ProcessingCommand ParseInput(string input, CultureInfo culture)
         {
-            ProcessingCommand resultProcessingCommand = new ProcessingCommand();
-            string[] tokens = input.ToLower().Split(" ");
+            Queue<string> tokens = new Queue<string>(input.ToLower().Split(" "));
+
+            InputProcessingCommand command = ExtractCommand(tokens);
 
             Entry entry = null;
-            switch (tokens[0])
+            switch (command)
             {
-                case "добавь":
-                    entry = ParseEntry(culture, tokens[1], tokens[2], tokens[3]);
-
-                    if (entry != null)
-                        resultProcessingCommand.Command = InputProcessingCommand.Add;
-                    else
-                        resultProcessingCommand.Command = InputProcessingCommand.SayIllegalArguments;
-                    
-                    resultProcessingCommand.Data = entry;
-                    break;
-
-                case "удали":
-                    entry = ParseEntry(culture, tokens[1], tokens[2], tokens[3]);
-
-                    if (entry != null)
-                        resultProcessingCommand.Command = InputProcessingCommand.Delete;
-                    else
-                        resultProcessingCommand.Command = InputProcessingCommand.SayIllegalArguments;
-
-                    resultProcessingCommand.Data = entry;
-                    break;
-
-                case "очисти":
-                    resultProcessingCommand.Command = InputProcessingCommand.Clear;
-                    break;
-
-                case "покажи":
-                    resultProcessingCommand.Command = InputProcessingCommand.ReadList;
-                    break;
-
-                default:
-                    resultProcessingCommand.Command = InputProcessingCommand.SayUnknownCommand;
+                case InputProcessingCommand.Add:
+                case InputProcessingCommand.Delete:
+                    entry = ExtractEntry(culture, tokens);
+                    if (entry == null)
+                        command = InputProcessingCommand.SayIllegalArguments;
                     break;
             }
 
-            return resultProcessingCommand;
+            return new ProcessingCommand
+            {
+                Command = command,
+                Data = entry,
+            };
         }
 
-        private Entry ParseEntry(CultureInfo culture, params string[] tokens)
+        private InputProcessingCommand ExtractCommand(Queue<string> tokens)
         {
+            if (tokens.Count == 0)
+                return InputProcessingCommand.SayUnknownCommand;
+
+            switch (tokens.Dequeue())
+            {
+                case "привет":
+                    return InputProcessingCommand.SayHello;
+
+                case "добавь":
+                    return InputProcessingCommand.Add;
+
+                case "удали":
+                    return InputProcessingCommand.Delete;
+
+                case "очисти":
+                    return InputProcessingCommand.Clear;
+
+                case "покажи":
+                    return InputProcessingCommand.ReadList;
+
+                default:
+                    return InputProcessingCommand.SayUnknownCommand;
+            }
+        }
+
+        private Entry ExtractEntry(CultureInfo culture, Queue<string> tokens)
+        {
+            int maxTokensCount = 3;
+
+            string name = null;
+            double count = 1;
+            bool isCountExist = false;
+            UnitOfMeasure unitOfMeasure = UnitOfMeasure.Unit;
+            bool isUnitOfMeasureExist = false;
+
+            for (int i = 0; i < maxTokensCount; i++)
+            {
+                string token;
+                if (!tokens.TryDequeue(out token))
+                    break;
+
+                if (!isCountExist
+                    && double.TryParse(token, NumberStyles.Any, culture, out count))
+                {
+                    isCountExist = true;
+                    continue;
+                }
+
+                if (!isUnitOfMeasureExist)
+                {
+                    isUnitOfMeasureExist = TryParseUnitOfMeasure(token, out unitOfMeasure);
+                    if (isUnitOfMeasureExist)
+                        continue;
+                }
+
+                name = token;
+            }
+
             Entry entry = null;
-
-            string name = tokens[0];
-            double count;
-            bool isCount = double.TryParse(tokens[1], NumberStyles.Any, culture, out count);
-            UnitOfMeasure unit = ParseUnitOfMeasure(tokens[2]);
-
-            if (isCount && count > 0)
+            if (name != null
+                && count > 0)
+            {
                 entry = new Entry
                 {
                     Name = name,
                     Count = count,
-                    Unit = unit
+                    Unit = unitOfMeasure
                 };
+            }
 
             return entry;
         }
 
-        private UnitOfMeasure ParseUnitOfMeasure(string unitOfMeasure)
+        private bool TryParseUnitOfMeasure(string unitOfMeasure, out UnitOfMeasure result)
         {
             switch (unitOfMeasure)
             {
@@ -79,7 +113,8 @@ namespace AliceInventory.Logic
                 case "килограмм":
                 case "килограмма":
                 case "килограммов":
-                    return UnitOfMeasure.Kg;
+                    result = UnitOfMeasure.Kg;
+                    return true;
 
                 case "штука":
                 case "штуки":
@@ -90,15 +125,18 @@ namespace AliceInventory.Logic
                 case "единица":
                 case "единицу":
                 case "единицы":
-                    return UnitOfMeasure.Unit;
+                    result = UnitOfMeasure.Unit;
+                    return true;
 
                 case "литр":
                 case "литра":
                 case "литров":
-                    return UnitOfMeasure.L;
+                    result = UnitOfMeasure.L;
+                    return true;
 
                 default:
-                    return UnitOfMeasure.Unit;
+                    result = UnitOfMeasure.Unit;
+                    return false;
             }
         }
     }
