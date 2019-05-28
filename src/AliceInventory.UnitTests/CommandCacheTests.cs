@@ -15,8 +15,8 @@ namespace AliceInventory.UnitTests
             sut.Set("testUser3", new ProcessingCommand());
             ProcessingCommand cachedCommandUser2 = sut.Get("testUser2");
 
-            Assert.Equal(null, cachedCommandUser1);
-            Assert.Equal(null, cachedCommandUser2);
+            Assert.Null(cachedCommandUser1);
+            Assert.Null(cachedCommandUser2);
         }
 
         [Fact]
