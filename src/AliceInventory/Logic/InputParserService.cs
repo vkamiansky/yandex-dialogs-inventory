@@ -124,8 +124,9 @@ namespace AliceInventory.Logic
                 case "очисть":
                 case "вычисти":
                     return InputProcessingCommand.Clear;
-
+                    
                 case "покажи":
+                case "показать":
                 case "продемонстрируй":
                 case "расскажи":
                     return InputProcessingCommand.ReadList;

@@ -141,12 +141,23 @@ namespace AliceInventory.Logic.AliceResponseRender
             },
             Buttons = MainButtons
         };
-
+        
         private static readonly ResponseTemplate ListReadTemplate = new ResponseTemplate()
         {
             TextAndSpeechTemplates = new[]
             {
                 new TextAndSpeechTemplate("Ваш список:\n{0}"),
+            },
+            Buttons = MainButtons
+        };
+
+        private static readonly ResponseTemplate EmptyListReadTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Ваш список пуст"),
+                new TextAndSpeechTemplate("Пока здесь пусто"),
+                new TextAndSpeechTemplate("Пока ничего нет"),
             },
             Buttons = MainButtons
         };
@@ -192,23 +203,24 @@ namespace AliceInventory.Logic.AliceResponseRender
             Buttons = MainButtons
         };
 
-        private static readonly Dictionary<InputProcessingResult, ResponseTemplate> responseTemplates;
+        private static readonly Dictionary<ResponseFormat, ResponseTemplate> responseTemplates;
 
         static AliceResponseRendererHelper()
         {
-            responseTemplates = new Dictionary<InputProcessingResult, ResponseTemplate>() ;
-            responseTemplates[InputProcessingResult.GreetingRequested] = GreetingRequestTemplate;
-            responseTemplates[InputProcessingResult.Added] = AddedTemplate;
-            responseTemplates[InputProcessingResult.AddCanceled] = AddCanceledTemplate;
-            responseTemplates[InputProcessingResult.Deleted] = DeletedTemplate;
-            responseTemplates[InputProcessingResult.DeleteCanceled] = DeleteCanceledTemplate;
-            responseTemplates[InputProcessingResult.Cleared] = ClearedTemplate;
-            responseTemplates[InputProcessingResult.ClearRequested] = ClearRequestedTemplate;
-            responseTemplates[InputProcessingResult.Declined] = DeclinedTemplate;
-            responseTemplates[InputProcessingResult.ExitRequested] = ExitRequestTemplate;
-            responseTemplates[InputProcessingResult.HelpRequested] = HelpRequestTemplate;
-            responseTemplates[InputProcessingResult.ListRead] = ListReadTemplate;
-            responseTemplates[InputProcessingResult.MailSent] =  MailSentTemplate;
+            responseTemplates = new Dictionary<ResponseFormat, ResponseTemplate>() ;
+            responseTemplates[ResponseFormat.GreetingRequested] = GreetingRequestTemplate;
+            responseTemplates[ResponseFormat.Added] = AddedTemplate;
+            responseTemplates[ResponseFormat.AddCanceled] = AddCanceledTemplate;
+            responseTemplates[ResponseFormat.Deleted] = DeletedTemplate;
+            responseTemplates[ResponseFormat.DeleteCanceled] = DeleteCanceledTemplate;
+            responseTemplates[ResponseFormat.Cleared] = ClearedTemplate;
+            responseTemplates[ResponseFormat.ClearRequested] = ClearRequestedTemplate;
+            responseTemplates[ResponseFormat.Declined] = DeclinedTemplate;
+            responseTemplates[ResponseFormat.ExitRequested] = ExitRequestTemplate;
+            responseTemplates[ResponseFormat.HelpRequested] = HelpRequestTemplate;
+            responseTemplates[ResponseFormat.ListRead] = ListReadTemplate;
+            responseTemplates[ResponseFormat.EmptyListRead] =EmptyListReadTemplate;
+            responseTemplates[ResponseFormat.MailSent] =  MailSentTemplate;
         }
 
         public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session)
@@ -225,67 +237,115 @@ namespace AliceInventory.Logic.AliceResponseRender
         private static Response CreateResponse(ProcessingResult result, CultureInfo cultureInfo)
         {
             bool isError = false;
-            object[] parts = new object[0];
+            object[] formatArguments = new object[0];
+
+
+            ResponseFormat format = ResponseFormat.Error;
 
             switch (result.Result)
             {
+                case InputProcessingResult.GreetingRequested:
+                {
+                    format = ResponseFormat.GreetingRequested;
+                    break;
+                }
+                case InputProcessingResult.Declined:
+                {
+                    format = ResponseFormat.Declined;
+                    break;
+                }
                 case InputProcessingResult.Added:
+                {
+                    format = ResponseFormat.Added;
+                    if (result.Data is Entry entry)
+                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                    break;
+                }
                 case InputProcessingResult.AddCanceled:
+                {
+                    format = ResponseFormat.AddCanceled;
+                    if (result.Data is Entry entry)
+                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                    break;
+                }
                 case InputProcessingResult.Deleted:
                 {
+                    format = ResponseFormat.Deleted;
                     if (result.Data is Entry entry)
-                    {
-                        parts = new object[] {entry.Name, entry.Count, entry.Unit.ToText()}; 
-                    }
-                    else
-                    {
-                        isError = true;
-                    }
+                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                    break;
+                }
+                case InputProcessingResult.DeleteCanceled:
+                {
+                    format = ResponseFormat.DeleteCanceled;
+                    if (result.Data is Entry entry)
+                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                    break;
+                }
+                case InputProcessingResult.ClearRequested:
+                    format = ResponseFormat.ClearRequested;
+                    break;
+                case InputProcessingResult.Cleared:
+                {
+                    format = ResponseFormat.Cleared;
                     break;
                 }
                 case InputProcessingResult.ListRead:
                 {
-                    if (result.Data is Entry[] entries)
+                    if (result.Data is Logic.Entry[] entries)
                     {
-                        parts = new object[] {entries.ToTextList()};
+                        if (entries.Length > 0)
+                        {
+                            format = ResponseFormat.ListRead;
+                            formatArguments = new object[] {entries.ToTextList()};
+                        }
+                        else
+                        {
+                            format = ResponseFormat.EmptyListRead;
+                        }
+
                     }
-                    else
-                    {
-                        isError = true;
-                    }
+
                     break;
                 }
-
                 case InputProcessingResult.MailSent:
                 {
+                    format = ResponseFormat.MailSent;
                     if (result.Data is string email)
                     {
-                        parts = new object[] {email};
-                    }
-                    else
-                    {
-                        isError = true;
+                        formatArguments = new object[] {email};
                     }
                     break;
                 }
+                case InputProcessingResult.HelpRequested:
+                {
+                    format = ResponseFormat.HelpRequested;
+                    break;
+                }
+                case InputProcessingResult.ExitRequested:
+                {
+                    format = ResponseFormat.ExitRequested;
+                    break;
+                }
+                default: break;
             }
 
             ResponseTemplate template;
-            if (isError || !responseTemplates.ContainsKey(result.Result))
+            if (isError || !responseTemplates.ContainsKey(format))
             {
                 template = ErrorTemplate;
             }
             else
             {
-                template = responseTemplates[result.Result];
+                template = responseTemplates[format];
             }
 
             var textAndSpeechTemplate = template.TextAndSpeechTemplates.GetRandomItem();
 
             return new Response()
             {
-                Text = textAndSpeechTemplate.FormatText(cultureInfo, parts),
-                Tts = textAndSpeechTemplate.FormatSpeech(cultureInfo, parts),
+                Text = textAndSpeechTemplate.FormatText(cultureInfo, formatArguments),
+                Tts = textAndSpeechTemplate.FormatSpeech(cultureInfo, formatArguments),
                 Buttons = template.Buttons
             };
 
