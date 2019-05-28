@@ -9,7 +9,9 @@ namespace AliceInventory.Logic.Email
 {
     public class AliceEmailService : EmailService, IAliceEmailService
     {
-        public AliceEmailService(string login, string password) : base(EmailHost.Yandex, login, password) { }
+        public AliceEmailService() : base(EmailHost.Yandex, "", "") { }
+
+        //public AliceEmailService(string login, string password) : base(EmailHost.Yandex, login, password) { }
 
         public async void SendListAsync(string email, Data.Entry[] entries)
         {
