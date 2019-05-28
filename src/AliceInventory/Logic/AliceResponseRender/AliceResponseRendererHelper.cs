@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AliceInventory.Controllers;
 using AliceInventory;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AliceInventory.Logic.AliceResponseRender
 {
@@ -102,6 +101,16 @@ namespace AliceInventory.Logic.AliceResponseRender
             Buttons = MainButtons
         };
 
+        private static readonly ResponseTemplate DeleteCanceledTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Вернула {0} {1} {2}"),
+                new TextAndSpeechTemplate("Вернула"),
+            },
+            Buttons = MainButtons
+        };
+
         private static readonly ResponseTemplate ClearRequestedTemplate = new ResponseTemplate()
         {
             TextAndSpeechTemplates = new[]
@@ -116,6 +125,19 @@ namespace AliceInventory.Logic.AliceResponseRender
             TextAndSpeechTemplates = new[]
             {
                 new TextAndSpeechTemplate("Список очищен"),
+                new TextAndSpeechTemplate("Рюкзак чист"),
+                new TextAndSpeechTemplate("Готово"),
+            },
+            Buttons = MainButtons
+        };
+
+        private static readonly ResponseTemplate DeclinedTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Хорошо"),
+                new TextAndSpeechTemplate("Продолжаем"),
+                new TextAndSpeechTemplate("Тогда в следующий раз"),
             },
             Buttons = MainButtons
         };
@@ -175,12 +197,14 @@ namespace AliceInventory.Logic.AliceResponseRender
         static AliceResponseRendererHelper()
         {
             responseTemplates = new Dictionary<InputProcessingResult, ResponseTemplate>() ;
-            responseTemplates[InputProcessingResult.Added] = AddedTemplate;
             responseTemplates[InputProcessingResult.GreetingRequested] = GreetingRequestTemplate;
+            responseTemplates[InputProcessingResult.Added] = AddedTemplate;
             responseTemplates[InputProcessingResult.AddCanceled] = AddCanceledTemplate;
+            responseTemplates[InputProcessingResult.Deleted] = DeletedTemplate;
+            responseTemplates[InputProcessingResult.DeleteCanceled] = DeleteCanceledTemplate;
             responseTemplates[InputProcessingResult.Cleared] = ClearedTemplate;
             responseTemplates[InputProcessingResult.ClearRequested] = ClearRequestedTemplate;
-            responseTemplates[InputProcessingResult.Deleted] = DeletedTemplate;
+            responseTemplates[InputProcessingResult.Declined] = DeclinedTemplate;
             responseTemplates[InputProcessingResult.ExitRequested] = ExitRequestTemplate;
             responseTemplates[InputProcessingResult.HelpRequested] = HelpRequestTemplate;
             responseTemplates[InputProcessingResult.ListRead] = ListReadTemplate;
