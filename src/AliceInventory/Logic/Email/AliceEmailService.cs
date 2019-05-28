@@ -7,17 +7,17 @@ using MimeKit;
 
 namespace AliceInventory.Logic.Email
 {
-    public class AliceEmailService : EmailService
+    public class AliceEmailService : EmailService, IAliceEmailService
     {
         public AliceEmailService(string login, string password) : base(EmailHost.Yandex, login, password) { }
 
-        public async void SendListAsync(string email, Entry[] entries)
+        public async void SendListAsync(string email, Data.Entry[] entries)
         {
             var message = CreateListMessage(email, entries);
             await SendEmailAsync(message);
         }
 
-        private MimeMessage CreateListMessage(string email, Entry[] entries)
+        private MimeMessage CreateListMessage(string email, Data.Entry[] entries)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress("Навык Алисы - Рюкзак", _login));
@@ -27,14 +27,14 @@ namespace AliceInventory.Logic.Email
             return emailMessage;
         }
 
-        private MimeEntity CreateHtmlBodyFromList(Entry[] entries)
+        private MimeEntity CreateHtmlBodyFromList(Data.Entry[] entries)
         {
             var bodyBuilder = new BodyBuilder();
             bodyBuilder.HtmlBody = CreateHtmlFromList(entries);
             return bodyBuilder.ToMessageBody();
         }
 
-        private string CreateHtmlFromList(Entry[] entries)
+        private string CreateHtmlFromList(Data.Entry[] entries)
         {
             var stringBuilder = new StringBuilder();
             foreach (var entry in entries)

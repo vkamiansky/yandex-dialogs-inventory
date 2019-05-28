@@ -25,7 +25,7 @@ namespace AliceInventory.Logic.Email
         {
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync(_host.Url, 25, false);
+                await client.ConnectAsync(_host.Url, _host.Port, false);
                 await client.AuthenticateAsync(_login, _password);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);

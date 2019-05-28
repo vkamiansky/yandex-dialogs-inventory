@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using AliceInventory.Data;
+using AliceInventory.Logic.Email;
 
 namespace AliceInventory.Logic
 {
@@ -9,18 +10,21 @@ namespace AliceInventory.Logic
         private IInventoryStorage storage;
         private IInputParserService parser;
         private ICommandCache commandCache;
+        private IAliceEmailService emailService;
 
-        public InventoryDialogService(IInventoryStorage storage, IInputParserService parser, ICommandCache commandCache)
+        public InventoryDialogService(IInventoryStorage storage, IInputParserService parser, ICommandCache commandCache, IAliceEmailService emailService)
         {
             this.storage = storage;
             this.parser = parser;
             this.commandCache = commandCache;
+            this.emailService = emailService;
         }
 
         public ProcessingResult ProcessInput(string userId, string input, CultureInfo culture)
         {
             ProcessingCommand parsedCommand = parser.ParseInput(input, culture);
             var logicItem = parsedCommand.Data as Entry;
+            var email = parsedCommand.Data as string;
             var dataItem = logicItem.ToData();
 
             InputProcessingResult resultType;
@@ -88,7 +92,9 @@ namespace AliceInventory.Logic
                     break;
 
                 case InputProcessingCommand.SendMail:
+                    //emailService.SendListAsync(email, storage.ReadAll(userId));
                     resultType = InputProcessingResult.MailSent;
+                    resultData = email;
                     break;
 
                 case InputProcessingCommand.RequestHelp:
