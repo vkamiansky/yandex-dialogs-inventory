@@ -19,49 +19,108 @@ namespace AliceInventory.Logic
 
         public ProcessingResult ProcessInput(string userId, string input, CultureInfo culture)
         {
-            ProcessingCommand command = parser.ParseInput(input, culture);
-            var logicItem = command.Data as Entry;
+            ProcessingCommand parsedCommand = parser.ParseInput(input, culture);
+            var logicItem = parsedCommand.Data as Entry;
             var dataItem = logicItem.ToData();
 
-            ProcessingResult commandResult;
-            switch (command.Command)
+            InputProcessingResult resultType;
+            object resultData = logicItem;
+            switch (parsedCommand.Command)
             {
-                case InputProcessingCommand.Add:
-                    storage.Add(userId, dataItem);
-                    commandResult = new ProcessingResult
+                case InputProcessingCommand.SayHello:
+                    resultType = InputProcessingResult.GreetingRequested;
+                    break;
+
+                case InputProcessingCommand.Accept:
+                    if (commandCache.Get(userId).Command == InputProcessingCommand.Clear)
                     {
-                        Result = InputProcessingResult.Added,
-                        Data = logicItem,
-                    };
+                        resultType = InputProcessingResult.Cleared;
+                        storage.Clear(userId);
+                    }
+                    else
+                    {
+                        resultType = InputProcessingResult.Error;
+                    }
+                    break;
+
+                case InputProcessingCommand.Decline:
+                    resultType = InputProcessingResult.Declined;
+                    break;
+                    
+                case InputProcessingCommand.Cancel: 
+                    ProcessingCommand cachedCommand = commandCache.Get(userId);
+                    Data.Entry cachedCommandData = (cachedCommand.Data as Logic.Entry).ToData();
+                    if (cachedCommand.Command == InputProcessingCommand.Add)
+                    {
+                        storage.Delete(userId, cachedCommandData);
+                        resultType = InputProcessingResult.AddCanceled;
+                        resultData = cachedCommandData;
+                    }
+                    else if (cachedCommand.Command == InputProcessingCommand.Delete)
+                    {
+                        storage.Add(userId, cachedCommandData);
+                        resultType = InputProcessingResult.DeleteCanceled;
+                        resultData = cachedCommandData;
+                    }
+                    else
+                    {
+                        resultType = InputProcessingResult.Error;
+                    }
+                    break;
+
+                case InputProcessingCommand.Add:
+                    resultType = InputProcessingResult.Added;
+                    storage.Add(userId, dataItem);
                     break;
 
                 case InputProcessingCommand.Delete:
+                    resultType = InputProcessingResult.Deleted;
                     storage.Delete(userId, dataItem);
-                    commandResult = new ProcessingResult
-                    {
-                        Result = InputProcessingResult.Deleted,
-                        Data = logicItem,
-                    };
                     break;
 
-                case InputProcessingCommand.Cancel:
-                    commandResult = new ProcessingResult
-                    {
-                        Result = InputProcessingResult.AddCanceled,
-                    };
+                case InputProcessingCommand.Clear:
+                    resultType = InputProcessingResult.ClearRequested;
+                    break;
+
+                case InputProcessingCommand.ReadList:
+                    resultType = InputProcessingResult.ListRead;
+                    resultData = storage.ReadAll(userId);
+                    break;
+
+                case InputProcessingCommand.SendMail:
+                    resultType = InputProcessingResult.MailSent;
+                    break;
+
+                case InputProcessingCommand.RequestHelp:
+                    resultType = InputProcessingResult.HelpRequested;
+                    break;
+
+                case InputProcessingCommand.RequestExit:
+                    resultType = InputProcessingResult.ExitRequested;
+                    break;
+
+                case InputProcessingCommand.SayUnknownCommand:
+                    resultType = InputProcessingResult.Error;
+                    resultData = parsedCommand.Command;
+                    break;
+
+                case InputProcessingCommand.SayIllegalArguments:
+                    resultType = InputProcessingResult.Error;
                     break;
 
                 default:
-                    commandResult = new ProcessingResult
-                    {
-                        Result = InputProcessingResult.Error,
-                        Data = "Command was not processed properly",
-                    };
+                    resultType = InputProcessingResult.Error;
+                    resultData = "Команда не была обработана должным образом";
                     break;
             }
-            commandCache.Set(userId, command);
 
-            return commandResult;
+            commandCache.Set(userId, parsedCommand);
+
+            return new ProcessingResult
+            {
+                Result = resultType,
+                Data = resultData,
+            };
         }
     }
 }
