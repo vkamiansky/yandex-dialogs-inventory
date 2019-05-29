@@ -34,7 +34,15 @@ namespace AliceInventory.Controllers
         [HttpGet]
         public string Get()
         {
-            return "Server is working...";
+            var vars = Environment.GetEnvironmentVariables();
+
+            string result = " --Vars-- \n";
+            foreach (var key in vars.Keys.Cast<string>())
+            {
+                result += key + ": " + Environment.GetEnvironmentVariable(key) + "\n";
+            }
+
+            return $"Server is working...\n{result}";
         }
 
         // HEAD api/inventory

@@ -189,7 +189,8 @@ namespace AliceInventory.Logic.AliceResponseRender
             {
                 new TextAndSpeechTemplate("Приятно было записывать за вами.\nВсего доброго!"),
             },
-            Buttons = MainButtons
+            Buttons = MainButtons,
+            EndSession = true
         };
 
         private static readonly ResponseTemplate ErrorTemplate = new ResponseTemplate()

@@ -10,5 +10,6 @@ namespace AliceInventory.Logic.AliceResponseRender
     {
         public TextAndSpeechTemplate[] TextAndSpeechTemplates { get; set; } 
         public Button[] Buttons { get; set; }
+        public bool EndSession { get; set; }
     }
 }
