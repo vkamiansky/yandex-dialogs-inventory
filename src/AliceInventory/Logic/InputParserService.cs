@@ -27,23 +27,30 @@ namespace AliceInventory.Logic
 
             InputProcessingCommand command = ExtractCommand(tokens);
 
-            Entry entry = null;
+            object data = null;
             switch (command)
             {
                 case InputProcessingCommand.Add:
                 case InputProcessingCommand.Delete:
-                case InputProcessingCommand.SendMail:
                 case InputProcessingCommand.SayIllegalArguments:
-                    entry = ExtractEntry(culture, tokens);
-                    if (entry == null)
+                    data = ExtractEntry(culture, tokens);
+                    if (data == null)
                         command = InputProcessingCommand.SayIllegalArguments;
+                    break;
+
+                case InputProcessingCommand.SendMail:
+                    string mail;
+                    if (tokens.TryDequeue(out mail))
+                        data = mail;
+                    else
+                        command = InputProcessingCommand.SayIllegalArguments; 
                     break;
             }
 
             return new ProcessingCommand
             {
                 Command = command,
-                Data = entry,
+                Data = data,
             };
         }
 
@@ -124,8 +131,9 @@ namespace AliceInventory.Logic
                 case "очисть":
                 case "вычисти":
                     return InputProcessingCommand.Clear;
-
+                    
                 case "покажи":
+                case "показать":
                 case "продемонстрируй":
                 case "расскажи":
                     return InputProcessingCommand.ReadList;

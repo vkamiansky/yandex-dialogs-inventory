@@ -60,7 +60,7 @@ namespace AliceInventory.IntegrationTests
             using(var response = await _client.GetAsync("/api/inventory/"))
             {
                 var responseString = await response.Content.ReadAsStringAsync();
-                Assert.Equal("Server is working...", responseString);
+                Assert.Contains("Server is working...", responseString);
             }
         }
 

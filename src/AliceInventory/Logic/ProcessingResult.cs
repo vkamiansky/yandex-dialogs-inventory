@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace AliceInventory.Logic
 {
@@ -6,5 +7,6 @@ namespace AliceInventory.Logic
     {
         public InputProcessingResult Result { get; set; }
         public object Data { get; set; }
+        public CultureInfo CultureInfo { get; set; }
     }
 }

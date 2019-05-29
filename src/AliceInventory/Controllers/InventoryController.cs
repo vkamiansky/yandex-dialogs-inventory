@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AliceInventory.Logic.AliceResponseRender;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
@@ -18,16 +20,29 @@ namespace AliceInventory.Controllers
         static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-            .ConfigureServices(srv => srv.AddMvc())
-            .Configure(app => app.UseMvc());
-            
+            WebHost.CreateDefaultBuilder(args).
+            UseStartup<AliceInventory.Startup>();
+
+        public Logic.IInventoryDialogService InventoryDialogService { set; get; }
+
+        public InventoryController(Logic.IInventoryDialogService inventoryDialogService)
+        {
+            this.InventoryDialogService = inventoryDialogService;
+        }
 
         // GET api/inventory
         [HttpGet]
         public string Get()
         {
-            return "Server is working...";
+            var vars = Environment.GetEnvironmentVariables();
+
+            string result = " --Vars-- \n";
+            foreach (var key in vars.Keys.Cast<string>())
+            {
+                result += key + ": " + Environment.GetEnvironmentVariable(key) + "\n";
+            }
+
+            return $"Server is working...\n{result}";
         }
 
         // HEAD api/inventory
@@ -42,16 +57,12 @@ namespace AliceInventory.Controllers
         [Route("alice")]
         public ActionResult<AliceResponse> Post([FromBody] AliceRequest request)
         {
-            var response = new AliceResponse()
-            {
-                Response = new Response()
-                {
-                    Text = request.Request.Command
-                }, 
-                Session = request.Session,
-                Version = request.Version
-            };
-            return response;
+            string input = string.IsNullOrEmpty(request.Request.Command)
+                ? request.Request.Payload
+                : request.Request.Command;
+
+            var answer = InventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
+            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session);
         }
     }
 }
