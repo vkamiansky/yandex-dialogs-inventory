@@ -1,11 +1,32 @@
 using System;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace AliceInventory.Logic
 {
     public class InputParserService : IInputParserService
     {
+        private Dictionary<InputProcessingCommand, Regex> AvailableCommands { get; }
+
+        public InputParserService()
+        {
+            AvailableCommands = new Dictionary<InputProcessingCommand, Regex>()
+            {
+                [InputProcessingCommand.SayHello] = new Regex(@"доброе утро|добрый (день|вечер)|здравствуй(те|)|привет(ствую|)|хеллоу|хай", RegexOptions.Compiled),
+                [InputProcessingCommand.Accept] = new Regex(@"подтвер(ждаю|дить|ди)|несомненно|конечно|именно|точно|верно|давай|хочу|^да$", RegexOptions.Compiled),
+                [InputProcessingCommand.Decline] = new Regex(@"не (надо|хочу)|отвали|отстань|^нет$", RegexOptions.Compiled),
+                [InputProcessingCommand.Cancel] = new Regex(@"отмен(ить|яю|яй|а|и)", RegexOptions.Compiled),
+                [InputProcessingCommand.Add] = new Regex(@"присоедини(ть|)|(над|при|до)бав(ляй|ить|ь)|по(ложи|мести)|(за|в)(сунь|пихай|пихни)", RegexOptions.Compiled),
+                [InputProcessingCommand.Delete] = new Regex(@"вы((тащить|(таскивать|нуть))|(брось|броси|тащи|суни|сунь|нь)(те|))|у(брать|далить|(дали|ничтожь)(те|))|с(тереть|тирай|отри)|изъять", RegexOptions.Compiled),
+                [InputProcessingCommand.Clear] = new Regex(@"(вы|по|о)(чист)(ите|и|ь)", RegexOptions.Compiled),
+                [InputProcessingCommand.ReadList] = new Regex(@"(продемонстрируй|покажи|расскажи)(те|)", RegexOptions.Compiled),
+                [InputProcessingCommand.SendMail] = new Regex(@"отправ(ить|(ляй|ь))(те|)|(вы|по)(слать|шли)", RegexOptions.Compiled),
+                [InputProcessingCommand.RequestHelp] = new Regex(@"что ты (можешь|умеешь)|помо(гите|ги|щь)|(спасай|спаси)(те|)|(выручай|выручи)(те|)|хелп", RegexOptions.Compiled),
+                [InputProcessingCommand.RequestExit] = new Regex(@"выход|пока|хватит|прощай", RegexOptions.Compiled),
+            };
+        }
+
         public ProcessingCommand ParseInput(string input, CultureInfo culture)
         {
             if (string.IsNullOrEmpty(input))
