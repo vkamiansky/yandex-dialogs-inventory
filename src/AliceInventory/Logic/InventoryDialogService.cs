@@ -1,6 +1,8 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using AliceInventory.Data;
+using AliceInventory.Logic.Email;
 
 namespace AliceInventory.Logic
 {
@@ -9,19 +11,20 @@ namespace AliceInventory.Logic
         private IInventoryStorage storage;
         private IInputParserService parser;
         private ICommandCache commandCache;
+        private IAliceEmailService emailService;
 
-        public InventoryDialogService(IInventoryStorage storage, IInputParserService parser, ICommandCache commandCache)
+        public InventoryDialogService(IInventoryStorage storage, IInputParserService parser, ICommandCache commandCache, IAliceEmailService emailService)
         {
             this.storage = storage;
             this.parser = parser;
             this.commandCache = commandCache;
+            this.emailService = emailService;
         }
 
         public ProcessingResult ProcessInput(string userId, string input, CultureInfo culture)
         {
             ProcessingCommand parsedCommand = parser.ParseInput(input, culture);
-            var logicItem = parsedCommand.Data as Entry;
-            var dataItem = logicItem.ToData();
+            var logicItem = parsedCommand.Data as Logic.Entry;
 
             InputProcessingResult resultType;
             object resultData = logicItem;
@@ -49,33 +52,32 @@ namespace AliceInventory.Logic
                     
                 case InputProcessingCommand.Cancel: 
                     ProcessingCommand cachedCommand = commandCache.Get(userId);
-                    Data.Entry cachedCommandData = (cachedCommand.Data as Logic.Entry).ToData();
-                    if (cachedCommand.Command == InputProcessingCommand.Add)
+                    switch (cachedCommand.Command)
                     {
-                        storage.Delete(userId, cachedCommandData);
-                        resultType = InputProcessingResult.AddCanceled;
-                        resultData = cachedCommandData;
-                    }
-                    else if (cachedCommand.Command == InputProcessingCommand.Delete)
-                    {
-                        storage.Add(userId, cachedCommandData);
-                        resultType = InputProcessingResult.DeleteCanceled;
-                        resultData = cachedCommandData;
-                    }
-                    else
-                    {
-                        resultType = InputProcessingResult.Error;
+                        case InputProcessingCommand.Add:
+                            storage.Delete(userId, (cachedCommand.Data as Logic.Entry).ToData());
+                            resultType = InputProcessingResult.AddCanceled;
+                            resultData = cachedCommand.Data as Logic.Entry;
+                            break;
+                        case InputProcessingCommand.Delete:
+                            storage.Add(userId, (cachedCommand.Data as Logic.Entry).ToData());
+                            resultType = InputProcessingResult.DeleteCanceled;
+                            resultData = cachedCommand.Data as Logic.Entry;
+                            break;
+                        default:
+                            resultType = InputProcessingResult.Error;
+                            break;
                     }
                     break;
 
                 case InputProcessingCommand.Add:
                     resultType = InputProcessingResult.Added;
-                    storage.Add(userId, dataItem);
+                    storage.Add(userId, logicItem.ToData());
                     break;
 
                 case InputProcessingCommand.Delete:
                     resultType = InputProcessingResult.Deleted;
-                    storage.Delete(userId, dataItem);
+                    storage.Delete(userId, logicItem.ToData());
                     break;
 
                 case InputProcessingCommand.Clear:
@@ -84,11 +86,14 @@ namespace AliceInventory.Logic
 
                 case InputProcessingCommand.ReadList:
                     resultType = InputProcessingResult.ListRead;
-                    resultData = storage.ReadAll(userId);
+                    resultData = Array.ConvertAll(storage.ReadAll(userId), x => x.ToLogic());
                     break;
 
                 case InputProcessingCommand.SendMail:
+                    //emailService.SendListAsync(email, storage.ReadAll(userId));
                     resultType = InputProcessingResult.MailSent;
+                    var email = parsedCommand.Data as string;
+                    resultData = email;
                     break;
 
                 case InputProcessingCommand.RequestHelp:
@@ -110,7 +115,6 @@ namespace AliceInventory.Logic
 
                 default:
                     resultType = InputProcessingResult.Error;
-                    resultData = "Команда не была обработана должным образом";
                     break;
             }
 
@@ -120,6 +124,7 @@ namespace AliceInventory.Logic
             {
                 Result = resultType,
                 Data = resultData,
+                CultureInfo = culture
             };
         }
     }

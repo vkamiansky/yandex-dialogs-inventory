@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,6 +26,8 @@ namespace AliceInventory
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<Logic.IConfigurationService, Logic.ConfigurationService>();
+            services.AddSingleton<Logic.Email.IAliceEmailService, Logic.Email.AliceEmailService>();
             services.AddSingleton<Logic.ICommandCache, Logic.CommandCache>();
             services.AddSingleton<Logic.IInputParserService, Logic.InputParserService>();
             services.AddSingleton<Data.IInventoryStorage, Data.DictionaryStorage>();

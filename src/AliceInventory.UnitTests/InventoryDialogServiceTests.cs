@@ -3,6 +3,8 @@ using System.Globalization;
 using Xunit;
 using Moq;
 using AliceInventory;
+using AliceInventory.Data;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace AliceInventory.UnitTests
 {
@@ -13,6 +15,7 @@ namespace AliceInventory.UnitTests
         {
             var input1 = "объект1 123.123кг";
             var userId1 = "userId1";
+            var userEmail = "some@yandex.ru";
             var logicEntryStub1 = new Logic.Entry
             {
                 Unit = Logic.UnitOfMeasure.Kg,
@@ -24,12 +27,21 @@ namespace AliceInventory.UnitTests
                 Command = Logic.InputProcessingCommand.Add,
                 Data = logicEntryStub1
             };
+            var entries = new Data.Entry[]
+            {
+                new Entry()
+                {
+                    Name = "камни",
+                    Count = 10,
+                    Unit = UnitOfMeasure.Unit
+                }, 
+            };
 
             var storageMock = new Mock<Data.IInventoryStorage>(MockBehavior.Strict);
             storageMock.Setup(x => x.Add(
                 It.Is<string>(y => y == userId1),
                 It.Is<Data.Entry>(y =>
-                    Logic.Converter.ToLogic(y.Unit) == logicEntryStub1.Unit
+                    Logic.Extensions.ToLogic(y.Unit) == logicEntryStub1.Unit
                     && y.Name == logicEntryStub1.Name
                     && y.Count == logicEntryStub1.Count)))
                 .Returns(true);
@@ -47,10 +59,16 @@ namespace AliceInventory.UnitTests
                     y.Command == processingCommand1.Command
                     && y.Data == processingCommand1.Data)));
 
+            var emailMock = new Mock<Logic.Email.IAliceEmailService>(MockBehavior.Strict);
+            emailMock.Setup(x => x.SendListAsync(
+                    It.Is<string>(y => y == userEmail),
+                    It.Is<Data.Entry[]>(y => y == entries)));
+
             var sut = new Logic.InventoryDialogService(
                 storageMock.Object,
                 parserMock.Object,
-                commandCacheMock.Object);
+                commandCacheMock.Object,
+                emailMock.Object);
 
             var result = sut.ProcessInput(userId1, input1, CultureInfo.CurrentCulture);
 
@@ -76,6 +94,7 @@ namespace AliceInventory.UnitTests
         {
             var input = "удалить объект1 123.123кг";
             var userId = "userId1";
+            var userEmail = "some@yandex.ru";
             var logicEntryStub = new Logic.Entry
             {
                 Unit = Logic.UnitOfMeasure.Kg,
@@ -87,12 +106,21 @@ namespace AliceInventory.UnitTests
                 Command = Logic.InputProcessingCommand.Delete,
                 Data = logicEntryStub
             };
+            var entries = new Data.Entry[]
+            {
+                new Entry()
+                {
+                    Name = "камни",
+                    Count = 10,
+                    Unit = UnitOfMeasure.Unit
+                }, 
+            };
 
             var storageMock = new Mock<Data.IInventoryStorage>(MockBehavior.Strict);
             storageMock.Setup(x => x.Delete(
                 It.Is<string>(y => y == userId),
                 It.Is<Data.Entry>(y =>
-                    Logic.Converter.ToLogic(y.Unit) == logicEntryStub.Unit
+                    Logic.Extensions.ToLogic(y.Unit) == logicEntryStub.Unit
                     && y.Name == logicEntryStub.Name
                     && y.Count == logicEntryStub.Count)))
                 .Returns(true);
@@ -110,10 +138,16 @@ namespace AliceInventory.UnitTests
                     y.Command == processingCommand.Command
                     && y.Data == processingCommand.Data)));
 
+            var emailMock = new Mock<Logic.Email.IAliceEmailService>(MockBehavior.Strict);
+            emailMock.Setup(x => x.SendListAsync(
+                It.Is<string>(y => y == userEmail),
+                It.Is<Data.Entry[]>(y => y == entries)));
+
             var sut = new Logic.InventoryDialogService(
                 storageMock.Object,
                 parserMock.Object,
-                commandCacheMock.Object);
+                commandCacheMock.Object,
+                emailMock.Object);
 
             var result = sut.ProcessInput(userId, input, CultureInfo.CurrentCulture);
 

@@ -40,23 +40,31 @@ namespace AliceInventory.Logic
 
             InputProcessingCommand command = ExtractCommand(ref input);
 
-            Entry entry = null;
+            object data = null;
             switch (command)
             {
                 case InputProcessingCommand.Add:
                 case InputProcessingCommand.Delete:
-                case InputProcessingCommand.SendMail:
                 case InputProcessingCommand.SayIllegalArguments:
-                    entry = ExtractEntry(input, culture);
-                    if (entry == null)
+                    data = ExtractEntry(input, culture);
+                    if (data == null)
                         command = InputProcessingCommand.SayIllegalArguments;
+                    break;
+
+                case InputProcessingCommand.SendMail:
+                    Regex mailRegex = new Regex(@"[\w+\.-]+@[\w+\-]+\.\w{2,4}", RegexOptions.Compiled);
+                    Match mailMatch = mailRegex.Match(input.Trim());
+                    if (mailMatch.Success)
+                        data = mailMatch.Value;
+                    else
+                        command = InputProcessingCommand.SayIllegalArguments; 
                     break;
             }
 
             return new ProcessingCommand
             {
                 Command = command,
-                Data = entry,
+                Data = data,
             };
         }
 
