@@ -35,7 +35,7 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("яблоки 2 килограмма", "яблоки", 2, UnitOfMeasure.Kg)]
         [InlineData("Прибавь 3 единицы яблок", "яблок", 3, UnitOfMeasure.Unit)]
-        [InlineData("4 литра яблок", "яблок", 1, UnitOfMeasure.L)]
+        [InlineData("4 литра яблок", "яблок", 4, UnitOfMeasure.L)]
         [InlineData("Плюс 5 яблок", "яблок", 5, UnitOfMeasure.Unit)]
         [InlineData("6 яблок", "яблок", 6, UnitOfMeasure.Unit)]
         [InlineData("засунь килограмм яблок", "яблок", 1, UnitOfMeasure.Kg)]
@@ -57,7 +57,7 @@ namespace AliceInventory.UnitTests
         [Theory]
         [InlineData("удали яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("убери 2 килограмм яблок", "яблок", 2, UnitOfMeasure.Kg)]
-        [InlineData("вытащи 3 яблока", "яблока", 3, UnitOfMeasure.Kg)]
+        [InlineData("вытащи 3 яблока", "яблока", 3, UnitOfMeasure.Unit)]
         [InlineData("сотри килограмм яблок", "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("высуни яблоко", "яблоко", 1, UnitOfMeasure.Unit)]
         public void DeleteCommandParsing(string input, string entryName, double entryCount, UnitOfMeasure entryUnitOfMeasure)
