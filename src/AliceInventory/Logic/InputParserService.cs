@@ -24,7 +24,7 @@ namespace AliceInventory.Logic
                 [InputProcessingCommand.ReadList] = new Regex(@"(продемонстрируй|покажи|расскажи)(те|)", RegexOptions.Compiled),
                 [InputProcessingCommand.SendMail] = new Regex(@"отправ(ить|(ляй|ь))(те|)|(вы|по)(слать|шли)", RegexOptions.Compiled),
                 [InputProcessingCommand.RequestHelp] = new Regex(@"что ты (можешь|умеешь)|помо(гите|ги|щь)|(спасай|спаси)(те|)|(выручай|выручи)(те|)|хелп", RegexOptions.Compiled),
-                [InputProcessingCommand.RequestExit] = new Regex(@"выход|пока|хватит|прощай", RegexOptions.Compiled),
+                [InputProcessingCommand.RequestExit] = new Regex(@"до (свидания|встречи|скорого)|выход(жу|и|)|пока|хватит|прощай", RegexOptions.Compiled),
             };
             AvailableUnitsOfMeasure = new Dictionary<UnitOfMeasure, Regex>()
             {
