@@ -38,6 +38,9 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь яблоко", InputProcessingCommand.Add, "яблоко", 1, UnitOfMeasure.Unit)]
         [InlineData("добавь килограмм яблок", InputProcessingCommand.Add, "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("добавь арбуз 3 штуки", InputProcessingCommand.Add, "арбуз", 3, UnitOfMeasure.Unit)]
+        [InlineData("добавь тестовое яблоко 1 штуки", InputProcessingCommand.Add, "тестовое яблоко", 1, UnitOfMeasure.Unit)]
+        [InlineData("добавь 1 штуку тестовое яблоко", InputProcessingCommand.Add, "тестовое яблоко", 1, UnitOfMeasure.Unit)]
+        [InlineData("добавь тестовое 1 штуку яблоко", InputProcessingCommand.Add, "тестовое яблоко", 1, UnitOfMeasure.Unit)]
         [InlineData("удали яблоко 1 килограмм", InputProcessingCommand.Delete, "яблоко", 1, UnitOfMeasure.Kg)]
         public void CommandParsingNotNullEntryTest(
             string input,
@@ -50,6 +53,7 @@ namespace AliceInventory.UnitTests
             ProcessingCommand parsedCommand = sut.ParseInput(input, CultureInfo.CurrentCulture);
 
             Assert.Equal(command, parsedCommand.Command);
+            Assert.IsType<Entry>(parsedCommand.Data);
 
             var data = parsedCommand.Data as Entry;
 
@@ -59,12 +63,18 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
+        [InlineData("привет", InputProcessingCommand.SayHello)]
+        [InlineData("да", InputProcessingCommand.Accept)]
+        [InlineData("нет", InputProcessingCommand.Decline)]
+        [InlineData("отмена", InputProcessingCommand.Cancel)]
         [InlineData("добавь предмет -2 штуки", InputProcessingCommand.SayIllegalArguments)]
         [InlineData("удали предмет 0 штук", InputProcessingCommand.SayIllegalArguments)]
+        [InlineData("очисти", InputProcessingCommand.Clear)]
         [InlineData("покажи", InputProcessingCommand.ReadList)]
         [InlineData("покажи всё", InputProcessingCommand.ReadList)]
-        [InlineData("очисти", InputProcessingCommand.Clear)]
         [InlineData("очисти инвентарь", InputProcessingCommand.Clear)]
+        [InlineData("помоги", InputProcessingCommand.RequestHelp)]
+        [InlineData("выход", InputProcessingCommand.RequestExit)]
         [InlineData("погода спб", InputProcessingCommand.SayUnknownCommand)]
         public void CommandParsingNullEntryTest(
             string input,
@@ -96,8 +106,9 @@ namespace AliceInventory.UnitTests
 
             Assert.NotNull(parsedCommand);
             Assert.NotNull(parsedCommand.Data);
+            Assert.IsType<string>(parsedCommand.Data);
             Assert.Equal(InputProcessingCommand.SendMail, parsedCommand.Command);
-            Assert.Equal(email, parsedCommand.Data.ToString());
+            Assert.Equal(email, parsedCommand.Data as string);
         }
         
         [Theory]
