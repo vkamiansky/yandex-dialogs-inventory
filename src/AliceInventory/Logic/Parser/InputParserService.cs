@@ -85,7 +85,7 @@ namespace AliceInventory.Logic.Parser
         };
         private static readonly CommandTemplate[] SendMailRegexTemplates = 
         {
-            new CommandTemplate($"{RegexHelper.SendMailWord}")
+            new CommandTemplate($"{RegexHelper.SendMailOnWord} ({RegexHelper.Email})")
         };
         private static readonly CommandTemplate[] SayHelloRegexTemplates = 
         {

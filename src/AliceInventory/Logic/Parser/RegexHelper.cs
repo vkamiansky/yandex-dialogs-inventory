@@ -26,8 +26,8 @@ namespace AliceInventory.Logic.Parser
             @"помо(?:ги(?:те)?|щь)|хелп|спас(?:и|а(?:й(?:те)?))|выручай(?:те)?|что ты умеешь";
         public const string ReadListWord =
             @"(?:п(?:ока(?:жи|зать)|родемонстрируй)|расскажи)(?:\s(?:вс(?:е|ё)|список|рюкзак|инвентарь))?";
-        public const string SendMailWord =
-            @"отправ(?:ь(?:те)?|ить|ляй)|вы(?:шли|слать)|по(?:шли|слать)";
+        public const string SendMailOnWord =
+            @"(?:отправ(?:ь(?:те)?|ить|ляй)|вы(?:шли|слать)|по(?:шли|слать))(?:\sна)?";
         public const string ExitWord =
             @"п(?:ока|рощай)|выход|хватит";
         
@@ -37,9 +37,9 @@ namespace AliceInventory.Logic.Parser
         private static Dictionary<UnitOfMeasure, string> unitOfMeasureDictionary;
         public const string UnitOfMeasureWord = UnitWord + "|" + KgWord + "|" + LiterWord;
 
-        public static readonly string EntryNameWord = @"[а-яА-ЯёЁ\d]{3,}";
+        public static readonly string EntryNameWord = @"[а-яА-ЯёЁ\d\s]{3,}";
         public static readonly string Number = @"-?\d+(?:(?:\.|,)\d+)?";
-        public static readonly string Email = @"";
+        public static readonly string Email = @"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
 
         static RegexHelper()
         {
