@@ -32,18 +32,14 @@ namespace AliceInventory.Logic
             {
                 case InputProcessingCommand.Add:
                 case InputProcessingCommand.Delete:
-                case InputProcessingCommand.SayIllegalArguments:
                     data = ExtractEntry(culture, tokens);
-                    if (data == null)
-                        command = InputProcessingCommand.SayIllegalArguments;
+
                     break;
 
                 case InputProcessingCommand.SendMail:
                     string mail;
                     if (tokens.TryDequeue(out mail))
                         data = mail;
-                    else
-                        command = InputProcessingCommand.SayIllegalArguments; 
                     break;
             }
 

@@ -109,10 +109,6 @@ namespace AliceInventory.Logic
                     resultData = parsedCommand.Command;
                     break;
 
-                case InputProcessingCommand.SayIllegalArguments:
-                    resultType = InputProcessingResult.Error;
-                    break;
-
                 default:
                     resultType = InputProcessingResult.Error;
                     break;
