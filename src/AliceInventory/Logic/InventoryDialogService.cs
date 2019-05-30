@@ -24,10 +24,10 @@ namespace AliceInventory.Logic
         public ProcessingResult ProcessInput(string userId, string input, CultureInfo culture)
         {
             ProcessingCommand parsedCommand = parser.ParseInput(input, culture);
-            var logicItem = parsedCommand.Data as Logic.Entry;
 
-            InputProcessingResult resultType;
-            object resultData = logicItem;
+            InputProcessingResult resultType = InputProcessingResult.Error;
+            object resultData = null;
+
             switch (parsedCommand.Command)
             {
                 case InputProcessingCommand.SayHello:
@@ -37,8 +37,8 @@ namespace AliceInventory.Logic
                 case InputProcessingCommand.Accept:
                     if (commandCache.Get(userId).Command == InputProcessingCommand.Clear)
                     {
-                        resultType = InputProcessingResult.Cleared;
                         storage.Clear(userId);
+                        resultType = InputProcessingResult.Cleared;
                     }
                     else
                     {
@@ -56,13 +56,13 @@ namespace AliceInventory.Logic
                     {
                         case InputProcessingCommand.Add:
                             storage.Delete(userId, (cachedCommand.Data as Logic.Entry).ToData());
-                            resultType = InputProcessingResult.AddCanceled;
                             resultData = cachedCommand.Data as Logic.Entry;
+                            resultType = InputProcessingResult.AddCanceled;
                             break;
                         case InputProcessingCommand.Delete:
                             storage.Add(userId, (cachedCommand.Data as Logic.Entry).ToData());
-                            resultType = InputProcessingResult.DeleteCanceled;
                             resultData = cachedCommand.Data as Logic.Entry;
+                            resultType = InputProcessingResult.DeleteCanceled;
                             break;
                         default:
                             resultType = InputProcessingResult.Error;
@@ -71,13 +71,15 @@ namespace AliceInventory.Logic
                     break;
 
                 case InputProcessingCommand.Add:
+                    storage.Add(userId, (parsedCommand.Data as Logic.Entry).ToData());
+                    resultData = parsedCommand.Data;
                     resultType = InputProcessingResult.Added;
-                    storage.Add(userId, logicItem.ToData());
                     break;
 
                 case InputProcessingCommand.Delete:
+                    storage.Delete(userId, (parsedCommand.Data as Logic.Entry).ToData());
+                    resultData = parsedCommand.Data;
                     resultType = InputProcessingResult.Deleted;
-                    storage.Delete(userId, logicItem.ToData());
                     break;
 
                 case InputProcessingCommand.Clear:
@@ -85,15 +87,15 @@ namespace AliceInventory.Logic
                     break;
 
                 case InputProcessingCommand.ReadList:
-                    resultType = InputProcessingResult.ListRead;
                     resultData = Array.ConvertAll(storage.ReadAll(userId), x => x.ToLogic());
+                    resultType = InputProcessingResult.ListRead;
                     break;
 
                 case InputProcessingCommand.SendMail:
                     //emailService.SendListAsync(email, storage.ReadAll(userId));
-                    resultType = InputProcessingResult.MailSent;
                     var email = parsedCommand.Data as string;
                     resultData = email;
+                    resultType = InputProcessingResult.MailSent;
                     break;
 
                 case InputProcessingCommand.RequestHelp:
@@ -105,11 +107,12 @@ namespace AliceInventory.Logic
                     break;
 
                 case InputProcessingCommand.SayUnknownCommand:
-                    resultType = InputProcessingResult.Error;
                     resultData = parsedCommand.Command;
+                    resultType = InputProcessingResult.Error;
                     break;
 
                 case InputProcessingCommand.SayIllegalArguments:
+                    resultData = parsedCommand.Data;
                     resultType = InputProcessingResult.Error;
                     break;
 
@@ -124,7 +127,7 @@ namespace AliceInventory.Logic
             {
                 Result = resultType,
                 Data = resultData,
-                CultureInfo = culture
+                CultureInfo = culture,
             };
         }
     }
