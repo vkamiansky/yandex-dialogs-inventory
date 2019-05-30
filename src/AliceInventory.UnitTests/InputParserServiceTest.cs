@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using Xunit;
 using AliceInventory.Logic;
+using AliceInventory.Logic.Parser;
 
 namespace AliceInventory.UnitTests
 {
@@ -116,7 +117,6 @@ namespace AliceInventory.UnitTests
         [InlineData("хватит", InputProcessingCommand.RequestExit)]
         [InlineData("прощай", InputProcessingCommand.RequestExit)]
         [InlineData("погода спб", InputProcessingCommand.SayUnknownCommand)]
-        [InlineData("член", InputProcessingCommand.SayUnknownCommand)]
         [InlineData("что делаешь", InputProcessingCommand.SayUnknownCommand)]
         [InlineData("люблю тесты", InputProcessingCommand.SayUnknownCommand)]
         [InlineData("добавь", InputProcessingCommand.SayUnknownCommand)]
@@ -135,7 +135,7 @@ namespace AliceInventory.UnitTests
         [InlineData("вышли на some.mai-l@ya.ru", "some.mai-l@ya.ru")]
         [InlineData("пошли somem333ail@ya.ru", "somem333ail@ya.ru")]
         [InlineData("послать на somem333ail@ya.ru", "somem333ail@ya.ru")]
-        public void MailSentParsingCultureTest(string input, string expectedEmail)
+        public void MailSentParsingTest(string input, string expectedEmail)
         {
             var parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
