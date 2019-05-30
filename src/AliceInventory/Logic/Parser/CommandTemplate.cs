@@ -10,11 +10,12 @@ namespace AliceInventory.Logic.Parser
     public class CommandTemplate
     {
         private Regex Regex;
+
         public string RegularExpression
         {
             set
             {
-                Regex = new Regex("^" + value + "$");
+                Regex = new Regex("^" + value + "$", RegexOptions.Compiled);
             }
         }
 
