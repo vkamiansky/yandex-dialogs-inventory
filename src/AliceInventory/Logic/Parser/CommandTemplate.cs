@@ -9,8 +9,9 @@ namespace AliceInventory.Logic.Parser
 {
     public class CommandTemplate
     {
+        public InputProcessingCommand Command { get; }
         private Regex Regex;
-
+        
         public string RegularExpression
         {
             set
@@ -19,8 +20,9 @@ namespace AliceInventory.Logic.Parser
             }
         }
 
-        public CommandTemplate(string expression)
+        public CommandTemplate(InputProcessingCommand command, string expression)
         {
+            Command = command;
             RegularExpression = expression;
         }
 

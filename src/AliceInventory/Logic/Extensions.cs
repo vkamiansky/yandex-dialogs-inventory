@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace AliceInventory.Logic
 {
@@ -93,6 +94,11 @@ namespace AliceInventory.Logic
                 default:
                     return Data.UnitOfMeasure.Unit;
             }
+        }
+
+        public static bool ContainsName(this GroupCollection group, string name)
+        {
+            return group.Any(x => x.Name == name);
         }
     }
 }

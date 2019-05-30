@@ -7,136 +7,77 @@ namespace AliceInventory.Logic.Parser
 {
     public class InputParserService : IInputParserService
     {
-        private static readonly CommandTemplate[] AddRegexTemplates = 
+        // Order by priority
+        private static readonly CommandTemplate[] CommandsTemplates = 
         {
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.AddWord} ({RegexHelper.EntryNameWord}) ({RegexHelper.Number}) ({RegexHelper.UnitOfMeasureWord})",
-                0, 1, 2),
-            new CommandTemplateWithEntry(
-                $"({RegexHelper.EntryNameWord}) ({RegexHelper.Number}) ({RegexHelper.UnitOfMeasureWord})",
-                0, 1, 2),
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.AddWord} ({RegexHelper.Number}) ({RegexHelper.UnitOfMeasureWord}) ({RegexHelper.EntryNameWord})",
-                2, 0, 1),
-            new CommandTemplateWithEntry(
-                $"({RegexHelper.Number}) ({RegexHelper.UnitOfMeasureWord}) ({RegexHelper.EntryNameWord})",
-                2, 0, 1),
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.AddWord} ({RegexHelper.Number}) ({RegexHelper.EntryNameWord})",
-                1, 0, -1),
-            new CommandTemplateWithEntry(
-                $"({RegexHelper.Number}) ({RegexHelper.EntryNameWord})",
-                1, 0, -1),
-            new CommandTemplateWithEntry(
-                $"({RegexHelper.UnitOfMeasureWord}) ({RegexHelper.EntryNameWord})",
-                1, -1, 0),
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.AddWord} ({RegexHelper.UnitOfMeasureWord}) ({RegexHelper.Number}) ({RegexHelper.EntryNameWord})",
-                2, 1, 0),
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.AddWord} ({RegexHelper.EntryNameWord}) ({RegexHelper.UnitOfMeasureWord}) ({RegexHelper.Number})",
-                0, 2, 1),
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.AddWord} ({RegexHelper.UnitOfMeasureWord}) ({RegexHelper.EntryNameWord})",
-                1, -1, 0),
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.AddWord} ({RegexHelper.EntryNameWord})",
-                0, -1, -1),
+            new CommandTemplateWithEntry(InputProcessingCommand.Add,
+                $"{RegexHelper.AddPattern} {RegexHelper.EntryName} {RegexHelper.EntryCount} {RegexHelper.EntryUnit}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Add,
+                $"{RegexHelper.AddPattern} {RegexHelper.EntryCount} {RegexHelper.EntryUnit} {RegexHelper.EntryName}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Add,
+                $"{RegexHelper.EntryCount} {RegexHelper.EntryUnit} {RegexHelper.EntryName}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Add,
+                $"{RegexHelper.EntryUnit} {RegexHelper.EntryName}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Add,
+                $"{RegexHelper.AddPattern} {RegexHelper.EntryCount} {RegexHelper.EntryName}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Add,
+                $"{RegexHelper.AddPattern} {RegexHelper.EntryUnit} {RegexHelper.EntryCount} {RegexHelper.EntryName}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Add,
+                $"{RegexHelper.AddPattern} {RegexHelper.EntryName} {RegexHelper.EntryUnit} {RegexHelper.EntryCount}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Add,
+                $"{RegexHelper.AddPattern} {RegexHelper.EntryUnit} {RegexHelper.EntryName}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Add,
+                $"{RegexHelper.AddPattern} {RegexHelper.EntryName}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Delete,
+                $"{RegexHelper.DeletePattern} {RegexHelper.EntryName} {RegexHelper.EntryCount} {RegexHelper.EntryUnit}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Delete,
+                $"{RegexHelper.DeletePattern} {RegexHelper.EntryCount} {RegexHelper.EntryUnit} {RegexHelper.EntryName}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Delete,
+                $"{RegexHelper.DeletePattern} {RegexHelper.EntryCount} {RegexHelper.EntryName}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Delete,
+                $"{RegexHelper.DeletePattern} {RegexHelper.EntryUnit} {RegexHelper.EntryName}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Delete,
+                $"{RegexHelper.DeletePattern} {RegexHelper.EntryName}"),
+            new CommandTemplate(InputProcessingCommand.Cancel,
+                $"{RegexHelper.CancelPattern}"),
+            new CommandTemplate(InputProcessingCommand.Accept,
+                $"{RegexHelper.AcceptPattern}"),
+            new CommandTemplate(InputProcessingCommand.Decline,
+                $"{RegexHelper.DeclinePattern}"),
+            new CommandTemplate(InputProcessingCommand.ReadList,
+                $"{RegexHelper.ReadListPattern}"),
+            new CommandTemplate(InputProcessingCommand.Clear,
+                $"{RegexHelper.ClearPattern}"),
+            new CommandTemplateWithEmail(InputProcessingCommand.SendMail,
+                $"{RegexHelper.SendMailOnPattern} {RegexHelper.Email}"),
+            new CommandTemplate(InputProcessingCommand.SayHello,
+                $"{RegexHelper.HelloPattern}"),
+            new CommandTemplate(InputProcessingCommand.RequestHelp,
+                $"{RegexHelper.HelpPattern}"),
+            new CommandTemplate(InputProcessingCommand.RequestExit,
+                $"{RegexHelper.ExitPattern}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Add,
+                $"{RegexHelper.EntryName} {RegexHelper.EntryCount} {RegexHelper.EntryUnit}"),
+            new CommandTemplateWithEntry(InputProcessingCommand.Add,
+                $"{RegexHelper.EntryCount} {RegexHelper.EntryName}"),
         };
-
-        private static readonly CommandTemplate[] DeleteRegexTemplates = 
-        {
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.DeleteWord} ({RegexHelper.EntryNameWord}) ({RegexHelper.Number}) ({RegexHelper.UnitOfMeasureWord})",
-                0, 1, 2), 
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.DeleteWord} ({RegexHelper.Number}) ({RegexHelper.UnitOfMeasureWord}) ({RegexHelper.EntryNameWord})",
-                2, 0, 1), 
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.DeleteWord} ({RegexHelper.Number}) ({RegexHelper.EntryNameWord})",
-                1, 0, -1), 
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.DeleteWord} ({RegexHelper.UnitOfMeasureWord}) ({RegexHelper.EntryNameWord})",
-                1, -1, 0), 
-            new CommandTemplateWithEntry(
-                $"{RegexHelper.DeleteWord} ({RegexHelper.EntryNameWord})",
-                0, -1, -1), 
-        };
-
-        private static readonly CommandTemplate[] CancelRegexTemplates = 
-        {
-            new CommandTemplate($"{RegexHelper.CancelWord}")
-        };
-        private static readonly CommandTemplate[] AcceptRegexTemplates = 
-        {
-            new CommandTemplate($"{RegexHelper.AcceptWord}")
-        };
-        private static readonly CommandTemplate[] DeclineRegexTemplates = 
-        {
-            new CommandTemplate($"{RegexHelper.DeclineWord}")
-        };
-        private static readonly CommandTemplate[] ReadListRegexTemplates = 
-        {
-            new CommandTemplate($"{RegexHelper.ReadListWord}")
-        };
-        private static readonly CommandTemplate[] ClearRegexTemplates = 
-        {
-            new CommandTemplate($"{RegexHelper.ClearWord}")
-        };
-        private static readonly CommandTemplate[] SendMailRegexTemplates = 
-        {
-            new CommandTemplate($"{RegexHelper.SendMailOnWord} ({RegexHelper.Email})")
-        };
-        private static readonly CommandTemplate[] SayHelloRegexTemplates = 
-        {
-            new CommandTemplate($"{RegexHelper.HelloWord}")
-        };
-        private static readonly CommandTemplate[] RequestHelpRegexTemplates = 
-        {
-            new CommandTemplate($"{RegexHelper.HelpWord}")
-        };
-        private static readonly CommandTemplate[] RequestExitRegexTemplates = 
-        {
-            new CommandTemplate($"{RegexHelper.ExitWord}")
-        };
-
-        private static readonly Dictionary<InputProcessingCommand, CommandTemplate[]> CommandDictionary;
-
-        static InputParserService()
-        {
-            CommandDictionary = new Dictionary<InputProcessingCommand, CommandTemplate[]>
-            {
-                [InputProcessingCommand.Add] = AddRegexTemplates,
-                [InputProcessingCommand.Delete] = DeleteRegexTemplates,
-                [InputProcessingCommand.Cancel] = CancelRegexTemplates,
-                [InputProcessingCommand.Accept] = AcceptRegexTemplates,
-                [InputProcessingCommand.Decline] = DeclineRegexTemplates,
-                [InputProcessingCommand.ReadList] = ReadListRegexTemplates,
-                [InputProcessingCommand.Clear] = ClearRegexTemplates,
-                [InputProcessingCommand.SendMail] = SendMailRegexTemplates,
-                [InputProcessingCommand.SayHello] = SayHelloRegexTemplates,
-                [InputProcessingCommand.RequestHelp] = RequestHelpRegexTemplates,
-                [InputProcessingCommand.RequestExit] = RequestExitRegexTemplates
-            };
-        }
 
         public ProcessingCommand ParseInput(string input, CultureInfo cultureInfo)
         {
             if (string.IsNullOrEmpty(input))
                 return new ProcessingCommand { Command = InputProcessingCommand.SayHello};
 
-            foreach (var (command, templates) in CommandDictionary)
+            input = input.ToLower(cultureInfo);
+
+            foreach (var template in CommandsTemplates)
             {
-                foreach (var template in templates)
+                if (template.TryParse(input, out object data, cultureInfo))
                 {
-                    if (template.TryParse(input, out object data, cultureInfo))
+                    return new ProcessingCommand()
                     {
-                        return new ProcessingCommand()
-                        {
-                            Command = command,
-                            Data = data
-                        };
-                    }
+                        Command = template.Command,
+                        Data = data
+                    };
                 }
             }
 

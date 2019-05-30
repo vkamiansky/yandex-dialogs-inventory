@@ -9,11 +9,11 @@ namespace AliceInventory.Logic.Parser
 {
     public class CommandTemplateWithEmail : CommandTemplate
     {
-        public CommandTemplateWithEmail(string expression) : base(expression) { }
+        public CommandTemplateWithEmail(InputProcessingCommand command, string expression) : base(command, expression) { }
 
         protected override object GetObject(Match match, CultureInfo cultureInfo)
         {
-            return match.Groups[0];
+            return match.Groups[RegexHelper.EmailGroupName].Value;
         }
     }
 }
