@@ -15,6 +15,6 @@ namespace AliceInventory.Logic
         SendMail,
         RequestHelp,
         RequestExit,
-        SayUnknownCommand,
+        SayUnknownCommand
     }
 }
