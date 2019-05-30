@@ -43,17 +43,12 @@ namespace AliceInventory.Logic
                     Command = InputProcessingCommand.SayHello,
                 };
             }
-            else if (input.Contains("что ты можешь"))
-            {
-                return new ProcessingCommand
-                {
-                    Command = InputProcessingCommand.RequestHelp,
-                };
-            }
 
-            Queue<string> tokens = new Queue<string>(input.ToLower().Split(" ", StringSplitOptions.RemoveEmptyEntries));
+            input = input.ToLower();
 
-            InputProcessingCommand command = ExtractCommand(tokens);
+            InputProcessingCommand command = ExtractCommand(ref input);
+
+            Queue<string> tokens = new Queue<string>(input.Split(" ", StringSplitOptions.RemoveEmptyEntries));
 
             Entry entry = null;
             switch (command)
@@ -78,122 +73,18 @@ namespace AliceInventory.Logic
         private InputProcessingCommand ExtractCommand(ref string input)
         {
             InputProcessingCommand command = InputProcessingCommand.SayUnknownCommand;
+
             foreach (var commandRegex in AvailableCommands)
             {
                 if (commandRegex.Value.IsMatch(input))
                 {
                     command = commandRegex.Key;
+                    input = commandRegex.Value.Replace(input, " ");
+                    break;
                 }
             }
-            switch (tokens.Dequeue())
-            {
-                case "привет":
-                case "приветствую":
-                case "здравствуй":
-                case "здравствуйте":
-                case "хай":
-                case "хеллоу":
-                    return InputProcessingCommand.SayHello;
-                
-                case "да":
-                case "конечно":
-                case "несомненно":
-                case "точно":
-                case "именно":
-                case "верно":
-                case "хочу":
-                case "давай":
-                case "подтверждаю":
-                case "подтвердить":
-                    return InputProcessingCommand.Accept;
 
-                case "нет":
-                case "отвали":
-                case "отстань":
-                    return InputProcessingCommand.Decline;
-
-                case "отмена":
-                case "отмени":
-                case "отменяй":
-                case "отменяю":
-                case "отменить":
-                    return InputProcessingCommand.Cancel;
-
-                case "добавь":
-                case "положи":
-                case "засунь":
-                case "помести":
-                case "вмести":
-                case "впихни":
-                case "всунь":
-                case "запихай":
-                case "добавить":
-                case "добавляй":
-                case "прибавить":
-                case "прибавь":
-                case "надбавь":
-                case "накинь":
-                case "присоедини":
-                    return InputProcessingCommand.Add;
-
-                case "удали":
-                case "убери":
-                case "высунь":
-                case "высуни":
-                case "выброси":
-                case "выбрось":
-                case "удалить":
-                case "убрать":
-                case "вытащи":
-                case "вытащить":
-                case "сотри":
-                case "изъять":
-                case "уничтожь":
-                case "стереть":
-                case "стирай":
-                case "вынуть":
-                case "вынь":
-                case "вытаскивать":
-                    return InputProcessingCommand.Delete;
-
-                case "очисти":
-                case "очисть":
-                case "вычисти":
-                    return InputProcessingCommand.Clear;
-
-                case "покажи":
-                case "продемонстрируй":
-                case "расскажи":
-                    return InputProcessingCommand.ReadList;
-
-                case "отправь":
-                case "отправить":
-                case "отправляй":
-                case "вышли":
-                case "пошли":
-                case "выслать":
-                case "послать":
-                    return InputProcessingCommand.SendMail;
-
-                case "помоги":
-                case "помогите":
-                case "помощь":
-                case "хелп":
-                case "спасай":
-                case "спасайте":
-                case "выручай":
-                case "выручайте":
-                    return InputProcessingCommand.RequestHelp;
-
-                case "выход":
-                case "пока":
-                case "хватит":
-                case "прощай":
-                    return InputProcessingCommand.RequestExit;
-
-                default:
-                    return InputProcessingCommand.SayUnknownCommand;
-            }
+            return command;
         }
 
         private Entry ExtractEntry(CultureInfo culture, Queue<string> tokens)
