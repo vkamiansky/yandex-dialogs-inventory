@@ -52,10 +52,10 @@ namespace AliceInventory.Logic
                     break;
 
                 case InputProcessingCommand.SendMail:
-                    Regex mailRegex = new Regex(@"[\w+\.-]+@[\w+\-]+\.\w{2,4}", RegexOptions.Compiled);
-                    Match mailMatch = mailRegex.Match(input.Trim());
+                    Regex mailRegex = new Regex(@"(^|\s)[\w+\.-]+@[\w+\-]+\.\w{2,4}($|\s)", RegexOptions.Compiled);
+                    Match mailMatch = mailRegex.Match(input);
                     if (mailMatch.Success)
-                        data = mailMatch.Value;
+                        data = mailMatch.Value.Trim();
                     else
                         command = InputProcessingCommand.SayIllegalArguments; 
                     break;

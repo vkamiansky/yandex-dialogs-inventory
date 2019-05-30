@@ -20,7 +20,7 @@ namespace AliceInventory.UnitTests
         {
             InputParserService sut = new InputParserService();
             ProcessingCommand parsedCommand = sut.ParseInput(input, CultureInfo.InvariantCulture);
-            
+
             Assert.Equal(InputProcessingCommand.SayHello, parsedCommand.Command);
             Assert.Null(parsedCommand.Data);
         }
@@ -75,6 +75,46 @@ namespace AliceInventory.UnitTests
 
             Assert.Equal(command, parsedCommand.Command);
             Assert.Null(parsedCommand.Data);
+        }
+        
+        [Theory]
+        [InlineData("отправь на testmail@test.ru", "testmail@test.ru")]
+        [InlineData("отправь на почту testmail@test.ru", "testmail@test.ru")]
+        [InlineData("отправь test-mail@test.ru", "test-mail@test.ru")]
+        [InlineData("отправь test.mail@test.ru", "test.mail@test.ru")]
+        [InlineData("отправь test_mail@test.ru", "test_mail@test.ru")]
+        [InlineData("отправь test.mail.test@test.ru", "test.mail.test@test.ru")]
+        [InlineData("отправь testmail@test.test", "testmail@test.test")]
+        [InlineData("отправь TestMail@test.test", "testmail@test.test")]
+        [InlineData("отправь testmail@testdomain.test", "testmail@testdomain.test")]
+        public void CommandParsingRightEmailTest(
+            string input,
+            string email)
+        {
+            InputParserService sut = new InputParserService();
+            ProcessingCommand parsedCommand = sut.ParseInput(input, CultureInfo.InvariantCulture);
+
+            Assert.NotNull(parsedCommand);
+            Assert.NotNull(parsedCommand.Data);
+            Assert.Equal(InputProcessingCommand.SendMail, parsedCommand.Command);
+            Assert.Equal(email, parsedCommand.Data.ToString());
+        }
+        
+        [Theory]
+        [InlineData("отправь @test.ru")]
+        [InlineData("отправь test")]
+        [InlineData("отправь test@@test.ru")]
+        [InlineData("отправь test@test@test.ru")]
+        [InlineData("отправь test@test.")]
+        [InlineData("отправь test@test.a")]
+        public void CommandParsingWrongEmailTest(string input)
+        {
+            InputParserService sut = new InputParserService();
+            ProcessingCommand parsedCommand = sut.ParseInput(input, CultureInfo.InvariantCulture);
+
+            Assert.NotNull(parsedCommand);
+            Assert.Null(parsedCommand.Data);
+            Assert.Equal(InputProcessingCommand.SayIllegalArguments, parsedCommand.Command);
         }
 
         [Theory]
