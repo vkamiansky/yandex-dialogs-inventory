@@ -36,19 +36,9 @@ namespace AliceInventory.Logic
 
         public ProcessingCommand ParseInput(string input, CultureInfo culture)
         {
-            if (string.IsNullOrEmpty(input))
-            {
-                return new ProcessingCommand
-                {
-                    Command = InputProcessingCommand.SayHello,
-                };
-            }
-
-            input = input.ToLower();
+            input = input?.ToLower();
 
             InputProcessingCommand command = ExtractCommand(ref input);
-
-            Queue<string> tokens = new Queue<string>(input.Split(" ", StringSplitOptions.RemoveEmptyEntries));
 
             Entry entry = null;
             switch (command)
@@ -57,7 +47,7 @@ namespace AliceInventory.Logic
                 case InputProcessingCommand.Delete:
                 case InputProcessingCommand.SendMail:
                 case InputProcessingCommand.SayIllegalArguments:
-                    entry = ExtractEntry(culture, tokens);
+                    entry = ExtractEntry(input, culture);
                     if (entry == null)
                         command = InputProcessingCommand.SayIllegalArguments;
                     break;
@@ -74,50 +64,52 @@ namespace AliceInventory.Logic
         {
             InputProcessingCommand command = InputProcessingCommand.SayUnknownCommand;
 
-            foreach (var commandRegex in AvailableCommands)
+            if (string.IsNullOrEmpty(input))
             {
-                if (commandRegex.Value.IsMatch(input))
+                command = InputProcessingCommand.SayHello;
+            }
+            else
+            {
+                foreach (var commandRegex in AvailableCommands)
                 {
-                    command = commandRegex.Key;
-                    input = commandRegex.Value.Replace(input, " ");
+                    if (commandRegex.Value.IsMatch(input))
+                    {
+                        command = commandRegex.Key;
+                        input = commandRegex.Value.Replace(input, " ");
+                        break;
+                    }
+                }
+            }
+            
+            return command;
+        }
+
+        private Entry ExtractEntry(string input, CultureInfo culture)
+        {
+            UnitOfMeasure unitOfMeasure = UnitOfMeasure.Unit;
+            foreach (var availableUnitOfMeasure in AvailableUnitsOfMeasure)
+            {
+                if (availableUnitOfMeasure.Value.IsMatch(input))
+                {
+                    unitOfMeasure = availableUnitOfMeasure.Key;
+                    input = availableUnitOfMeasure.Value.Replace(input, " ");
                     break;
                 }
             }
 
-            return command;
-        }
-
-        private Entry ExtractEntry(CultureInfo culture, Queue<string> tokens)
-        {
-            int tokensCount = (tokens.Count > 3) ? 3 : tokens.Count;
-
-            string name = null;
             double count = 1;
-            bool isCountExist = false;
-            UnitOfMeasure unitOfMeasure = UnitOfMeasure.Unit;
-            bool isUnitOfMeasureExist = false;
-
-            for (int i = 0; i < tokensCount; i++)
+            Regex countRegex = new Regex(@"(^|\s|-)(\d+|)([\.,]|)\d+(\s|$)", RegexOptions.Compiled);
+            Match countMatch = countRegex.Match(input);
+            if (countMatch.Success)
             {
-                string token = tokens.Dequeue();
-
-                if (!isCountExist)
-                {
-                    if (isCountExist = double.TryParse(token, NumberStyles.Any, culture, out count))
-                        continue;
-                    else
-                        count = 1;
-                }
-                if (!isUnitOfMeasureExist)
-                {
-                    if (isUnitOfMeasureExist = TryParseUnitOfMeasure(token, out unitOfMeasure))
-                        continue;
-                }
-                name = token;
+                count = double.Parse(countMatch.Value, culture);
+                input = countRegex.Replace(input, " ");
             }
 
+            string name = input.Trim();
+
             Entry entry = null;
-            if (name != null
+            if (!string.IsNullOrEmpty(name)
                 && count > 0)
             {
                 entry = new Entry
@@ -129,41 +121,6 @@ namespace AliceInventory.Logic
             }
 
             return entry;
-        }
-
-        private bool TryParseUnitOfMeasure(string unitOfMeasure, out UnitOfMeasure result)
-        {
-            switch (unitOfMeasure)
-            {
-                case "кг":
-                case "килограмм":
-                case "килограмма":
-                case "килограммов":
-                    result = UnitOfMeasure.Kg;
-                    return true;
-
-                case "штука":
-                case "штуки":
-                case "штук":
-                case "штуку":
-                case "штуковин":
-                case "единиц":
-                case "единица":
-                case "единицу":
-                case "единицы":
-                    result = UnitOfMeasure.Unit;
-                    return true;
-
-                case "литр":
-                case "литра":
-                case "литров":
-                    result = UnitOfMeasure.L;
-                    return true;
-
-                default:
-                    result = UnitOfMeasure.Unit;
-                    return false;
-            }
         }
     }
 }
