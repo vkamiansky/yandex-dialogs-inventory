@@ -11,5 +11,7 @@ namespace AliceInventory.Logic
         string MailingAccountPassword { get; }
         string MailingSmtpHost { get; }
         string MailingSmtpPort { get; }
+        bool IsApplicationConfigured { get; }
     }
+
 }
