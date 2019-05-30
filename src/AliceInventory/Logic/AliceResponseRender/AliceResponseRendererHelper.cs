@@ -208,20 +208,22 @@ namespace AliceInventory.Logic.AliceResponseRender
 
         static AliceResponseRendererHelper()
         {
-            responseTemplates = new Dictionary<ResponseFormat, ResponseTemplate>() ;
-            responseTemplates[ResponseFormat.GreetingRequested] = GreetingRequestTemplate;
-            responseTemplates[ResponseFormat.Added] = AddedTemplate;
-            responseTemplates[ResponseFormat.AddCanceled] = AddCanceledTemplate;
-            responseTemplates[ResponseFormat.Deleted] = DeletedTemplate;
-            responseTemplates[ResponseFormat.DeleteCanceled] = DeleteCanceledTemplate;
-            responseTemplates[ResponseFormat.Cleared] = ClearedTemplate;
-            responseTemplates[ResponseFormat.ClearRequested] = ClearRequestedTemplate;
-            responseTemplates[ResponseFormat.Declined] = DeclinedTemplate;
-            responseTemplates[ResponseFormat.ExitRequested] = ExitRequestTemplate;
-            responseTemplates[ResponseFormat.HelpRequested] = HelpRequestTemplate;
-            responseTemplates[ResponseFormat.ListRead] = ListReadTemplate;
-            responseTemplates[ResponseFormat.EmptyListRead] =EmptyListReadTemplate;
-            responseTemplates[ResponseFormat.MailSent] =  MailSentTemplate;
+            responseTemplates = new Dictionary<ResponseFormat, ResponseTemplate>
+            {
+                [ResponseFormat.GreetingRequested] = GreetingRequestTemplate,
+                [ResponseFormat.Added] = AddedTemplate,
+                [ResponseFormat.AddCanceled] = AddCanceledTemplate,
+                [ResponseFormat.Deleted] = DeletedTemplate,
+                [ResponseFormat.DeleteCanceled] = DeleteCanceledTemplate,
+                [ResponseFormat.Cleared] = ClearedTemplate,
+                [ResponseFormat.ClearRequested] = ClearRequestedTemplate,
+                [ResponseFormat.Declined] = DeclinedTemplate,
+                [ResponseFormat.ExitRequested] = ExitRequestTemplate,
+                [ResponseFormat.HelpRequested] = HelpRequestTemplate,
+                [ResponseFormat.ListRead] = ListReadTemplate,
+                [ResponseFormat.EmptyListRead] = EmptyListReadTemplate,
+                [ResponseFormat.MailSent] = MailSentTemplate
+            };
         }
 
         public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session)

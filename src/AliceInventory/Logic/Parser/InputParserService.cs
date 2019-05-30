@@ -104,18 +104,20 @@ namespace AliceInventory.Logic.Parser
 
         static InputParserService()
         {
-            CommandDictionary = new Dictionary<InputProcessingCommand, CommandTemplate[]>();
-            CommandDictionary[InputProcessingCommand.Add] = AddRegexTemplates;
-            CommandDictionary[InputProcessingCommand.Delete] = DeleteRegexTemplates;
-            CommandDictionary[InputProcessingCommand.Cancel] = CancelRegexTemplates;
-            CommandDictionary[InputProcessingCommand.Accept] = AcceptRegexTemplates;
-            CommandDictionary[InputProcessingCommand.Decline] = DeclineRegexTemplates;
-            CommandDictionary[InputProcessingCommand.ReadList] = ReadListRegexTemplates;
-            CommandDictionary[InputProcessingCommand.Clear] = ClearRegexTemplates;
-            CommandDictionary[InputProcessingCommand.SendMail] = SendMailRegexTemplates;
-            CommandDictionary[InputProcessingCommand.SayHello] = SayHelloRegexTemplates;
-            CommandDictionary[InputProcessingCommand.RequestHelp] = RequestHelpRegexTemplates;
-            CommandDictionary[InputProcessingCommand.RequestExit] = RequestExitRegexTemplates;
+            CommandDictionary = new Dictionary<InputProcessingCommand, CommandTemplate[]>
+            {
+                [InputProcessingCommand.Add] = AddRegexTemplates,
+                [InputProcessingCommand.Delete] = DeleteRegexTemplates,
+                [InputProcessingCommand.Cancel] = CancelRegexTemplates,
+                [InputProcessingCommand.Accept] = AcceptRegexTemplates,
+                [InputProcessingCommand.Decline] = DeclineRegexTemplates,
+                [InputProcessingCommand.ReadList] = ReadListRegexTemplates,
+                [InputProcessingCommand.Clear] = ClearRegexTemplates,
+                [InputProcessingCommand.SendMail] = SendMailRegexTemplates,
+                [InputProcessingCommand.SayHello] = SayHelloRegexTemplates,
+                [InputProcessingCommand.RequestHelp] = RequestHelpRegexTemplates,
+                [InputProcessingCommand.RequestExit] = RequestExitRegexTemplates
+            };
         }
 
         public ProcessingCommand ParseInput(string input, CultureInfo cultureInfo)

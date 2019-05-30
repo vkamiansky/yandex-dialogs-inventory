@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using Xunit;
 using AliceInventory.Logic;
+using AliceInventory.Logic.Parser;
 
 namespace AliceInventory.UnitTests
 {
