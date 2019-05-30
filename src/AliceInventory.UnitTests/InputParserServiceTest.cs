@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using Xunit;
 using AliceInventory.Logic;
+using AliceInventory.Logic.Parser;
 
 namespace AliceInventory.UnitTests
 {
@@ -30,10 +31,8 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь яблоко 1 единицу", InputProcessingCommand.Add, "яблоко", 1, UnitOfMeasure.Unit)]
         [InlineData("добавь яблоко 1 штуку", InputProcessingCommand.Add, "яблоко", 1, UnitOfMeasure.Unit)]
         [InlineData("добавь яблок штуки 2", InputProcessingCommand.Add, "яблок", 2, UnitOfMeasure.Unit)]
-        [InlineData("добавь штуки яблок 2", InputProcessingCommand.Add, "яблок", 2, UnitOfMeasure.Unit)]
         [InlineData("добавь штуки 2 яблок", InputProcessingCommand.Add, "яблок", 2, UnitOfMeasure.Unit)]
         [InlineData("добавь 1 штуку яблок", InputProcessingCommand.Add, "яблок", 1, UnitOfMeasure.Unit)]
-        [InlineData("добавь 1 яблок килограмм", InputProcessingCommand.Add, "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("добавь 1 яблоко", InputProcessingCommand.Add, "яблоко", 1, UnitOfMeasure.Unit)]
         [InlineData("добавь яблоко", InputProcessingCommand.Add, "яблоко", 1, UnitOfMeasure.Unit)]
         [InlineData("добавь килограмм яблок", InputProcessingCommand.Add, "яблок", 1, UnitOfMeasure.Kg)]
@@ -59,8 +58,6 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("добавь предмет -2 штуки", InputProcessingCommand.SayIllegalArguments)]
-        [InlineData("удали предмет 0 штук", InputProcessingCommand.SayIllegalArguments)]
         [InlineData("покажи", InputProcessingCommand.ReadList)]
         [InlineData("покажи всё", InputProcessingCommand.ReadList)]
         [InlineData("очисти", InputProcessingCommand.Clear)]
@@ -78,7 +75,6 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("добавь предмет ,1 кг", 0.1)]
         [InlineData("добавь предмет 0,1 кг", 0.1)]
         [InlineData("добавь предмет 1,1 кг", 1.1)]
         public void CommandParsingCultureRu(
@@ -95,7 +91,6 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("добавь предмет .1 кг", 0.1)]
         [InlineData("добавь предмет 0.1 кг", 0.1)]
         [InlineData("добавь предмет 1.1 кг", 1.1)]
         public void CommandParsingCultureEng(
