@@ -8,6 +8,7 @@ namespace AliceInventory.Logic
     public class InputParserService : IInputParserService
     {
         private Dictionary<InputProcessingCommand, Regex> AvailableCommands { get; }
+        private Dictionary<UnitOfMeasure, Regex> AvailableUnitsOfMeasure { get; }
 
         public InputParserService()
         {
@@ -24,6 +25,12 @@ namespace AliceInventory.Logic
                 [InputProcessingCommand.SendMail] = new Regex(@"отправ(ить|(ляй|ь))(те|)|(вы|по)(слать|шли)", RegexOptions.Compiled),
                 [InputProcessingCommand.RequestHelp] = new Regex(@"что ты (можешь|умеешь)|помо(гите|ги|щь)|(спасай|спаси)(те|)|(выручай|выручи)(те|)|хелп", RegexOptions.Compiled),
                 [InputProcessingCommand.RequestExit] = new Regex(@"выход|пока|хватит|прощай", RegexOptions.Compiled),
+            };
+            AvailableUnitsOfMeasure = new Dictionary<UnitOfMeasure, Regex>()
+            {
+                [UnitOfMeasure.Unit] = new Regex(@"(^|\s)единиц(а|у|ы|)($|\s)|(^|\s)шту(чек|к(овин|и|а|у|))($|\s)", RegexOptions.Compiled),
+                [UnitOfMeasure.Kg] = new Regex(@"(^|\s)килограмм(ов|а|)($|\s)|(^|\s)кг($|\s)", RegexOptions.Compiled),
+                [UnitOfMeasure.L] = new Regex(@"(^|\s)литр(ов|а|)($|\s)|(^|\s)л($|\s)", RegexOptions.Compiled),
             };
         }
 
@@ -68,8 +75,16 @@ namespace AliceInventory.Logic
             };
         }
 
-        private InputProcessingCommand ExtractCommand(Queue<string> tokens)
+        private InputProcessingCommand ExtractCommand(ref string input)
         {
+            InputProcessingCommand command = InputProcessingCommand.SayUnknownCommand;
+            foreach (var commandRegex in AvailableCommands)
+            {
+                if (commandRegex.Value.IsMatch(input))
+                {
+                    command = commandRegex.Key;
+                }
+            }
             switch (tokens.Dequeue())
             {
                 case "привет":
