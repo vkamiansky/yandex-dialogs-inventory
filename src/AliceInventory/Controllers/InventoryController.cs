@@ -40,10 +40,8 @@ namespace AliceInventory.Controllers
         [HttpGet]
         public async Task<string> Get()
         {
-            string configSuccessAnswer = await this.ConfigurationService.GetIsConfigured() 
-                            ? "Application is configured, good job!" 
-                            : "Application is not configured, sorry=("; 
-            return "Server is running.\n" + configSuccessAnswer;
+            string configSuccessAnswer = await this.ConfigurationService.GetIsConfigured();  
+            return "Server is working...\n" + configSuccessAnswer;
         }
 
         // HEAD api/inventory
