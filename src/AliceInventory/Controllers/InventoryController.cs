@@ -41,7 +41,10 @@ namespace AliceInventory.Controllers
         public async Task<string> Get()
         {
             string configSuccessAnswer = await this.ConfigurationService.GetIsConfigured();  
-            return "Server is working...\n" + configSuccessAnswer;
+            return "Server is working...\n"
+                + (string.IsNullOrWhiteSpace(configSuccessAnswer)
+                    ? "Configuration OK!"
+                    : "Not configured.");
         }
 
         // HEAD api/inventory
