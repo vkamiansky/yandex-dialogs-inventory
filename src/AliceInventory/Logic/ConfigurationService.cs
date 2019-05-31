@@ -40,7 +40,7 @@ namespace AliceInventory.Logic
         public async Task<string> GetIsConfigured()
         {
             if (_VaultClient == null)
-                return "NullReferenceException";
+                return _VaultClientError.Message;
             try
             {
                 Secret<SecretData> smtpAddress = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_address");
