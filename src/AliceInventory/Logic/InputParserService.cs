@@ -9,6 +9,7 @@ namespace AliceInventory.Logic
     {
         private Dictionary<InputProcessingCommand, Regex> AvailableCommands { get; }
         private Dictionary<UnitOfMeasure, Regex> AvailableUnitsOfMeasure { get; }
+        private Regex AvailableCountRegex { get; }
 
         public InputParserService()
         {
@@ -32,6 +33,7 @@ namespace AliceInventory.Logic
                 [UnitOfMeasure.Kg] = new Regex(@"(^|\s)(килограмм(ов|а|)|кг)($|\s)", RegexOptions.Compiled),
                 [UnitOfMeasure.L] = new Regex(@"(^|\s)(литр(ов|а|)|л)($|\s)", RegexOptions.Compiled),
             };
+            AvailableCountRegex = new Regex(@"(^|\s)-?(\d+|)([\.,]|)\d+(\s|$)", RegexOptions.Compiled);
         }
 
         public ProcessingCommand ParseInput(string input, CultureInfo culture)
