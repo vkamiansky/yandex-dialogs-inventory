@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using Xunit;
 using AliceInventory.Logic;
@@ -228,6 +229,44 @@ namespace AliceInventory.UnitTests
             var data = parsedCommand.Data as Entry;
 
             Assert.Equal(entryCount, data?.Count);
+        }
+
+        [Fact]
+        public void CommandParsingSpeedTest()
+        {
+            InputParserService sut = new InputParserService();
+
+            string[] inputs = new string[]
+            {
+                "добавь яблоко 1 килограмм",
+                "добавь яблоко 1 единицу",
+                "добавь яблоко 1 единицу",
+                "добавь яблок штуки 2",
+                "добавь 1 штуку яблок",
+                "добавь тестовое 1 штуку яблоко",
+                "отмени",
+                "очисти инвентарь",
+                "помощь",
+                "что ты умеешь",
+                "погода спб",
+                "добавь предмет -2 штуки",
+                "удали предмет 0 штук",
+            };
+
+            long totalTimeMs = 0;
+            Stopwatch stopwatch = new Stopwatch();
+            foreach (string input in inputs)
+            {
+                stopwatch.Start();
+                ProcessingCommand parsedCommand = sut.ParseInput(input, CultureInfo.CurrentCulture);
+                stopwatch.Stop();
+                totalTimeMs += stopwatch.ElapsedMilliseconds;
+
+                stopwatch.Reset();
+            }
+            double averageTimeMs = (double)totalTimeMs / inputs.Length;
+
+            Assert.InRange(averageTimeMs, 0, inputs.Length * 2);
         }
     }
 }
