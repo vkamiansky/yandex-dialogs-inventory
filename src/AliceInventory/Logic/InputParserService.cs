@@ -100,17 +100,7 @@ namespace AliceInventory.Logic
             double count = ExtractCount(ref input, culture) ?? 1;
             string name = ExtractName(ref input);
 
-            Entry entry = null;
-            if (!string.IsNullOrEmpty(name)
-                && count > 0)
-            {
-                entry = new Entry
-                {
-                    Name = name,
-                    Count = count,
-                    Unit = unitOfMeasure
-                };
-            }
+            Entry entry = CreateEntry(name, count, unitOfMeasure);
 
             return entry;
         }
@@ -149,6 +139,24 @@ namespace AliceInventory.Logic
         private string ExtractName(ref string input)
         {
             return input.Trim();
+        }
+
+        private Entry CreateEntry(string name, double count, UnitOfMeasure unitOfMeasure)
+        {
+            Entry entry = null;
+
+            if (!string.IsNullOrEmpty(name)
+                && count > 0)
+            {
+                entry = new Entry
+                {
+                    Name = name,
+                    Count = count,
+                    Unit = unitOfMeasure
+                };
+            }
+
+            return entry;
         }
     }
 }
