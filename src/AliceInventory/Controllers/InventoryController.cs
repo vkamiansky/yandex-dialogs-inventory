@@ -24,10 +24,12 @@ namespace AliceInventory.Controllers
             UseStartup<AliceInventory.Startup>();
 
         public Logic.IInventoryDialogService InventoryDialogService { set; get; }
+        public Logic.AliceResponseRender.IAliceResponseRender _renderer { set; get; }
 
-        public InventoryController(Logic.IInventoryDialogService inventoryDialogService)
+        public InventoryController(Logic.IInventoryDialogService inventoryDialogService, Logic.AliceResponseRender.IAliceResponseRender renderer)
         {
             this.InventoryDialogService = inventoryDialogService;
+            this._renderer = renderer;
         }
 
         // GET api/inventory
@@ -62,7 +64,7 @@ namespace AliceInventory.Controllers
                 : request.Request.Command;
 
             var answer = InventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
-            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session);
+            return _renderer.CreateAliceResponse(answer, request.Session);
         }
     }
 }
