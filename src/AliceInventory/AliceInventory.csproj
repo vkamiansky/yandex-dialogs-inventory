@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="newtonsoft.json" Version="12.0.1" />
+    <PackageReference Include="VaultSharp" Version="0.11.1002" />
   </ItemGroup>
 
 </Project>

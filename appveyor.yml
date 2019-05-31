@@ -7,6 +7,8 @@ environment:
     secure: Q1RiZsWAMyXDY9VF6erhkg==
   DOCKER_RESTART_PASS:
     secure: RgakURjBhPGLXPHCnYOK+rgef4IwdmyONEt56FnUFzQ=
+  SECRET_TOKEN:
+    secure: qgoI0YFEZCz4eO9+7MJxvQ==
 
 image: Ubuntu
 
@@ -36,7 +38,7 @@ deploy_script:
 
         docker push vkamiansky/aliceskills:aliceinventory
 
-        echo "$env:DOCKER_RESTART_PASS" | nc -q 0 84.201.130.31 5003
+        echo "$env:DOCKER_RESTART_PASS;$env:SECRET_TOKEN" | nc -q 0 84.201.130.31 5003
 
         Write-Host "Success"
     }

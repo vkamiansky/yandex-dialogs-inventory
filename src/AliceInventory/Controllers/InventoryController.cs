@@ -5,11 +5,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AliceInventory.Logic.AliceResponseRender;
+using AliceInventory.Logic;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace AliceInventory.Controllers
 {
@@ -18,33 +21,33 @@ namespace AliceInventory.Controllers
     public class InventoryController : ControllerBase
     {
         static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
-
+        
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args).
             UseStartup<AliceInventory.Startup>();
 
         public Logic.IInventoryDialogService InventoryDialogService { set; get; }
+        public Logic.IConfigurationService ConfigurationService { set; get; }
         public Logic.AliceResponseRender.IAliceResponseRender _renderer { set; get; }
 
-        public InventoryController(Logic.IInventoryDialogService inventoryDialogService, Logic.AliceResponseRender.IAliceResponseRender renderer)
+        public InventoryController(
+            Logic.IInventoryDialogService inventoryDialogService,
+            Logic.IConfigurationService configurationService,
+            Logic.AliceResponseRender.IAliceResponseRender renderer)
         {
             this.InventoryDialogService = inventoryDialogService;
+            this.ConfigurationService = configurationService;
             this._renderer = renderer;
         }
 
         // GET api/inventory
         [HttpGet]
-        public string Get()
+        public async Task<string> Get()
         {
-            var vars = Environment.GetEnvironmentVariables();
-
-            string result = " --Vars-- \n";
-            foreach (var key in vars.Keys.Cast<string>())
-            {
-                result += key + ": " + Environment.GetEnvironmentVariable(key) + "\n";
-            }
-
-            return $"Server is working...\n{result}";
+            string configSuccessAnswer = await this.ConfigurationService.GetIsConfigured() 
+                            ? "Application is configured, good job!" 
+                            : "Application is not configured, sorry=("; 
+            return "Server is running.\n" + configSuccessAnswer;
         }
 
         // HEAD api/inventory
