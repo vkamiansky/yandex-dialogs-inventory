@@ -51,11 +51,11 @@ namespace AliceInventory.Logic
 
                 var configValues = new[] { smtpAddress, smtpPort, emailLogin, emailPassword };
                 var result = configValues.Any(x => !x.Data.Data.ContainsKey("CURRENT"));
-                return _VaultClientError.Message;
+                return result ? "Vault value empty" : string.Empty;
             }
             catch (Exception e)
             {
-                return new String(e.Message + "\n" + _VaultClientError?.Message ?? "");
+                return new String(e.Message + "\n" + _VaultClientError?.Message ?? string.Empty);
             }
         }
     }
