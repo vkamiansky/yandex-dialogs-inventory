@@ -118,120 +118,120 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="HelpButton" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ReadListButton" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ExitButton" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="CancelButton" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="YesButton" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="NoButton" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="GreetingRequested" xml:space="preserve">
-    <value>Это приветствие из resx файла!</value>
+    <value>Здравствуй, я рюкзак! Добавь в меня 5 яблок, а потом ещё 6. Почему бы ещё и немного груш не положить? Собери свой рюкзак и узнай "Что в итоге?" насчиталось. Так я работаю :)\nНо ты всегда можешь сказать Помощь</value>
   </data>
   <data name="Added" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Added1" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Added2" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AddCanceled" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AddCanceled1" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AddCanceled2" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AddCanceled3" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Deleted" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Deleted1" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DeleteCanceled" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DeleteCanceled1" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Cleared" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ClearRequested" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ClearRequested1" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ClearRequested2" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Declined" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Declined1" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Declined2" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ExitRequested" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ExitRequested1" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ExitRequested2" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="HelpRequested" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ListRead" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EmptyListRead" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EmptyListRead1" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EmptyListRead2" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="MailSent" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="MailSent1" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="MailSent2" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Error" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Error1" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Error2" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
 </root>
