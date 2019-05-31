@@ -42,9 +42,13 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь тестовое яблоко 1 штуки", InputProcessingCommand.Add, "тестовое яблоко", 1, UnitOfMeasure.Unit)]
         [InlineData("добавь 1 штуку тестовое яблоко", InputProcessingCommand.Add, "тестовое яблоко", 1, UnitOfMeasure.Unit)]
         [InlineData("добавь тестовое 1 штуку яблоко", InputProcessingCommand.Add, "тестовое яблоко", 1, UnitOfMeasure.Unit)]
+        [InlineData("яблоки 2 килограмма", InputProcessingCommand.Add, "яблоки", 2, UnitOfMeasure.Kg)]
         [InlineData("Прибавь 3 единицы яблок", InputProcessingCommand.Add, "яблок", 3, UnitOfMeasure.Unit)]
+        [InlineData("4 литра яблок", InputProcessingCommand.Add, "яблок", 4, UnitOfMeasure.L)]
         [InlineData("Плюс 5 яблок", InputProcessingCommand.Add, "яблок", 5, UnitOfMeasure.Unit)]
+        [InlineData("6 яблок", InputProcessingCommand.Add, "яблок", 6, UnitOfMeasure.Unit)]
         [InlineData("засунь килограмм яблок", InputProcessingCommand.Add, "яблок", 1, UnitOfMeasure.Kg)]
+        [InlineData("Килограмм яблок", InputProcessingCommand.Add, "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("закинь яблоко", InputProcessingCommand.Add, "яблоко", 1, UnitOfMeasure.Unit)]
         [InlineData("удали яблоко 1 килограмм", InputProcessingCommand.Delete, "яблоко", 1, UnitOfMeasure.Kg)]
         public void CommandParsingNotNullEntryTest(

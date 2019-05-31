@@ -53,6 +53,23 @@ namespace AliceInventory.Logic
                         command = InputProcessingCommand.SayIllegalArguments;
                     break;
 
+                case InputProcessingCommand.SayUnknownCommand:
+                    UnitOfMeasure? unitOfMeasureNull = ExtractUnitOfMeasure(ref input);
+                    double? countNull = ExtractCount(ref input, culture);
+                    string name = ExtractName(ref input);
+
+                    bool isCommandAdd = !(unitOfMeasureNull == null && countNull == null);
+                    if (isCommandAdd)
+                    {
+                        UnitOfMeasure unitOfMeasure = unitOfMeasureNull ?? UnitOfMeasure.Unit;
+                        double count = countNull ?? 1;
+
+                        data = CreateEntry(name, count, unitOfMeasure);
+                        if (data != null)
+                            command = InputProcessingCommand.Add;
+                    }
+                    break;
+
                 case InputProcessingCommand.SendMail:
                     Regex mailRegex = new Regex(@"(^|\s)[\w+\.-]+@[\w+\-]+\.\w{2,4}($|\s)", RegexOptions.Compiled);
                     Match mailMatch = mailRegex.Match(input);
