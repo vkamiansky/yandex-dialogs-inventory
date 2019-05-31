@@ -71,13 +71,27 @@ namespace AliceInventory.Logic
                     break;
 
                 case InputProcessingCommand.Add:
-                    resultType = InputProcessingResult.Added;
-                    storage.Add(userId, logicItem.ToData());
+                    if (logicItem != null && logicItem.Count > 0)
+                    {
+                        resultType = InputProcessingResult.Added;
+                        storage.Add(userId, logicItem.ToData());
+                    }
+                    else
+                    {
+                        resultType = InputProcessingResult.Error;
+                    }
                     break;
 
                 case InputProcessingCommand.Delete:
-                    resultType = InputProcessingResult.Deleted;
-                    storage.Delete(userId, logicItem.ToData());
+                    if (logicItem != null && logicItem.Count > 0)
+                    {
+                        resultType = InputProcessingResult.Deleted;
+                        storage.Delete(userId, logicItem.ToData());
+                    }
+                    else
+                    {
+                        resultType = InputProcessingResult.Error;
+                    }
                     break;
 
                 case InputProcessingCommand.Clear:
@@ -107,10 +121,6 @@ namespace AliceInventory.Logic
                 case InputProcessingCommand.SayUnknownCommand:
                     resultType = InputProcessingResult.Error;
                     resultData = parsedCommand.Command;
-                    break;
-
-                case InputProcessingCommand.SayIllegalArguments:
-                    resultType = InputProcessingResult.Error;
                     break;
 
                 default:
