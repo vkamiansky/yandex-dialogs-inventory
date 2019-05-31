@@ -29,7 +29,7 @@ namespace AliceInventory.Logic
                 var vaultClientSettings = new VaultClientSettings($"http://{secretIp}:{secretPort}", authMethod);
                 _VaultClient = new VaultClient(vaultClientSettings);
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }
