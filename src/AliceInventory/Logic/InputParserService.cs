@@ -96,8 +96,8 @@ namespace AliceInventory.Logic
 
         private Entry ExtractEntry(string input, CultureInfo culture)
         {
-            UnitOfMeasure unitOfMeasure = ExtractUnitOfMeasure(ref input);
-            double count = ExtractCount(ref input, culture);
+            UnitOfMeasure unitOfMeasure = ExtractUnitOfMeasure(ref input) ?? UnitOfMeasure.Unit;
+            double count = ExtractCount(ref input, culture) ?? 1;
             string name = ExtractName(ref input);
 
             Entry entry = null;
@@ -115,9 +115,9 @@ namespace AliceInventory.Logic
             return entry;
         }
 
-        private UnitOfMeasure ExtractUnitOfMeasure(ref string input)
+        private UnitOfMeasure? ExtractUnitOfMeasure(ref string input)
         {
-            UnitOfMeasure unitOfMeasure = UnitOfMeasure.Unit;
+            UnitOfMeasure? unitOfMeasure = null;
 
             foreach (var availableUnitOfMeasure in AvailableUnitsOfMeasure)
             {
@@ -132,9 +132,9 @@ namespace AliceInventory.Logic
             return unitOfMeasure;
         }
 
-        private double ExtractCount(ref string input, CultureInfo culture)
+        private double? ExtractCount(ref string input, CultureInfo culture)
         {
-            double count = 1;
+            double? count = null;
             Match countMatch = AvailableCountRegex.Match(input);
 
             if (countMatch.Success)
