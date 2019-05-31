@@ -126,6 +126,29 @@ namespace AliceInventory.UnitTests
             Assert.Equal(command, parsedCommand.Command);
             Assert.Null(parsedCommand.Data);
         }
+
+        [Theory]
+        [InlineData("удали яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
+        [InlineData("убери 2 килограмм яблок", "яблок", 2, UnitOfMeasure.Kg)]
+        [InlineData("вытащи 3 яблока", "яблока", 3, UnitOfMeasure.Unit)]
+        [InlineData("сотри килограмм яблок", "яблок", 1, UnitOfMeasure.Kg)]
+        [InlineData("высуни яблоко", "яблоко", 1, UnitOfMeasure.Unit)]
+        [InlineData("минус яблоко", "яблоко", 1, UnitOfMeasure.Unit)]
+        public void DeleteCommandParsingTest(
+            string input,
+            string entryName,
+            double entryCount,
+            UnitOfMeasure entryUnitOfMeasure)
+        {
+            InputParserService sut = new InputParserService();
+            ProcessingCommand parsedCommand = sut.ParseInput(input, CultureInfo.CurrentCulture);
+
+            var data = parsedCommand.Data as Entry;
+
+            Assert.Equal(entryName, data?.Name);
+            Assert.Equal(entryCount, data?.Count);
+            Assert.Equal(entryUnitOfMeasure, data?.Unit);
+        }
         
         [Theory]
         [InlineData("отправь на testmail@test.ru", "testmail@test.ru")]
