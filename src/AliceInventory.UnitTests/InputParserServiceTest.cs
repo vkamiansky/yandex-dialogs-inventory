@@ -55,6 +55,26 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
+        [InlineData("добавь 5 ак47", "ак47", 5, UnitOfMeasure.Unit)]
+        [InlineData("добавь ак-47 3 штуки", "ак-47", 3, UnitOfMeasure.Unit)]
+        [InlineData("ак 47 3,5 килограмма", "ак 47", 3.5, UnitOfMeasure.Kg)]
+        [InlineData("добавь молоко 1 литр 5 штук", "молоко 1 литр", 5, UnitOfMeasure.Unit)]
+        [InlineData("ну давай добавим 5 кг яблок", "яблок", 1, UnitOfMeasure.Kg)]
+        [InlineData("ещё 4 яблока", "яблока", 4, UnitOfMeasure.Unit)]
+        public void SpecificAddCommandParsing(string input, string entryName, double entryCount, UnitOfMeasure entryUnitOfMeasure)
+        {
+            ProcessingCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+
+            Assert.Equal(InputProcessingCommand.Add, parsedCommand.Command);
+
+            var data = parsedCommand.Data as Entry;
+
+            Assert.Equal(entryName, data?.Name);
+            Assert.Equal(entryCount, data?.Count);
+            Assert.Equal(entryUnitOfMeasure, data?.Unit);
+        }
+
+        [Theory]
         [InlineData("удали яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("убери 2 килограмм яблок", "яблок", 2, UnitOfMeasure.Kg)]
         [InlineData("вытащи 3 яблока", "яблока", 3, UnitOfMeasure.Unit)]
@@ -88,6 +108,7 @@ namespace AliceInventory.UnitTests
         [InlineData("верно", InputProcessingCommand.Accept)]
         [InlineData("хочу", InputProcessingCommand.Accept)]
         [InlineData("давай", InputProcessingCommand.Accept)]
+        [InlineData("ну давай", InputProcessingCommand.Accept)]
         [InlineData("нет", InputProcessingCommand.Decline)]
         [InlineData("не надо", InputProcessingCommand.Decline)]
         [InlineData("отмена", InputProcessingCommand.Cancel)]
