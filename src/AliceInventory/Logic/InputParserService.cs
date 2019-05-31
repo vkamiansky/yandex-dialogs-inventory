@@ -96,27 +96,9 @@ namespace AliceInventory.Logic
 
         private Entry ExtractEntry(string input, CultureInfo culture)
         {
-            UnitOfMeasure unitOfMeasure = UnitOfMeasure.Unit;
-            foreach (var availableUnitOfMeasure in AvailableUnitsOfMeasure)
-            {
-                if (availableUnitOfMeasure.Value.IsMatch(input))
-                {
-                    unitOfMeasure = availableUnitOfMeasure.Key;
-                    input = availableUnitOfMeasure.Value.Replace(input, " ");
-                    break;
-                }
-            }
-
-            double count = 1;
-            Regex countRegex = new Regex(@"(^|\s|-)(\d+|)([\.,]|)\d+(\s|$)", RegexOptions.Compiled);
-            Match countMatch = countRegex.Match(input);
-            if (countMatch.Success)
-            {
-                count = double.Parse(countMatch.Value, culture);
-                input = countRegex.Replace(input, " ");
-            }
-
-            string name = input.Trim();
+            UnitOfMeasure unitOfMeasure = ExtractUnitOfMeasure(ref input);
+            double count = ExtractCount(ref input, culture);
+            string name = ExtractName(ref input);
 
             Entry entry = null;
             if (!string.IsNullOrEmpty(name)
@@ -131,6 +113,42 @@ namespace AliceInventory.Logic
             }
 
             return entry;
+        }
+
+        private UnitOfMeasure ExtractUnitOfMeasure(ref string input)
+        {
+            UnitOfMeasure unitOfMeasure = UnitOfMeasure.Unit;
+
+            foreach (var availableUnitOfMeasure in AvailableUnitsOfMeasure)
+            {
+                if (availableUnitOfMeasure.Value.IsMatch(input))
+                {
+                    unitOfMeasure = availableUnitOfMeasure.Key;
+                    input = availableUnitOfMeasure.Value.Replace(input, " ");
+                    break;
+                }
+            }
+
+            return unitOfMeasure;
+        }
+
+        private double ExtractCount(ref string input, CultureInfo culture)
+        {
+            double count = 1;
+            Match countMatch = AvailableCountRegex.Match(input);
+
+            if (countMatch.Success)
+            {
+                count = double.Parse(countMatch.Value, culture);
+                input = AvailableCountRegex.Replace(input, " ");
+            }
+
+            return count;
+        }
+
+        private string ExtractName(ref string input)
+        {
+            return input.Trim();
         }
     }
 }
