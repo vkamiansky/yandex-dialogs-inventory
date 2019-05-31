@@ -59,7 +59,7 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь ак-47 3 штуки", "ак-47", 3, UnitOfMeasure.Unit)]
         [InlineData("ак 47 3,5 килограмма", "ак 47", 3.5, UnitOfMeasure.Kg)]
         [InlineData("добавь молоко 1 литр 5 штук", "молоко 1 литр", 5, UnitOfMeasure.Unit)]
-        [InlineData("ну давай добавим 5 кг яблок", "яблок", 1, UnitOfMeasure.Kg)]
+        [InlineData("ну давай добавим 5 кг яблок", "яблок", 5, UnitOfMeasure.Kg)]
         [InlineData("ещё 4 яблока", "яблока", 4, UnitOfMeasure.Unit)]
         public void SpecificAddCommandParsing(string input, string entryName, double entryCount, UnitOfMeasure entryUnitOfMeasure)
         {
