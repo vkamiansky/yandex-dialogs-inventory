@@ -26,30 +26,21 @@ namespace AliceInventory.Controllers
             UseStartup<AliceInventory.Startup>();
 
         public Logic.IInventoryDialogService InventoryDialogService { set; get; }
+        public Logic.IConfigurationService ConfigurationService { set; get; }
 
-        public InventoryController(Logic.IInventoryDialogService inventoryDialogService)
+        public InventoryController(
+            Logic.IInventoryDialogService inventoryDialogService,
+            Logic.IConfigurationService configurationService)
         {
             this.InventoryDialogService = inventoryDialogService;
+            this.ConfigurationService = configurationService;
         }
 
         // GET api/inventory
         [HttpGet]
         public async Task<string> Get()
         {
-            // var vars = Environment.GetEnvironmentVariables();
-            // string result = " --Vars-- \n";
-            // foreach (var key in vars.Keys.Cast<string>())
-            // {
-            //    result += key + ": " + Environment.GetEnvironmentVariable(key) + "\n";
-            // }
-            //return $"Server is working...\n{result}";
-
-
-
-            // return "Server is working\n" + String.Join(";",kv2Secret.Data.Data.Values);
-            //сконфигурированы ли переменные окружения (true|false)? 
-
-            string configSuccessAnswer = AliceInventory.Logic.IConfigurationService.IsApplicationConfigured 
+            string configSuccessAnswer = await this.ConfigurationService.GetIsConfigured() 
                             ? "Application is configured, good job!" 
                             : "Application is not configured, sorry=("; 
             return "Server is running.\n" + configSuccessAnswer;

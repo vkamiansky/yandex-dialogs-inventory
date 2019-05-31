@@ -19,39 +19,42 @@ namespace AliceInventory.Logic
 
         public ConfigurationService()
         {
-            var vars = Environment.GetEnvironmentVariables();
-            KeyValuePair<string, string> vaultProperties = new KeyValuePair<string, string>("","");
-            foreach (var key in vars.Keys.Cast<string>())
+            try
             {
-               vaultProperties = KeyValuePair.Create(key, Environment.GetEnvironmentVariable(key));
-            }
+                string secretToken = Environment.GetEnvironmentVariable("SECRET_TOKEN");
+                string secretIp = Environment.GetEnvironmentVariable("SECRET_IP");
+                string secretPort = Environment.GetEnvironmentVariable("SECRET_PORT");
 
-            this.ConfigureVault("secret", "http://172.18.0.2:8200", "mail");
-            if(vaultProperties.Key == "VAULT_VAR" && vaultProperties.Value == "VAULT_CONF")
-            {
-                Configured = true;
+                IAuthMethodInfo authMethod = new TokenAuthMethodInfo(secretToken);
+                var vaultClientSettings = new VaultClientSettings($"http://{secretIp}:{secretPort}", authMethod);
+                _VaultClient = new VaultClient(vaultClientSettings);
             }
-        } 
+            catch (Exception e)
+            {
 
-        public bool IsApplicationConfigured 
-        { 
-            get
-            {
-                return this.Configured;  
-            }
-            private set
-            {
-                this.Configured = value;
             }
         }
-        private bool Configured = false;
+        private IVaultClient _VaultClient;
 
-        private async void ConfigureVault(string token, string ipAddrPort, string path)
+        public async Task<bool> GetIsConfigured()
         {
-            IAuthMethodInfo authMethod = new TokenAuthMethodInfo(token);
-            var vaultClientSettings = new VaultClientSettings(ipAddrPort, authMethod);
-            IVaultClient vaultClient = new VaultClient(vaultClientSettings);
-            Secret<SecretData> kv2Secret = await vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path);
+            if (_VaultClient == null)
+                return false;
+            try
+            {
+                Secret<SecretData> smtpAddress = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_address");
+                Secret<SecretData> smtpPort = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_port");
+                Secret<SecretData> emailLogin = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_login");
+                Secret<SecretData> emailPassword = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_password");
+                
+                var configValues = new[] { smtpAddress, smtpPort, emailLogin, emailPassword };
+                var result = configValues.Any(x => !x.Data.Data.ContainsKey("CURRENT"));
+                return result;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
