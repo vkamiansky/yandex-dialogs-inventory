@@ -16,7 +16,7 @@ namespace AliceInventory.Logic.Parser
         {
             set
             {
-                Regex = new Regex("^" + value + "$", RegexOptions.Compiled);
+                Regex = new Regex(@"^" + value + @"(?:\s+|$)", RegexOptions.Compiled);
             }
         }
 

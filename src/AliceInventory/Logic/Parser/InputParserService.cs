@@ -69,6 +69,19 @@ namespace AliceInventory.Logic.Parser
 
             input = input.ToLower(cultureInfo);
 
+            var result = ParseInput(input, true, cultureInfo);
+
+            if (result.Command == InputProcessingCommand.SayUnknownCommand)
+                return ParseInput(input, false, cultureInfo);
+            
+            return result;
+        }
+
+        private ProcessingCommand ParseInput(string input, bool removeIgnoreWords, CultureInfo cultureInfo)
+        {
+            if (removeIgnoreWords)
+                input = RegexHelper.RemoveIgnoreWords(input);
+
             foreach (var template in CommandsTemplates)
             {
                 if (template.TryParse(input, out object data, cultureInfo))

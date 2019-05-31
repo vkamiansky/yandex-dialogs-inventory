@@ -14,7 +14,7 @@ namespace AliceInventory.Logic.Parser
         public const string EmailGroupName = "email";
 
         public const string AddPattern =
-            @"(?:за|в|над?|п(?:о|ри)|до)?(?:плюс|с(?:оедин|ун)|пих|ки|лож|мест|бав)(?:н)?(?:л|и|ь)?(?:ай|яй|ть|те|ка)?";
+            @"(?:за|в|над?|п(?:о|ри)|до)?(?:плюс|с(?:оедин|ун)|пих|ки|лож|мест|бав)(?:н)?(?:л|им?|ь)?(?:ай|яй|ть|те|ка)?";
         public const string DeletePattern =
             @"(?:вы|у)?(?:дал|бер|сун|брос|бра|тащ|сотр|изъя|ничтож|стер|стир|таск)(?:ива|ова|ева|ыва)?(?:ай|у|е|и|й|ь)?(?:ть)?(?:те|ка)?";
         public const string ClearPattern =
@@ -22,7 +22,7 @@ namespace AliceInventory.Logic.Parser
         public const string HelloPattern =
             @"привет(?:ик|ствую)?|здравствуй(?:те)?|хай|хеллоу";
         public const string AcceptPattern =
-            @"да(?:вай)?|конечно|несомненно|точно|именно|верно|хочу|подтвер(?:дить|ждаю)";
+            @"(?:ну\s)?да(?:вай)?|конечно|несомненно|точно|именно|верно|хочу|подтвер(?:дить|ждаю)";
         public const string DeclinePattern =
             @"не(?:т|\sнадо)?|от(?:вали|стань)";
         public const string CancelPattern =
@@ -35,13 +35,17 @@ namespace AliceInventory.Logic.Parser
             @"(?:отправ(?:ь(?:те)?|ить|ляй)|вы(?:шли|слать)|по(?:шли|слать))(?:\sна)?";
         public const string ExitPattern =
             @"п(?:ока|рощай)|выход|хватит";
-        
+
+        private const string IgnoreWordPatter =
+            @"(?:ещ(?:е|ё)|конечно|давай|ну)\s?";
+        private static readonly Regex IgnoreWord = new Regex(IgnoreWordPatter, RegexOptions.Compiled);
+
         public const string UnitPattern = @"штук(?:а|и|у|овин)?|единиц(?:а|у|ы)?";
         public const string KgPattern = @"к(?:г|илограмм(?:а|ов)?)";
         public const string LiterPattern = @"литр(?:а|ов)?";
         public const string UnitOfMeasurePattern = UnitPattern + "|" + KgPattern + "|" + LiterPattern;
         public static readonly string EntryUnit = AddGroupName(EntryUnitGroupName, UnitOfMeasurePattern);
-        public const string EntryNamePattern = @"[а-яА-ЯёЁ\d\s]{3,}";
+        public const string EntryNamePattern = @".{3,}";
         public static readonly string EntryName = AddGroupName(EntryNameGroupName, EntryNamePattern);
         public const string Number = @"-?\d+(?:(?:\.|,)\d+)?";
         public static readonly string EntryCount = AddGroupName(EntryCountGroupName, Number);
@@ -60,6 +64,11 @@ namespace AliceInventory.Logic.Parser
         private static string AddGroupName(string name, string pattern)
         {
             return $"(?<{name}>{pattern})";
+        }
+
+        public static string RemoveIgnoreWords(string input)
+        {
+            return IgnoreWord.Replace(input, "");
         }
 
         public static UnitOfMeasure ParseUnitOfMeasure(string unit)
