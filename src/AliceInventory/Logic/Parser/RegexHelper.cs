@@ -8,10 +8,10 @@ namespace AliceInventory.Logic.Parser
 {
     public static class RegexHelper
     {
-        public const string EntryNameGroupName = "ename";
-        public const string EntryCountGroupName = "enumber";
-        public const string EntryUnitGroupName = "eunit";
-        public const string EmailGroupName = "email";
+        public const string EntryNameGroupName = "g1";
+        public const string EntryCountGroupName = "g2";
+        public const string EntryUnitGroupName = "g3";
+        public const string EmailGroupName = "g4";
 
         public const string AddPattern =
             @"(?:за|в|над?|п(?:о|ри)|до)?(?:плюс|с(?:оедин|ун)|пих|ки|лож|мест|бав)(?:н)?(?:л|им?|ь)?(?:ай|яй|ть|те|ка)?";
@@ -36,9 +36,9 @@ namespace AliceInventory.Logic.Parser
         public const string ExitPattern =
             @"п(?:ока|рощай)|выход|хватит";
 
-        private const string IgnoreWordPatter =
+        private const string IgnoreWordPattern =
             @"(?:ещ(?:е|ё)|конечно|давай|ну)\s?";
-        private static readonly Regex IgnoreWord = new Regex(IgnoreWordPatter, RegexOptions.Compiled);
+        private static readonly Regex IgnoreWord = new Regex(IgnoreWordPattern, RegexOptions.Compiled);
 
         public const string UnitPattern = @"штук(?:а|и|у|овин)?|единиц(?:а|у|ы)?";
         public const string KgPattern = @"к(?:г|илограмм(?:а|ов)?)";

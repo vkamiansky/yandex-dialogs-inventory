@@ -1,29 +1,18 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AliceInventory.Logic.Parser
 {
     public class CommandTemplate
     {
         public InputProcessingCommand Command { get; }
-        private Regex Regex;
-        
-        public string RegularExpression
-        {
-            set
-            {
-                Regex = new Regex(@"^" + value + @"(?:\s+|$)", RegexOptions.Compiled);
-            }
-        }
+        protected readonly Regex Regex;
 
         public CommandTemplate(InputProcessingCommand command, string expression)
         {
             Command = command;
-            RegularExpression = expression;
+            Regex = new Regex(@"^" + expression + @"(?:\s+|$)", RegexOptions.Compiled);
         }
 
         public bool TryParse(string input, out object data, CultureInfo cultureInfo)

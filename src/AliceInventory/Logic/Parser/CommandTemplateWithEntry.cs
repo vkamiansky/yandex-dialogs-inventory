@@ -8,22 +8,26 @@ namespace AliceInventory.Logic.Parser
 {
     public class CommandTemplateWithEntry : CommandTemplate
     {
+        private int nameGroupId;
+        private int countGroupId;
+        private int unitGroupId;
+
         public CommandTemplateWithEntry(InputProcessingCommand command, string expression) : base(command, expression)
-        { }
+        {
+            var groups = this.Regex.GetGroupNames();
+
+            nameGroupId = Array.IndexOf(groups, RegexHelper.EntryNameGroupName);
+            countGroupId = Array.IndexOf(groups, RegexHelper.EntryCountGroupName);
+            unitGroupId= Array.IndexOf(groups, RegexHelper.EntryUnitGroupName);
+        }
 
         protected override object GetObject(Match match, CultureInfo cultureInfo)
         {
             var groups = match.Groups;
-
-            string name = groups.ContainsName(RegexHelper.EntryNameGroupName)
-                ? groups[RegexHelper.EntryNameGroupName].Value
-                : "noname";
-            double count = groups.ContainsName(RegexHelper.EntryCountGroupName)
-                ? Convert.ToDouble(groups[RegexHelper.EntryCountGroupName].Value, cultureInfo)
-                : 1;
-            UnitOfMeasure unit = groups.ContainsName(RegexHelper.EntryUnitGroupName)
-                ? RegexHelper.ParseUnitOfMeasure(groups[RegexHelper.EntryUnitGroupName].Value)
-                : UnitOfMeasure.Unit;
+            
+            var name = nameGroupId > -1 ? groups[nameGroupId].Value : "noname";
+            var count = countGroupId > -1 ? Convert.ToDouble(groups[RegexHelper.EntryCountGroupName].Value, cultureInfo) : 1;
+            var unit = unitGroupId > -1 ? RegexHelper.ParseUnitOfMeasure(groups[RegexHelper.EntryUnitGroupName].Value) : UnitOfMeasure.Unit;
 
             return new Entry()
             {
