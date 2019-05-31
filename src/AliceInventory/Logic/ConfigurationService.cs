@@ -42,7 +42,7 @@ namespace AliceInventory.Logic
             try
             {
                 if (_VaultClient == null)
-                    return _VaultClientError.Message;
+                    return _VaultClientError.StackTrace;
 
                 Secret<SecretData> smtpAddress = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_address");
                 Secret<SecretData> smtpPort = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_port");
@@ -55,7 +55,7 @@ namespace AliceInventory.Logic
             }
             catch (Exception e)
             {
-                return new String(e.Message + "\n" + _VaultClientError?.Message ?? string.Empty);
+                return new String(e.StackTrace + "\n" + _VaultClientError?.StackTrace ?? string.Empty);
             }
         }
     }
