@@ -10,6 +10,7 @@ namespace AliceInventory.Logic
         private Dictionary<InputProcessingCommand, Regex> AvailableCommands { get; }
         private Dictionary<UnitOfMeasure, Regex> AvailableUnitsOfMeasure { get; }
         private Regex AvailableCountRegex { get; }
+        private Regex AvailableMailRegex { get; }
 
         public InputParserService()
         {
@@ -34,6 +35,7 @@ namespace AliceInventory.Logic
                 [UnitOfMeasure.L] = new Regex(@"(^|\s)(литр(ов|а|)|л)($|\s)"),
             };
             AvailableCountRegex = new Regex(@"(^|\s)-?(\d+|)([\.,]|)\d+(\s|$)");
+            AvailableMailRegex = new Regex(@"(^|\s)[\w+\.-]+@[\w+\-]+\.\w{2,4}($|\s)");
         }
 
         public ProcessingCommand ParseInput(string input, CultureInfo culture)
@@ -71,7 +73,7 @@ namespace AliceInventory.Logic
                     break;
 
                 case InputProcessingCommand.SendMail:
-                    Regex mailRegex = new Regex(@"(^|\s)[\w+\.-]+@[\w+\-]+\.\w{2,4}($|\s)");
+                    Regex mailRegex = AvailableMailRegex;
                     Match mailMatch = mailRegex.Match(input);
                     if (mailMatch.Success)
                         data = mailMatch.Value.Trim();
