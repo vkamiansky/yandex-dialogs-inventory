@@ -15,25 +15,25 @@ namespace AliceInventory.Logic
         {
             AvailableCommands = new Dictionary<InputProcessingCommand, Regex>()
             {
-                [InputProcessingCommand.SayHello] = new Regex(@"(^|\s)(доброе утро|добрый (день|вечер)|здравствуй(те|)|привет(ствую|)|хеллоу|хай)($|\s)", RegexOptions.Compiled),
-                [InputProcessingCommand.Accept] = new Regex(@"(^|\s)(подтвер(ждаю|дить|ди)|несомненно|конечно|именно|точно|верно|давай|хочу|да)($|\s)", RegexOptions.Compiled),
-                [InputProcessingCommand.Decline] = new Regex(@"(^|\s)(не (надо|хочу)|нет)($|\s)", RegexOptions.Compiled),
-                [InputProcessingCommand.Cancel] = new Regex(@"(^|\s)(отмен(ить|яю|яй|а|и))($|\s)", RegexOptions.Compiled),
-                [InputProcessingCommand.Add] = new Regex(@"(^|\s)(присоедини(ть|м|)|(над|при|до)бав(ляй|ить|им|ь)|по(ложи|мести)(м|)|(за|в)(пихай|пихни|сунь|кинь)|плюс)($|\s)", RegexOptions.Compiled),
-                [InputProcessingCommand.Delete] = new Regex(@"(^|\s)(вы((тащить|(таскивать|нуть))|(брось|броси|тащи|суни|сунь|нь)(те|))|у(брать|далить|(ничтожь|дали|бери)(те|))|с(тереть|тирай|отри)|изъять|минус)($|\s)", RegexOptions.Compiled),
-                [InputProcessingCommand.Clear] = new Regex(@"(^|\s)((вы|по|о)(чист)(ите|ить|и|ь))($|\s)", RegexOptions.Compiled),
-                [InputProcessingCommand.ReadList] = new Regex(@"(^|\s)((продемонстрируй|покажи|расскажи)(те|))($|\s)", RegexOptions.Compiled),
-                [InputProcessingCommand.SendMail] = new Regex(@"(^|\s)(отправ(ить|(ляй|ь))(те|)|(вы|по)(слать|шли))($|\s)", RegexOptions.Compiled),
-                [InputProcessingCommand.RequestHelp] = new Regex(@"(^|\s)(что ты (можешь|умеешь)|помо(гите|ги|щь)|(спасай|спаси)(те|)|(выручай|выручи)(те|)|хелп)($|\s)", RegexOptions.Compiled),
-                [InputProcessingCommand.RequestExit] = new Regex(@"(^|\s)(до (свидания|встречи|скорого)|выход(жу|и|)|пока|хватит|прощай|отвали|отстань)($|\s)", RegexOptions.Compiled),
+                [InputProcessingCommand.SayHello] = new Regex(@"(^|\s)(доброе утро|добрый (день|вечер)|здравствуй(те|)|привет(ствую|)|хеллоу|хай)($|\s)"),
+                [InputProcessingCommand.Accept] = new Regex(@"(^|\s)(подтвер(ждаю|дить|ди)|несомненно|конечно|именно|точно|верно|давай|хочу|да)($|\s)"),
+                [InputProcessingCommand.Decline] = new Regex(@"(^|\s)(не (надо|хочу)|нет)($|\s)"),
+                [InputProcessingCommand.Cancel] = new Regex(@"(^|\s)(отмен(ить|яю|яй|а|и))($|\s)"),
+                [InputProcessingCommand.Add] = new Regex(@"(^|\s)(присоедини(ть|м|)|(над|при|до)бав(ляй|ить|им|ь)|по(ложи|мести)(м|)|(за|в)(пихай|пихни|сунь|кинь)|плюс)($|\s)"),
+                [InputProcessingCommand.Delete] = new Regex(@"(^|\s)(вы((тащить|(таскивать|нуть))|(брось|броси|тащи|суни|сунь|нь)(те|))|у(брать|далить|(ничтожь|дали|бери)(те|))|с(тереть|тирай|отри)|изъять|минус)($|\s)"),
+                [InputProcessingCommand.Clear] = new Regex(@"(^|\s)((вы|по|о)(чист)(ите|ить|и|ь))($|\s)"),
+                [InputProcessingCommand.ReadList] = new Regex(@"(^|\s)((продемонстрируй|покажи|расскажи)(те|))($|\s)"),
+                [InputProcessingCommand.SendMail] = new Regex(@"(^|\s)(отправ(ить|(ляй|ь))(те|)|(вы|по)(слать|шли))($|\s)"),
+                [InputProcessingCommand.RequestHelp] = new Regex(@"(^|\s)(что ты (можешь|умеешь)|помо(гите|ги|щь)|(спасай|спаси)(те|)|(выручай|выручи)(те|)|хелп)($|\s)"),
+                [InputProcessingCommand.RequestExit] = new Regex(@"(^|\s)(до (свидания|встречи|скорого)|выход(жу|и|)|пока|хватит|прощай|отвали|отстань)($|\s)"),
             };
             AvailableUnitsOfMeasure = new Dictionary<UnitOfMeasure, Regex>()
             {
-                [UnitOfMeasure.Unit] = new Regex(@"(^|\s)(единиц(а|у|ы|)|шту(чек|к(овин|и|а|у|)))($|\s)", RegexOptions.Compiled),
-                [UnitOfMeasure.Kg] = new Regex(@"(^|\s)(килограмм(ов|а|)|кг)($|\s)", RegexOptions.Compiled),
-                [UnitOfMeasure.L] = new Regex(@"(^|\s)(литр(ов|а|)|л)($|\s)", RegexOptions.Compiled),
+                [UnitOfMeasure.Unit] = new Regex(@"(^|\s)(единиц(а|у|ы|)|шту(чек|к(овин|и|а|у|)))($|\s)"),
+                [UnitOfMeasure.Kg] = new Regex(@"(^|\s)(килограмм(ов|а|)|кг)($|\s)"),
+                [UnitOfMeasure.L] = new Regex(@"(^|\s)(литр(ов|а|)|л)($|\s)"),
             };
-            AvailableCountRegex = new Regex(@"(^|\s)-?(\d+|)([\.,]|)\d+(\s|$)", RegexOptions.Compiled);
+            AvailableCountRegex = new Regex(@"(^|\s)-?(\d+|)([\.,]|)\d+(\s|$)");
         }
 
         public ProcessingCommand ParseInput(string input, CultureInfo culture)
@@ -71,7 +71,7 @@ namespace AliceInventory.Logic
                     break;
 
                 case InputProcessingCommand.SendMail:
-                    Regex mailRegex = new Regex(@"(^|\s)[\w+\.-]+@[\w+\-]+\.\w{2,4}($|\s)", RegexOptions.Compiled);
+                    Regex mailRegex = new Regex(@"(^|\s)[\w+\.-]+@[\w+\-]+\.\w{2,4}($|\s)");
                     Match mailMatch = mailRegex.Match(input);
                     if (mailMatch.Success)
                         data = mailMatch.Value.Trim();
