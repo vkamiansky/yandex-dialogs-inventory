@@ -6,13 +6,13 @@ using System.Text.RegularExpressions;
 
 namespace AliceInventory.Logic.Parser
 {
-    public class CommandTemplateWithEntry : CommandTemplate
+    public class CommandTemplateWithSingleEntry : CommandTemplate
     {
         private int nameGroupId;
         private int countGroupId;
         private int unitGroupId;
 
-        public CommandTemplateWithEntry(InputProcessingCommand command, string expression) : base(command, expression)
+        public CommandTemplateWithSingleEntry(InputProcessingCommand command, string expression) : base(command, expression)
         {
             var groups = this.Regex.GetGroupNames();
 
@@ -29,7 +29,7 @@ namespace AliceInventory.Logic.Parser
             var count = countGroupId > -1 ? Convert.ToDouble(groups[RegexHelper.EntryCountGroupName].Value, cultureInfo) : 1;
             var unit = unitGroupId > -1 ? RegexHelper.ParseUnitOfMeasure(groups[RegexHelper.EntryUnitGroupName].Value) : UnitOfMeasure.Unit;
 
-            return new Entry()
+            return new SingleEntry()
             {
                 Name = name,
                 Count = count,

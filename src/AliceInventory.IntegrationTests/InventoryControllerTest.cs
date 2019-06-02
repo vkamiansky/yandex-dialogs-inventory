@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using AliceInventory.Controllers;
 using Newtonsoft.Json;
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AliceInventory.IntegrationTests
 {
@@ -31,10 +33,17 @@ namespace AliceInventory.IntegrationTests
 
         public InventoryControllerTest()
         {
-            _server = new TestServer(WebHost.CreateDefaultBuilder().UseStartup<AliceInventory.Startup>());
+            _server = new TestServer(WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>()
+                .ConfigureTestServices(ConfigureTestServices));
             _client = _server.CreateClient();
         }
-        
+
+        protected virtual void ConfigureTestServices(IServiceCollection services)
+        {
+            services.AddSingleton<Logic.IConfigurationService, TestConfigurationService>();
+        }
+
         private async Task<AliceResponse> SendRequest(HttpClient client, AliceRequest request)
         {
             var requestJson = JsonConvert.SerializeObject(request);
@@ -70,7 +79,7 @@ namespace AliceInventory.IntegrationTests
             var request = new HttpRequestMessage(HttpMethod.Head, "/api/inventory/");
             using(HttpResponseMessage response = await _client.SendAsync(request))
             {
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);   
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             }
         }
 

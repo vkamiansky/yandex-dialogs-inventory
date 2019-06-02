@@ -13,22 +13,43 @@ namespace AliceInventory.Logic
             switch (unit)
             {
                 case UnitOfMeasure.Kg:
-                    return "кг.";
+                    return "кг";
                 case UnitOfMeasure.L:
-                    return "л.";
+                    return "л";
                 case UnitOfMeasure.Unit:
-                    return "шт.";
+                    return "шт";
                 default:
                     return "error";
             }
         }
 
-        public static string ToTextList(this Entry[] entries)
+        public static string ToTextList(this Logic.Entry[] entries)
         {
             var stringBuilder = new StringBuilder();
+
             foreach (var entry in entries)
             {
-                stringBuilder.Append($"{entry.Name}: {entry.Count} {entry.Unit.ToText()}\n");
+                stringBuilder.Append($"{entry.Name}: ");
+
+                Dictionary<UnitOfMeasure, double> units = entry.UnitValues;
+
+                if (entry.UnitValues.Count == 1)
+                {
+                    var (unit, value) = units.First();
+                    stringBuilder.AppendLine($"{value} {unit.ToText()}");
+                }
+                else
+                {
+                    foreach (var (unit, count) in units.Take(units.Count - 2))
+                    {
+                        stringBuilder.Append($"{count} {unit.ToText()}, ");
+                    }
+
+                    var lasts = units.Skip(units.Count - 2).ToArray();
+                    var (preLastUnit, preLastCount) = lasts.First();
+                    var (lastUnit, lastCount) = lasts.Last();
+                    stringBuilder.AppendLine($"{preLastCount} {preLastUnit.ToText()} и {lastCount} {lastUnit.ToText()}");
+                }
             }
 
             return stringBuilder.ToString();
@@ -37,7 +58,7 @@ namespace AliceInventory.Logic
         private static readonly Random Random = new Random();
         public static T GetRandomItem<T>(this IReadOnlyList<T> collection)
         {
-            return collection[Random.Next(0, collection.Count - 1)];
+            return collection[Random.Next(0, collection.Count)];
         }
 
         public static Logic.Entry ToLogic(this Data.Entry entry)
@@ -45,11 +66,15 @@ namespace AliceInventory.Logic
             if (entry == null)
                 return null;
 
-            return new Logic.Entry
+            var unitValues = new Dictionary<Logic.UnitOfMeasure, double>();
+            foreach (var (unit, count) in entry.UnitValues)
             {
-                Name = entry.Name,
-                Count = entry.Count,
-                Unit = entry.Unit.ToLogic(),
+                unitValues.Add(unit.ToLogic(), count);
+            }
+            
+            return new Logic.Entry(entry.Name)
+            {
+                UnitValues = unitValues
             };
         }
 
@@ -57,8 +82,38 @@ namespace AliceInventory.Logic
         {
             if (entry == null)
                 return null;
+            
+            var unitValues = new Dictionary<Data.UnitOfMeasure, double>();
+            foreach (var (unit, count) in entry.UnitValues)
+            {
+                unitValues.Add(unit.ToData(), count);
+            }
+            
+            return new Data.Entry(entry.Name)
+            {
+                UnitValues = unitValues
+            };
+        }
 
-            return new Data.Entry
+        public static Logic.SingleEntry ToLogic(this Data.SingleEntry entry)
+        {
+            if (entry == null)
+                return null;
+
+            return new Logic.SingleEntry()
+            {
+                Name = entry.Name,
+                Count = entry.Count,
+                Unit = entry.Unit.ToLogic(),
+            };
+        }
+
+        public static Data.SingleEntry ToData(this Logic.SingleEntry entry)
+        {
+            if (entry == null)
+                return null;
+
+            return new Data.SingleEntry
             {
                 Name = entry.Name,
                 Count = entry.Count,
@@ -94,11 +149,6 @@ namespace AliceInventory.Logic
                 default:
                     return Data.UnitOfMeasure.Unit;
             }
-        }
-
-        public static bool ContainsName(this GroupCollection group, string name)
-        {
-            return group.Any(x => x.Name == name);
         }
     }
 }
