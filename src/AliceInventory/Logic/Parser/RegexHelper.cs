@@ -54,7 +54,7 @@ namespace AliceInventory.Logic.Parser
         public static readonly string EntryName = AddGroupName(EntryNameGroupName, EntryNamePattern);
         public const string Number = @"-?\d+(?:(?:\.|,)\d+)?";
         public static readonly string EntryCount = AddGroupName(EntryCountGroupName, Number);
-        public const string EmailPattern = @"[a-z0-9!#$%&'*+\=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+        public const string EmailPattern = @"[^@]+@[^\.]+\..+";
         public static readonly string Email = AddGroupName(EmailGroupName, EmailPattern);
         
         private static readonly Dictionary<UnitOfMeasure, string> UnitOfMeasureDictionary;
