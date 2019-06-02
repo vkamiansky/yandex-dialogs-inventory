@@ -1,23 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
-
   <PropertyGroup>
-      <PublishWithAspNetCoreTargetManifest>
+    <PublishWithAspNetCoreTargetManifest>
         false
       </PublishWithAspNetCoreTargetManifest>
-      <UserSecretsId>1125d9e2-3d2a-4d9c-b6de-6f1411260722</UserSecretsId>
+    <UserSecretsId>1125d9e2-3d2a-4d9c-b6de-6f1411260722</UserSecretsId>
   </PropertyGroup>
-   
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="2.1.5.1" />
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="newtonsoft.json" Version="12.0.1" />
-    <PackageReference Include="VaultSharp" Version="0.11.1002" />
+    <PackageReference Include="MailKit" Version="2.1.5.1"/>
+    <PackageReference Include="Microsoft.AspNetCore.App"/>
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All"/>
+    <PackageReference Include="newtonsoft.json" Version="12.0.1"/>
+    <PackageReference Include="VaultSharp" Version="0.11.1002"/>
+    <PackageReference Include="Jaeger" Version="*"/>
+    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="*"/>
   </ItemGroup>
-
 </Project>

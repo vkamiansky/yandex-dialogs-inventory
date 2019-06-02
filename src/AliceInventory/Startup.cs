@@ -9,23 +9,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
+using AliceInventory.Logger;
 
 namespace AliceInventory
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, ILoggerFactory logerFactory)
         {
             Configuration = configuration;
+            LoggerFactory = logerFactory;
         }
-
         public IConfiguration Configuration { get; }
+        public ILoggerFactory LoggerFactory { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            // services.AddJaegerTracing_NotWorking(options => 
+            //     {
+            //         options.JaegerAgentHost = Configuration["JAEGER_AGENT_HOST"];
+            //         options.ServiceName = "CustomJaegerService";
+            //         options.LoggerFactory = LoggerFactory;
+            //     });
+            services.AddJaegerTracing_Working();
+
             services.AddSingleton<Logic.IConfigurationService, Logic.ConfigurationService>();
             services.AddSingleton<Logic.Email.IAliceEmailService, Logic.Email.AliceEmailService>();
             services.AddSingleton<Logic.ICommandCache, Logic.CommandCache>();
