@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -31,9 +31,9 @@ namespace AliceInventory.Logic.Parser
             new CommandTemplate(InputProcessingCommand.SendMail,
                 $"{RegexHelper.SendWord} {RegexHelper.MailWord}"),
             new CommandTemplate(InputProcessingCommand.SendMail,
-                $"{RegexHelper.SendWord} Ì‡ {RegexHelper.MailWord}"),
+                $"{RegexHelper.SendWord} –Ω–∞ {RegexHelper.MailWord}"),
             new CommandTemplateWithEmail(InputProcessingCommand.SendMailTo,
-                $"{RegexHelper.SendWord} Ì‡ {RegexHelper.Email}"),
+                $"{RegexHelper.SendWord} –Ω–∞ {RegexHelper.Email}"),
             new CommandTemplateWithEmail(InputProcessingCommand.AddMail,
                 $"{RegexHelper.Email}"),
             new CommandTemplate(InputProcessingCommand.DeleteMail,
