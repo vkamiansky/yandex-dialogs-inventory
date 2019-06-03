@@ -54,25 +54,25 @@ namespace AliceInventory.IntegrationTests
             }
         }
 
-        [Fact]
-        public async Task ServerRunningTest()
-        {
-            // using(var response = await _client.GetAsync("/api/inventory/"))
-            // {
-            //     var responseString = await response.Content.ReadAsStringAsync();
-            //     Assert.Contains("Server is working...", responseString);
-            // }
-        }
+        // [Fact]
+        // public async Task ServerRunningTest()
+        // {
+        //     // using(var response = await _client.GetAsync("/api/inventory/"))
+        //     // {
+        //     //     var responseString = await response.Content.ReadAsStringAsync();
+        //     //     Assert.Contains("Server is working...", responseString);
+        //     // }
+        // }
 
-        [Fact]
-        public async Task ServerAvailableTest()
-        {
-            var request = new HttpRequestMessage(HttpMethod.Head, "/api/inventory/");
-            using(HttpResponseMessage response = await _client.SendAsync(request))
-            {
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);   
-            }
-        }
+        // [Fact]
+        // public async Task ServerAvailableTest()
+        // {
+        //     var request = new HttpRequestMessage(HttpMethod.Head, "/api/inventory/");
+        //     using(HttpResponseMessage response = await _client.SendAsync(request))
+        //     {
+        //         Assert.Equal(HttpStatusCode.OK, response.StatusCode);   
+        //     }
+        // }
 
         [Fact]
         public async Task JsonVerification()

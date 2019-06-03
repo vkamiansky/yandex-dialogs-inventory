@@ -15,14 +15,12 @@ namespace AliceInventory
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, ILoggerFactory logerFactory)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            LoggerFactory = logerFactory;
-        }
+         }
         public IConfiguration Configuration { get; }
-        public ILoggerFactory LoggerFactory { get; }
-
+ 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -31,7 +29,7 @@ namespace AliceInventory
             //     {
             //         options.JaegerAgentHost = Configuration["JAEGER_AGENT_HOST"];
             //         options.ServiceName = "CustomJaegerService";
-            //         options.LoggerFactory = LoggerFactory;
+            //         options.LoggerFactory = new LoggerFactory();
             //     });
             services.AddJaegerTracing_Working();
 
