@@ -47,7 +47,8 @@ namespace AliceInventory.Logger
                     .Build();
 
                 // Allows code that can't use DI to also access the tracer.
-                GlobalTracer.Register(tracer);
+                if (!GlobalTracer.IsRegistered())
+                    GlobalTracer.Register(tracer);
 
                 return tracer;
             });

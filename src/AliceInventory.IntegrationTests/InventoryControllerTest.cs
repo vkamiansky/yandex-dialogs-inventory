@@ -64,15 +64,15 @@ namespace AliceInventory.IntegrationTests
         //     // }
         // }
 
-        // [Fact]
-        // public async Task ServerAvailableTest()
-        // {
-        //     var request = new HttpRequestMessage(HttpMethod.Head, "/api/inventory/");
-        //     using(HttpResponseMessage response = await _client.SendAsync(request))
-        //     {
-        //         Assert.Equal(HttpStatusCode.OK, response.StatusCode);   
-        //     }
-        // }
+        [Fact]
+        public async Task ServerAvailableTest()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Head, "/api/inventory/");
+            using(HttpResponseMessage response = await _client.SendAsync(request))
+            {
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);   
+            }
+        }
 
         [Fact]
         public async Task JsonVerification()
