@@ -95,32 +95,6 @@ namespace AliceInventory.Logic
             };
         }
 
-        public static Logic.SingleEntry ToLogic(this Data.SingleEntry entry)
-        {
-            if (entry == null)
-                return null;
-
-            return new Logic.SingleEntry()
-            {
-                Name = entry.Name,
-                Count = entry.Count,
-                Unit = entry.Unit.ToLogic(),
-            };
-        }
-
-        public static Data.SingleEntry ToData(this Logic.SingleEntry entry)
-        {
-            if (entry == null)
-                return null;
-
-            return new Data.SingleEntry
-            {
-                Name = entry.Name,
-                Count = entry.Count,
-                Unit = entry.Unit.ToData(),
-            };
-        }
-
         public static Logic.UnitOfMeasure ToLogic(this Data.UnitOfMeasure unit)
         {
             switch (unit)

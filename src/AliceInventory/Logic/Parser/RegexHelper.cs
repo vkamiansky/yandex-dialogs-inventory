@@ -43,7 +43,7 @@ namespace AliceInventory.Logic.Parser
 
         private const string IgnoreWordPattern =
             @"(?:(?:ещ(?:е|ё)|конечно|давай|ну)\s?)";
-        private static readonly Regex IgnoreWord = new Regex(IgnoreWordPattern, RegexOptions.Compiled);
+        private static readonly Regex IgnoreWord = new Regex(IgnoreWordPattern);
 
         public const string UnitPattern = @"штук(?:а|и|у|овин)?|единиц(?:а|у|ы)?";
         public const string KgPattern = @"к(?:г|илограмм(?:а|ов)?)";

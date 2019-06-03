@@ -8,10 +8,10 @@ namespace AliceInventory.Logic
 {
     public class InventoryDialogService : IInventoryDialogService
     {
-        private IUserDataStorage storage;
-        private IInputParserService parser;
-        private ICommandCache commandCache;
-        private IInventoryEmailService emailService;
+        private readonly IUserDataStorage storage;
+        private readonly IInputParserService parser;
+        private readonly ICommandCache commandCache;
+        private readonly IInventoryEmailService emailService;
 
         public InventoryDialogService(IUserDataStorage storage, IInputParserService parser, ICommandCache commandCache, IInventoryEmailService emailService)
         {
@@ -58,7 +58,8 @@ namespace AliceInventory.Logic
 
                 case InputProcessingCommand.Cancel when prevCommand.Command == InputProcessingCommand.Add:
                 {
-                    storage.DeleteEntry(userId, (prevCommand.Data as Logic.SingleEntry).ToData());
+                    if (!(prevCommand.Data is SingleEntry singleEntry)) goto default;
+                    storage.DeleteEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
                     resultData = prevCommand.Data as Logic.Entry;
                     resultType = InputProcessingResult.AddCanceled;
                     break;
@@ -66,7 +67,8 @@ namespace AliceInventory.Logic
                 
                 case InputProcessingCommand.Cancel when prevCommand.Command == InputProcessingCommand.Delete:
                 {
-                    storage.AddEntry(userId, (prevCommand.Data as Logic.SingleEntry).ToData());
+                    if (!(prevCommand.Data is SingleEntry singleEntry)) goto default;
+                    storage.AddEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
                     resultData = prevCommand.Data as Logic.Entry;
                     resultType = InputProcessingResult.DeleteCanceled;
                     break;
@@ -74,7 +76,8 @@ namespace AliceInventory.Logic
 
                 case InputProcessingCommand.Add:
                 {
-                    storage.AddEntry(userId, (parsedCommand.Data as Logic.SingleEntry).ToData());
+                    if (!(parsedCommand.Data is SingleEntry singleEntry)) goto default;
+                    storage.AddEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
                     resultData = parsedCommand.Data;
                     resultType = InputProcessingResult.Added;
                     break;
@@ -82,7 +85,8 @@ namespace AliceInventory.Logic
 
                 case InputProcessingCommand.Delete:
                 {
-                    storage.DeleteEntry(userId, (parsedCommand.Data as Logic.SingleEntry).ToData());
+                    if (!(parsedCommand.Data is SingleEntry singleEntry)) goto default;
+                    storage.DeleteEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
                     resultData = parsedCommand.Data;
                     resultType = InputProcessingResult.Deleted;
                     break;

@@ -19,9 +19,9 @@ namespace AliceInventory.UnitTests
             var userEmail = "some@yandex.ru";
             var logicEntryStub = new Logic.SingleEntry
             {
-                Unit = Logic.UnitOfMeasure.Kg,
                 Name = "объект1",
-                Count = 123.123d
+                Count = 123.123d,
+                Unit = Logic.UnitOfMeasure.Kg
             };
             var processingCommand = new Logic.ProcessingCommand
             {
@@ -35,11 +35,10 @@ namespace AliceInventory.UnitTests
 
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
             storageMock.Setup(x => x.AddEntry(
-                It.Is<string>(y => y == userId),
-                It.Is<Data.SingleEntry>(y =>
-                    Logic.Extensions.ToLogic(y.Unit) == logicEntryStub.Unit
-                    && y.Name == logicEntryStub.Name
-                    && y.Count == logicEntryStub.Count)))
+                    It.Is<string>(y => y == userId),
+                    It.Is<string>(y => y == logicEntryStub.Name),
+                    It.Is<double>(y => y == logicEntryStub.Count),
+                    It.Is<Data.UnitOfMeasure>(y => y == logicEntryStub.Unit.ToData())))
                 .Returns(true);
 
             var parserMock = new Mock<Logic.IInputParserService>();
@@ -76,7 +75,9 @@ namespace AliceInventory.UnitTests
             storageMock.Verify(x =>
                 x.AddEntry(
                     It.IsAny<string>(),
-                    It.IsAny<Data.SingleEntry>()), Times.Once);
+                    It.IsAny<string>(),
+                    It.IsAny<double>(),
+                    It.IsAny<Data.UnitOfMeasure>()), Times.Once);
 
             parserMock.Verify(x =>
                 x.ParseInput(It.IsAny<string>(), It.IsAny<CultureInfo>()), Times.Once);
@@ -111,11 +112,10 @@ namespace AliceInventory.UnitTests
 
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
             storageMock.Setup(x => x.DeleteEntry(
-                It.Is<string>(y => y == userId),
-                It.Is<Data.SingleEntry>(y =>
-                    Logic.Extensions.ToLogic(y.Unit) == logicEntryStub.Unit
-                    && y.Name == logicEntryStub.Name
-                    && y.Count == logicEntryStub.Count)))
+                    It.Is<string>(y => y == userId),
+                    It.Is<string>(y => y == logicEntryStub.Name),
+                    It.Is<double>(y => y == logicEntryStub.Count),
+                    It.Is<Data.UnitOfMeasure>(y => y == logicEntryStub.Unit.ToData())))
                 .Returns(true);
 
             var parserMock = new Mock<Logic.IInputParserService>();
@@ -152,7 +152,9 @@ namespace AliceInventory.UnitTests
             storageMock.Verify(x =>
                 x.DeleteEntry(
                     It.IsAny<string>(),
-                    It.IsAny<Data.SingleEntry>()), Times.Once);
+                    It.IsAny<string>(),
+                    It.IsAny<double>(),
+                    It.IsAny<Data.UnitOfMeasure>()), Times.Once);
 
             parserMock.Verify(x =>
                 x.ParseInput(It.IsAny<string>(), It.IsAny<CultureInfo>()), Times.Once);

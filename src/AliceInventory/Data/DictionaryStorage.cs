@@ -14,41 +14,41 @@ namespace AliceInventory.Data
             storage = new Dictionary<string, UserData>();
         }
 
-        public bool AddEntry(string userId, SingleEntry item)
+        public bool AddEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
         {
             bool isSuccessful = true;
 
             UserData data = GetUserData(userId);
             var entries = data.Entries;
 
-            if (entries.All(x => x.Name != item.Name))
-                entries.Add(new Entry(item.Name));
+            if (entries.All(x => x.Name != entryName))
+                entries.Add(new Entry(entryName));
 
-            var userItem = entries.First(x => x.Name == item.Name);
+            var userItem = entries.First(x => x.Name == entryName);
 
-            if (!userItem.UnitValues.ContainsKey(item.Unit))
-                userItem.UnitValues.Add(item.Unit, item.Count);
+            if (!userItem.UnitValues.ContainsKey(unit))
+                userItem.UnitValues.Add(unit, count);
             else
-                userItem.UnitValues[item.Unit] += item.Count;
+                userItem.UnitValues[unit] += count;
 
             return isSuccessful;
         }
 
-        public bool DeleteEntry(string userId, SingleEntry item)
+        public bool DeleteEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
         {
             UserData data = GetUserData(userId);
             var entries = data.Entries;
-            var userItem = entries.FirstOrDefault(x => x.Name == item.Name);
+            var userItem = entries.FirstOrDefault(x => x.Name == entryName);
 
             if (userItem == null) return false;
-            if (!userItem.UnitValues.ContainsKey(item.Unit)) return false;
+            if (!userItem.UnitValues.ContainsKey(unit)) return false;
 
             // Removing
-            userItem.UnitValues[item.Unit] -= item.Count;
+            userItem.UnitValues[unit] -= count;
             
             // Data cleaning
-            if (userItem.UnitValues[item.Unit] > 0) return true;
-            userItem.UnitValues.Remove(item.Unit);
+            if (userItem.UnitValues[unit] > 0) return true;
+            userItem.UnitValues.Remove(unit);
             
             if (userItem.UnitValues.Count > 0) return true;
             entries.Remove(userItem);
