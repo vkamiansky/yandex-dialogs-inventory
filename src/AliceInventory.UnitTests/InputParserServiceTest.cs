@@ -36,6 +36,7 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("яблоки 2 килограмма", "яблоки", 2, UnitOfMeasure.Kg)]
         [InlineData("Прибавь 3 единицы яблок", "яблок", 3, UnitOfMeasure.Unit)]
+        [InlineData("Прибавь 3 шт яблок", "яблок", 3, UnitOfMeasure.Unit)]
         [InlineData("4 литра яблок", "яблок", 4, UnitOfMeasure.L)]
         [InlineData("Плюс 5 яблок", "яблок", 5, UnitOfMeasure.Unit)]
         [InlineData("6 яблок", "яблок", 6, UnitOfMeasure.Unit)]
