@@ -18,7 +18,7 @@ namespace AliceInventory.Logic.AliceResponseRender
         ListRead,
         EmptyListRead,
         MailSent,
-        RequestMail,
+        MailRequest,
         MailIsEmpty,
         MailAdded,
         MailDeleted,

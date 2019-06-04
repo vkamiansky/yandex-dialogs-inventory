@@ -260,7 +260,7 @@ namespace AliceInventory.Logic.AliceResponseRender
                 [ResponseFormat.ListRead] = ListReadTemplate,
                 [ResponseFormat.EmptyListRead] = EmptyListReadTemplate,
                 [ResponseFormat.MailSent] = MailSentTemplate,
-                [ResponseFormat.RequestMail] = RequestMailTemplate,
+                [ResponseFormat.MailRequest] = RequestMailTemplate,
                 [ResponseFormat.MailIsEmpty] = MailIsEmptyTemplate,
                 [ResponseFormat.MailAdded] = MailAddedTemplate,
                 [ResponseFormat.MailDeleted] = MailDeletedTemplate,
@@ -374,7 +374,7 @@ namespace AliceInventory.Logic.AliceResponseRender
                 }
                 case InputProcessingResult.RequestMail:
                 {
-                    format = ResponseFormat.RequestMail;
+                    format = ResponseFormat.MailRequest;
                     break;
                 }
                 case InputProcessingResult.MailAdded:
