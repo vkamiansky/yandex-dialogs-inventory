@@ -4,25 +4,15 @@ using MimeKit;
 
 namespace AliceInventory.Logic.Email
 {
-    public class EmailService
+    public static class EmailHelper
     {
-        protected EmailHost _host;
-        protected string _login;
-        protected string _password;
 
-        public EmailService(EmailHost host, string login, string password)
-        {
-            _login = login;
-            _password = password;
-            _host = host;
-        }
-
-        public async Task SendEmailAsync(MimeMessage message)
+        public static async Task SendEmailAsync(EmailHost host, string login, string password, MimeMessage message)
         {
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync(_host.Url, _host.Port, false);
-                await client.AuthenticateAsync(_login, _password);
+                await client.ConnectAsync(host.Url, host.Port, false);
+                await client.AuthenticateAsync(login, password);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
             }

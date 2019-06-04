@@ -7,18 +7,24 @@ using MimeKit;
 
 namespace AliceInventory.Logic.Email
 {
-    public class InventoryEmailService : EmailService, IInventoryEmailService
+    public class InventoryEmailService : IInventoryEmailService
     {
+        private IConfigurationService Configuration { get; set; }
+        
         public InventoryEmailService(IConfigurationService config)
-            : base(new EmailHost(config.MailingSmtpHost, int.Parse(config.MailingSmtpPort)),
-                config.MailingAccountLogin, config.MailingAccountPassword) { }
+        {
+            Configuration = config;
+        }
 
         public async void SendListAsync(string email, Logic.Entry[] entries)
         {
-            var message = CreateListMessage(email, entries);
             try
             {
-                await SendEmailAsync(message);
+                var host = new EmailHost(await Configuration.GetMailingSmtpHost(), await Configuration.GetMailingSmtpPort());
+                var login = await Configuration.GetMailingAccountLogin();
+                var password = await Configuration.GetMailingAccountPassword();
+                var message = CreateListMessage(email, login, entries);
+                await EmailHelper.SendEmailAsync(host, login, password, message);
             }
             catch
             {
@@ -26,11 +32,11 @@ namespace AliceInventory.Logic.Email
             }
         }
 
-        private MimeMessage CreateListMessage(string email, Logic.Entry[] entries)
+        private MimeMessage CreateListMessage(string receiverEmail, string senderEmail, Logic.Entry[] entries)
         {
             var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress("Навык Алисы - Рюкзак", _login));
-            emailMessage.To.Add(new MailboxAddress("", email));
+            emailMessage.From.Add(new MailboxAddress("Навык Алисы - Рюкзак", senderEmail));
+            emailMessage.To.Add(new MailboxAddress("", receiverEmail));
             emailMessage.Subject = $"Ваш отчёт от {DateTime.Now.Date:dd.MM.yyyy}";
             emailMessage.Body = CreateHtmlBodyFromList(entries);
             return emailMessage;
