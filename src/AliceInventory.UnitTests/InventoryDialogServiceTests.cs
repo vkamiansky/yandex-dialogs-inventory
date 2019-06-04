@@ -16,7 +16,6 @@ namespace AliceInventory.UnitTests
         {
             var input = "объект1 123.123кг";
             var userId = "userId1";
-            var userEmail = "some@yandex.ru";
             var logicEntryStub = new Logic.SingleEntry
             {
                 Name = "объект1",
@@ -90,7 +89,6 @@ namespace AliceInventory.UnitTests
         {
             var input = "удалить объект1 123.123кг";
             var userId = "userId1";
-            var userEmail = "some@yandex.ru";
             var logicEntryStub = new Logic.SingleEntry
             {
                 Unit = Logic.UnitOfMeasure.Kg,
