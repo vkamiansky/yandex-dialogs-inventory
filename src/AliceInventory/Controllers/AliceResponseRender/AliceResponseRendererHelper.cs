@@ -6,8 +6,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AliceInventory.Controllers;
 using AliceInventory;
+using AliceInventory.Logic;
 
-namespace AliceInventory.Logic.AliceResponseRender
+namespace Controllers.AliceResponseRender
 {
     public static class AliceResponseRendererHelper
     {
@@ -267,11 +268,11 @@ namespace AliceInventory.Logic.AliceResponseRender
             };
         }
 
-        public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session, AliceResponseRender render)
+        public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session, Responses responses)
         {
             var aliceResponse = new AliceResponse()
             {
-                Response = CreateResponse(result, result.CultureInfo, render.responseTemplates),
+                Response = CreateResponse(result, result.CultureInfo, responses.responseTemplates),
                 Session = session,
                 Version = "1.0"
             };
@@ -347,7 +348,7 @@ namespace AliceInventory.Logic.AliceResponseRender
                 }
                 case InputProcessingResult.ListRead:
                 {
-                    if (result.Data is Logic.Entry[] entries)
+                    if (result.Data is Entry[] entries)
                     {
                         if (entries.Length > 0)
                         {

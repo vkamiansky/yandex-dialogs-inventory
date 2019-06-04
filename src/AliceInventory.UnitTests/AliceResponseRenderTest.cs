@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using AliceInventory.Controllers;
 using AliceInventory.Logic;
-using AliceInventory.Logic.AliceResponseRender;
+using Controllers.AliceResponseRender;
 using Xunit;
 using Xunit.Abstractions;
 

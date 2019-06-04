@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AliceInventory.Controllers;
 
-namespace AliceInventory.Logic.AliceResponseRender
+namespace Controllers.AliceResponseRender
 {
     public class ResponseTemplate
     {

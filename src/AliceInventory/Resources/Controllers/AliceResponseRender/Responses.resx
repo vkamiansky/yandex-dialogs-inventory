@@ -139,13 +139,13 @@
     <value>Здравствуй, я рюкзак! Добавь в меня 5 яблок, а потом ещё 6. Почему бы ещё и немного груш не положить? Собери свой рюкзак и узнай "Что в итоге?" насчиталось. Так я работаю :)\nНо ты всегда можешь сказать Помощь</value>
   </data>
   <data name="Added" xml:space="preserve">
-    <value />
+    <value>Добавлено "{0}" {1} {2} </value>
   </data>
   <data name="Added1" xml:space="preserve">
-    <value />
+    <value>Добавила "{0}" {1} {2} </value>
   </data>
   <data name="Added2" xml:space="preserve">
-    <value />
+    <value>Плюс "{0}" {1} {2} </value>
   </data>
   <data name="AddCanceled" xml:space="preserve">
     <value />

@@ -5,11 +5,11 @@ using AliceInventory.Controllers;
 using Microsoft.Extensions.Localization;
 
 
-namespace AliceInventory.Logic.AliceResponseRender
+namespace Controllers.AliceResponseRender
 {
-    public class AliceResponseRender : IAliceResponseRender
+    public class Responses 
     {
-        private readonly IStringLocalizer<AliceResponseRender> _localizer;
+        private readonly IStringLocalizer<Responses> _localizer;
 
         public Dictionary<ResponseFormat, ResponseTemplate> responseTemplates;
 
@@ -59,7 +59,7 @@ namespace AliceInventory.Logic.AliceResponseRender
         private readonly Button[] MainButtons;
         private readonly Button[] MainButtonsWithCancel;
 
-        public AliceResponseRender(IStringLocalizer<AliceResponseRender> localizer)
+        public Responses(IStringLocalizer<Responses> localizer)
         {
             this._localizer = localizer;
             responseTemplates = new Dictionary<ResponseFormat, ResponseTemplate>();
@@ -71,7 +71,7 @@ namespace AliceInventory.Logic.AliceResponseRender
             {
                 TextAndSpeechTemplates = new[]
                 {
-                    new TextAndSpeechTemplate(
+                    new TextAndSpeechTemplate( 
                         _localizer["GreetingRequested"].Value),
                 },
                 Buttons = MainButtons
@@ -81,20 +81,21 @@ namespace AliceInventory.Logic.AliceResponseRender
             {
                 TextAndSpeechTemplates = new[]
                 {
-                    new TextAndSpeechTemplate("Добавлено {0} {1} {2} "),
-                    new TextAndSpeechTemplate("Добавила {0} {1} {2} "),
-                    new TextAndSpeechTemplate("Плюс {0} {1} {2} "),
+                    new TextAndSpeechTemplate(_localizer["Added"].Value),
+                    new TextAndSpeechTemplate(_localizer["Added1"].Value),
+                    new TextAndSpeechTemplate(_localizer["Added2"].Value)
                 },
                 Buttons = MainButtonsWithCancel
             };
+
             responseTemplates[ResponseFormat.AddCanceled] = new ResponseTemplate()
             {
                 TextAndSpeechTemplates = new[]
                 {
-                    new TextAndSpeechTemplate("Отменено добавление {0} {1} {2}"),
-                    new TextAndSpeechTemplate("Отменила добавление {0} {1} {2}"),
-                    new TextAndSpeechTemplate("Убрала {0} {1} {2}"),
-                    new TextAndSpeechTemplate("Убрано {0} {1} {2}"),
+                    new TextAndSpeechTemplate("Отменено добавление \"{0}\" {1} {2}"),
+                    new TextAndSpeechTemplate("Отменила добавление \"{0}\" {1} {2}"),
+                    new TextAndSpeechTemplate("Убрала \"{0}\" {1} {2}"),
+                    new TextAndSpeechTemplate("Убрано \"{0}\" {1} {2}"),
                 },
                 Buttons = MainButtons
             };
@@ -102,16 +103,16 @@ namespace AliceInventory.Logic.AliceResponseRender
             {
                 TextAndSpeechTemplates = new[]
                 {
-                    new TextAndSpeechTemplate("Удалено {0} {1} {2}"),
-                    new TextAndSpeechTemplate("Удалила {0} {1} {2}"),
+                    new TextAndSpeechTemplate("Удалено \"{0}\" {1} {2}"),
+                    new TextAndSpeechTemplate("Удалила \"{0}\" {1} {2}"),
                 },
-                Buttons = MainButtons
+                Buttons = MainButtonsWithCancel
             };
             responseTemplates[ResponseFormat.DeleteCanceled] = new ResponseTemplate()
             {
                 TextAndSpeechTemplates = new[]
                 {
-                    new TextAndSpeechTemplate("Вернула {0} {1} {2}"),
+                    new TextAndSpeechTemplate("Вернула \"{0}\" {1} {2}"),
                     new TextAndSpeechTemplate("Вернула"),
                 },
                 Buttons = MainButtons
@@ -185,9 +186,42 @@ namespace AliceInventory.Logic.AliceResponseRender
             {
                 TextAndSpeechTemplates = new[]
                 {
-                    new TextAndSpeechTemplate("Отправила на {0}"),
+                    new TextAndSpeechTemplate("Отправила на \"{0}\""),
                     new TextAndSpeechTemplate("Отправлено"),
-                    new TextAndSpeechTemplate("Проверьте на {0}"),
+                    new TextAndSpeechTemplate("Проверьте на \"{0}\""),
+                },
+                Buttons = MainButtons
+            };
+            responseTemplates[ResponseFormat.MailRequest] = new ResponseTemplate()
+            {
+                TextAndSpeechTemplates = new[]
+                {
+                    new TextAndSpeechTemplate("К сожалению, я не знаю, какая у Вас почта, но если вы скажете, я запомню и никому не скажу. Какая у вас почта?")
+                },
+                Buttons = MainButtons
+            };
+            responseTemplates[ResponseFormat.MailIsEmpty] = new ResponseTemplate()
+            {
+                TextAndSpeechTemplates = new[]
+                {
+                    new TextAndSpeechTemplate("У меня и не было вашей почты")
+                },
+                Buttons = MainButtons
+            };
+            responseTemplates[ResponseFormat.MailAdded] = new ResponseTemplate()
+            {
+                TextAndSpeechTemplates = new[]
+                {
+                    new TextAndSpeechTemplate("Я добавила почту \"{0}\". Отправить на неё отчет?", "Я добавила почту. Отправить на неё отчет?"),
+                    new TextAndSpeechTemplate("Я сохранила почту \"{0}\". Отправить на неё отчет?", "Я сохранила почту. Отправить на неё отчет?")
+                },
+                Buttons = MainButtons
+            };
+            responseTemplates[ResponseFormat.MailDeleted] = new ResponseTemplate()
+            {
+                TextAndSpeechTemplates = new[]
+                {
+                    new TextAndSpeechTemplate("Я удалила почту \"{0}\"", "Я удалила вашу почту")
                 },
                 Buttons = MainButtons
             };
@@ -201,6 +235,7 @@ namespace AliceInventory.Logic.AliceResponseRender
                 },
                 Buttons = MainButtons
             };
+
         }
     }
 }

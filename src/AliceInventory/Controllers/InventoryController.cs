@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AliceInventory.Logic.AliceResponseRender;
+using Controllers.AliceResponseRender;
 using AliceInventory.Logic;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -23,16 +23,16 @@ namespace AliceInventory.Controllers
     {
         public Logic.IInventoryDialogService InventoryDialogService { set; get; }
         public Logic.IConfigurationService ConfigurationService { set; get; }
-        public Logic.AliceResponseRender.IAliceResponseRender _renderer { set; get; }
+        public Responses Responses { set; get; }
 
         public InventoryController(
             Logic.IInventoryDialogService inventoryDialogService,
             Logic.IConfigurationService configurationService,
-            IStringLocalizer<AliceResponseRender> localizer)
+            IStringLocalizer<Responses> localizer)
         {
             this.InventoryDialogService = inventoryDialogService;
             this.ConfigurationService = configurationService;
-            this._renderer = new AliceResponseRender(localizer);
+            this.Responses = new Responses(localizer);
         }
 
         // GET api/inventory
@@ -63,7 +63,7 @@ namespace AliceInventory.Controllers
                 : request.Request.Command;
 
             var answer = InventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
-            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session, _renderer as AliceResponseRender);
+            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session, Responses as Responses);
         }
     }
 }

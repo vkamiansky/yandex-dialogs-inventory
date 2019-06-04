@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AliceInventory.Logic.AliceResponseRender
+namespace Controllers.AliceResponseRender
 {
     public class TextAndSpeechTemplate
     {
