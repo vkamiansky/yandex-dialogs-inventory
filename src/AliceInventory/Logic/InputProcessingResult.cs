@@ -14,7 +14,7 @@ namespace AliceInventory.Logic
         Cleared,
         ListRead,
         MailSent,
-        RequestMail,
+        RequestedMail,
         MailAdded,
         MailDeleted,
         HelpRequested,
