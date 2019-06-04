@@ -5,11 +5,11 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace AliceInventory.Data
 {
-    public class DictionaryStorage : IUserDataStorage
+    public class DictionaryUserDataStorage : IUserDataStorage
     {
         private Dictionary<string, UserData> storage;
 
-        public DictionaryStorage()
+        public DictionaryUserDataStorage()
         {
             storage = new Dictionary<string, UserData>();
         }

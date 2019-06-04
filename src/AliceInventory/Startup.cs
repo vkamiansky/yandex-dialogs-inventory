@@ -36,7 +36,7 @@ namespace AliceInventory
             services.AddSingleton<Logic.Email.IInventoryEmailService, Logic.Email.InventoryEmailService>();
             services.AddSingleton<Logic.ICommandCache, Logic.CommandCache>();
             services.AddSingleton<Logic.IInputParserService, Logic.Parser.InputParserService>();
-            services.AddSingleton<Data.IUserDataStorage, Data.DictionaryStorage>();
+            services.AddSingleton<Data.IUserDataStorage, Data.DictionaryUserDataStorage>();
             services.AddSingleton<Logic.IInventoryDialogService, Logic.InventoryDialogService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
