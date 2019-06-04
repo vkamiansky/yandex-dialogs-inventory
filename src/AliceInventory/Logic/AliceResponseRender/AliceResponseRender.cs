@@ -221,7 +221,7 @@ namespace AliceInventory.Logic.AliceResponseRender
             object[] formatArguments = new object[0];
 
 
-            ResponseFormat format = ResponseFormat.GreetingRequested;
+            ResponseFormat format = ResponseFormat.Error;
 
             switch (result.Result)
             {
