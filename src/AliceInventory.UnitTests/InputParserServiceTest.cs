@@ -36,6 +36,7 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("яблоки 2 килограмма", "яблоки", 2, UnitOfMeasure.Kg)]
         [InlineData("Прибавь 3 единицы яблок", "яблок", 3, UnitOfMeasure.Unit)]
+        [InlineData("Прибавь 3 шт яблок", "яблок", 3, UnitOfMeasure.Unit)]
         [InlineData("4 литра яблок", "яблок", 4, UnitOfMeasure.L)]
         [InlineData("Плюс 5 яблок", "яблок", 5, UnitOfMeasure.Unit)]
         [InlineData("6 яблок", "яблок", 6, UnitOfMeasure.Unit)]
@@ -48,7 +49,7 @@ namespace AliceInventory.UnitTests
 
             Assert.Equal(InputProcessingCommand.Add, parsedCommand.Command);
 
-            var data = parsedCommand.Data as Entry;
+            var data = parsedCommand.Data as SingleEntry;
 
             Assert.Equal(entryName, data?.Name);
             Assert.Equal(entryCount, data?.Count);
@@ -68,7 +69,7 @@ namespace AliceInventory.UnitTests
 
             Assert.Equal(InputProcessingCommand.Add, parsedCommand.Command);
 
-            var data = parsedCommand.Data as Entry;
+            var data = parsedCommand.Data as SingleEntry;
 
             Assert.Equal(entryName, data?.Name);
             Assert.Equal(entryCount, data?.Count);
@@ -87,7 +88,7 @@ namespace AliceInventory.UnitTests
 
             Assert.Equal(InputProcessingCommand.Delete, parsedCommand.Command);
 
-            var data = parsedCommand.Data as Entry;
+            var data = parsedCommand.Data as SingleEntry;
 
             Assert.Equal(entryName, data?.Name);
             Assert.Equal(entryCount, data?.Count);
@@ -152,15 +153,16 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("Отправь на somemail@ya.ru", "somemail@ya.ru")]
-        [InlineData("вышли на some.mai-l@ya.ru", "some.mai-l@ya.ru")]
-        [InlineData("пошли somem333ail@ya.ru", "somem333ail@ya.ru")]
-        [InlineData("послать на somem333ail@ya.ru", "somem333ail@ya.ru")]
-        public void MailSentParsingTest(string input, string expectedEmail)
+        [InlineData("Отправь на somemail@ya.ru", InputProcessingCommand.SendMailTo, "somemail@ya.ru")]
+        [InlineData("вышли на some.mai-l@ya.ru", InputProcessingCommand.SendMailTo, "some.mai-l@ya.ru")]
+        [InlineData("somem333ail@ya.ru", InputProcessingCommand.AddMail, "somem333ail@ya.ru")]
+        [InlineData("Удали мыло", InputProcessingCommand.DeleteMail, null)]
+        [InlineData("Отправь на почту", InputProcessingCommand.SendMail, null)]
+        public void MailSentParsingTest(string input, InputProcessingCommand command, string expectedEmail)
         {
             var parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
-            Assert.Equal(InputProcessingCommand.SendMail, parsedCommand.Command);
+            Assert.Equal(command, parsedCommand.Command);
 
             var email = parsedCommand.Data as string;
 
@@ -175,7 +177,7 @@ namespace AliceInventory.UnitTests
         public void CommandParsingCultureTest(string input, string culture, double entryCount)
         {
             var parsedCommand = _parser.ParseInput(input, new CultureInfo(culture));
-            var data = parsedCommand.Data as Entry;
+            var data = parsedCommand.Data as SingleEntry;
 
             Assert.Equal(entryCount, data?.Count);
         }

@@ -8,12 +8,12 @@ namespace AliceInventory.Logic
 {
     public class InventoryDialogService : IInventoryDialogService
     {
-        private IInventoryStorage storage;
-        private IInputParserService parser;
-        private ICommandCache commandCache;
-        private IAliceEmailService emailService;
+        private readonly IUserDataStorage storage;
+        private readonly IInputParserService parser;
+        private readonly ICommandCache commandCache;
+        private readonly IInventoryEmailService emailService;
 
-        public InventoryDialogService(IInventoryStorage storage, IInputParserService parser, ICommandCache commandCache, IAliceEmailService emailService)
+        public InventoryDialogService(IUserDataStorage storage, IInputParserService parser, ICommandCache commandCache, IInventoryEmailService emailService)
         {
             this.storage = storage;
             this.parser = parser;
@@ -24,108 +24,174 @@ namespace AliceInventory.Logic
         public ProcessingResult ProcessInput(string userId, string input, CultureInfo culture)
         {
             ProcessingCommand parsedCommand = parser.ParseInput(input, culture);
-            var logicItem = parsedCommand.Data as Logic.Entry;
 
-            InputProcessingResult resultType;
-            object resultData = logicItem;
+            InputProcessingResult resultType = InputProcessingResult.Error;
+            object resultData = null;
+            ProcessingCommand prevCommand = commandCache.Get(userId);
+
             switch (parsedCommand.Command)
             {
                 case InputProcessingCommand.SayHello:
+                {
                     resultType = InputProcessingResult.GreetingRequested;
                     break;
+                }
 
-                case InputProcessingCommand.Accept:
-                    if (commandCache.Get(userId).Command == InputProcessingCommand.Clear)
-                    {
-                        resultType = InputProcessingResult.Cleared;
-                        storage.Clear(userId);
-                    }
-                    else
-                    {
-                        resultType = InputProcessingResult.Error;
-                    }
+                case InputProcessingCommand.Accept when prevCommand.Command == InputProcessingCommand.Clear:
+                {
+                    storage.ClearInventory(userId);
+                    resultType = InputProcessingResult.Cleared;
+
                     break;
+                }
+
+                case InputProcessingCommand.Accept when prevCommand.Command == InputProcessingCommand.AddMail:
+                {
+                    goto case InputProcessingCommand.SendMail;
+                }
 
                 case InputProcessingCommand.Decline:
+                {
                     resultType = InputProcessingResult.Declined;
                     break;
-                    
-                case InputProcessingCommand.Cancel: 
-                    ProcessingCommand cachedCommand = commandCache.Get(userId);
-                    switch (cachedCommand.Command)
-                    {
-                        case InputProcessingCommand.Add:
-                            storage.Delete(userId, (cachedCommand.Data as Logic.Entry).ToData());
-                            resultType = InputProcessingResult.AddCanceled;
-                            resultData = cachedCommand.Data as Logic.Entry;
-                            break;
-                        case InputProcessingCommand.Delete:
-                            storage.Add(userId, (cachedCommand.Data as Logic.Entry).ToData());
-                            resultType = InputProcessingResult.DeleteCanceled;
-                            resultData = cachedCommand.Data as Logic.Entry;
-                            break;
-                        default:
-                            resultType = InputProcessingResult.Error;
-                            break;
-                    }
+                }
+
+                case InputProcessingCommand.Cancel when prevCommand.Command == InputProcessingCommand.Add:
+                {
+                    if (!(prevCommand.Data is SingleEntry singleEntry)) goto default;
+                    storage.DeleteEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
+                    resultData = (Logic.SingleEntry) prevCommand.Data;
+                    resultType = InputProcessingResult.AddCanceled;
                     break;
+                }
+                
+                case InputProcessingCommand.Cancel when prevCommand.Command == InputProcessingCommand.Delete:
+                {
+                    if (!(prevCommand.Data is SingleEntry singleEntry)) goto default;
+                    storage.AddEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
+                    resultData = (Logic.SingleEntry) prevCommand.Data;
+                    resultType = InputProcessingResult.DeleteCanceled;
+                    break;
+                }
 
                 case InputProcessingCommand.Add:
-                    if (logicItem != null && logicItem.Count > 0)
-                    {
-                        resultType = InputProcessingResult.Added;
-                        storage.Add(userId, logicItem.ToData());
-                    }
-                    else
-                    {
-                        resultType = InputProcessingResult.Error;
-                    }
+                {
+                    if (!(parsedCommand.Data is SingleEntry singleEntry)) goto default;
+                    storage.AddEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
+                    resultData = parsedCommand.Data;
+                    resultType = InputProcessingResult.Added;
                     break;
+                }
 
                 case InputProcessingCommand.Delete:
-                    if (logicItem != null && logicItem.Count > 0)
+                {
+                    if (!(parsedCommand.Data is SingleEntry singleEntry)) goto default;
+                    storage.DeleteEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
+                    resultData = parsedCommand.Data;
+                    resultType = InputProcessingResult.Deleted;
+                    break;
+                }
+
+                case InputProcessingCommand.Clear:
+                {
+                    resultType = InputProcessingResult.ClearRequested;
+                    break;
+                }
+
+                case InputProcessingCommand.ReadList:
+                {
+                    resultData = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
+                    resultType = InputProcessingResult.ListRead;
+                    break;
+                }
+
+                case InputProcessingCommand.SendMailTo:
+                {
+                    var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
+
+                    if (entries.Length < 1)
                     {
-                        resultType = InputProcessingResult.Deleted;
-                        storage.Delete(userId, logicItem.ToData());
+                        resultType = InputProcessingResult.ListRead;
+                        resultData = entries;
+                    }
+                    else if (parsedCommand.Data is string email)
+                    {
+                        emailService.SendListAsync(email, entries);
+                        storage.SetUserEmail(userId, email);
+                        resultType = InputProcessingResult.MailSent;
+                        resultData = email;
+                    }
+
+                    break;
+                }
+
+                case InputProcessingCommand.SendMail:
+                {
+                    var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
+                    var email = storage.GetUserEmail(userId);
+
+                    if (entries.Length < 1)
+                    {
+                        resultType = InputProcessingResult.ListRead;
+                        resultData = entries;
+                    }
+                    else if (string.IsNullOrEmpty(email))
+                    {
+                        resultType = InputProcessingResult.RequestedMail;
                     }
                     else
                     {
-                        resultType = InputProcessingResult.Error;
+                        emailService.SendListAsync(email, entries);
+                        resultType = InputProcessingResult.MailSent;
+                        resultData = email;
+                    }
+
+                    break;
+                }
+                
+                case InputProcessingCommand.AddMail:
+                {
+                    if (parsedCommand.Data is string email)
+                    {
+                        storage.SetUserEmail(userId, email);
+                        resultType = InputProcessingResult.MailAdded;
+                        resultData = email;
                     }
                     break;
+                }
 
-                case InputProcessingCommand.Clear:
-                    resultType = InputProcessingResult.ClearRequested;
-                    break;
-
-                case InputProcessingCommand.ReadList:
-                    resultType = InputProcessingResult.ListRead;
-                    resultData = Array.ConvertAll(storage.ReadAll(userId), x => x.ToLogic());
-                    break;
-
-                case InputProcessingCommand.SendMail:
-                    //emailService.SendListAsync(email, storage.ReadAll(userId));
-                    resultType = InputProcessingResult.MailSent;
-                    var email = parsedCommand.Data as string;
+                case InputProcessingCommand.DeleteMail:
+                {
+                    var email = storage.DeleteUserEmail(userId);
+                    resultType = InputProcessingResult.MailDeleted;
                     resultData = email;
                     break;
+                }
 
                 case InputProcessingCommand.RequestHelp:
+                {
                     resultType = InputProcessingResult.HelpRequested;
                     break;
+                }
 
                 case InputProcessingCommand.RequestExit:
+                {
                     resultType = InputProcessingResult.ExitRequested;
                     break;
+                }
 
                 case InputProcessingCommand.SayUnknownCommand:
-                    resultType = InputProcessingResult.Error;
+                {
                     resultData = parsedCommand.Command;
+                    resultType = InputProcessingResult.Error;
                     break;
+                }
 
                 default:
+                {
                     resultType = InputProcessingResult.Error;
                     break;
+                }
             }
 
             commandCache.Set(userId, parsedCommand);
@@ -134,7 +200,7 @@ namespace AliceInventory.Logic
             {
                 Result = resultType,
                 Data = resultData,
-                CultureInfo = culture
+                CultureInfo = culture,
             };
         }
     }

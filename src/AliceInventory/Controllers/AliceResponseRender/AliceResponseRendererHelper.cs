@@ -72,9 +72,9 @@ namespace AliceInventory.Logic.AliceResponseRender
         {
             TextAndSpeechTemplates = new[]
             {
-                new TextAndSpeechTemplate("Добавлено {0} {1} {2} "),
-                new TextAndSpeechTemplate("Добавила {0} {1} {2} "),
-                new TextAndSpeechTemplate("Плюс {0} {1} {2} "),
+                new TextAndSpeechTemplate("Добавлено \"{0}\" {1} {2} "),
+                new TextAndSpeechTemplate("Добавила \"{0}\" {1} {2} "),
+                new TextAndSpeechTemplate("Плюс \"{0}\" {1} {2} "),
             },
             Buttons = MainButtonsWithCancel
         };
@@ -83,10 +83,10 @@ namespace AliceInventory.Logic.AliceResponseRender
         {
             TextAndSpeechTemplates = new[]
             {
-                new TextAndSpeechTemplate("Отменено добавление {0} {1} {2}"),
-                new TextAndSpeechTemplate("Отменила добавление {0} {1} {2}"),
-                new TextAndSpeechTemplate("Убрала {0} {1} {2}"),
-                new TextAndSpeechTemplate("Убрано {0} {1} {2}"),
+                new TextAndSpeechTemplate("Отменено добавление \"{0}\" {1} {2}"),
+                new TextAndSpeechTemplate("Отменила добавление \"{0}\" {1} {2}"),
+                new TextAndSpeechTemplate("Убрала \"{0}\" {1} {2}"),
+                new TextAndSpeechTemplate("Убрано \"{0}\" {1} {2}"),
             },
             Buttons = MainButtons
         };
@@ -95,17 +95,17 @@ namespace AliceInventory.Logic.AliceResponseRender
         {
             TextAndSpeechTemplates = new[]
             {
-                new TextAndSpeechTemplate("Удалено {0} {1} {2}"),
-                new TextAndSpeechTemplate("Удалила {0} {1} {2}"),
+                new TextAndSpeechTemplate("Удалено \"{0}\" {1} {2}"),
+                new TextAndSpeechTemplate("Удалила \"{0}\" {1} {2}"),
             },
-            Buttons = MainButtons
+            Buttons = MainButtonsWithCancel
         };
 
         private static readonly ResponseTemplate DeleteCanceledTemplate = new ResponseTemplate()
         {
             TextAndSpeechTemplates = new[]
             {
-                new TextAndSpeechTemplate("Вернула {0} {1} {2}"),
+                new TextAndSpeechTemplate("Вернула \"{0}\" {1} {2}"),
                 new TextAndSpeechTemplate("Вернула"),
             },
             Buttons = MainButtons
@@ -166,9 +166,46 @@ namespace AliceInventory.Logic.AliceResponseRender
         {
             TextAndSpeechTemplates = new[]
             {
-                new TextAndSpeechTemplate("Отправила на {0}"),
+                new TextAndSpeechTemplate("Отправила на \"{0}\""),
                 new TextAndSpeechTemplate("Отправлено"),
-                new TextAndSpeechTemplate("Проверьте на {0}"),
+                new TextAndSpeechTemplate("Проверьте на \"{0}\""),
+            },
+            Buttons = MainButtons
+        };
+
+        private static readonly ResponseTemplate RequestMailTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("К сожалению, я не знаю, какая у Вас почта, но если вы скажете, я запомню и никому не скажу. Какая у вас почта?")
+            },
+            Buttons = MainButtons
+        };
+
+        private static readonly ResponseTemplate MailIsEmptyTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("У меня и не было вашей почты")
+            },
+            Buttons = MainButtons
+        };
+
+        private static readonly ResponseTemplate MailAddedTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Я добавила почту \"{0}\". Отправить на неё отчет?", "Я добавила почту. Отправить на неё отчет?"),
+                new TextAndSpeechTemplate("Я сохранила почту \"{0}\". Отправить на неё отчет?", "Я сохранила почту. Отправить на неё отчет?")
+            },
+            Buttons = MainButtons
+        };
+
+        private static readonly ResponseTemplate MailDeletedTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Я удалила почту \"{0}\"", "Я удалила вашу почту")
             },
             Buttons = MainButtons
         };
@@ -222,7 +259,11 @@ namespace AliceInventory.Logic.AliceResponseRender
                 [ResponseFormat.HelpRequested] = HelpRequestTemplate,
                 [ResponseFormat.ListRead] = ListReadTemplate,
                 [ResponseFormat.EmptyListRead] = EmptyListReadTemplate,
-                [ResponseFormat.MailSent] = MailSentTemplate
+                [ResponseFormat.MailSent] = MailSentTemplate,
+                [ResponseFormat.MailRequest] = RequestMailTemplate,
+                [ResponseFormat.MailIsEmpty] = MailIsEmptyTemplate,
+                [ResponseFormat.MailAdded] = MailAddedTemplate,
+                [ResponseFormat.MailDeleted] = MailDeletedTemplate,
             };
         }
 
@@ -239,7 +280,6 @@ namespace AliceInventory.Logic.AliceResponseRender
 
         private static Response CreateResponse(ProcessingResult result, CultureInfo cultureInfo)
         {
-            bool isError = false;
             object[] formatArguments = new object[0];
 
 
@@ -259,30 +299,42 @@ namespace AliceInventory.Logic.AliceResponseRender
                 }
                 case InputProcessingResult.Added:
                 {
-                    format = ResponseFormat.Added;
-                    if (result.Data is Entry entry)
+                    if (result.Data is SingleEntry entry)
+                    {
+                        format = ResponseFormat.Added;
                         formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                    }
+
                     break;
                 }
                 case InputProcessingResult.AddCanceled:
                 {
-                    format = ResponseFormat.AddCanceled;
-                    if (result.Data is Entry entry)
+                    if (result.Data is SingleEntry entry)
+                    {
+                        format = ResponseFormat.AddCanceled;
                         formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                    }
+
                     break;
                 }
                 case InputProcessingResult.Deleted:
                 {
-                    format = ResponseFormat.Deleted;
-                    if (result.Data is Entry entry)
+                    if (result.Data is SingleEntry entry)
+                    {
+                        format = ResponseFormat.Deleted;
                         formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                    }
+
                     break;
                 }
                 case InputProcessingResult.DeleteCanceled:
                 {
-                    format = ResponseFormat.DeleteCanceled;
-                    if (result.Data is Entry entry)
+                    if (result.Data is SingleEntry entry)
+                    {
+                        format = ResponseFormat.DeleteCanceled;
                         formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                    }
+
                     break;
                 }
                 case InputProcessingResult.ClearRequested:
@@ -313,10 +365,37 @@ namespace AliceInventory.Logic.AliceResponseRender
                 }
                 case InputProcessingResult.MailSent:
                 {
-                    format = ResponseFormat.MailSent;
                     if (result.Data is string email)
                     {
+                        format = ResponseFormat.MailSent;
                         formatArguments = new object[] {email};
+                    }
+                    break;
+                }
+                case InputProcessingResult.RequestedMail:
+                {
+                    format = ResponseFormat.MailRequest;
+                    break;
+                }
+                case InputProcessingResult.MailAdded:
+                {
+                    if (result.Data is string email)
+                    {
+                        format = ResponseFormat.MailAdded;
+                        formatArguments = new object[] {email};
+                    }
+                    break;
+                }
+                case InputProcessingResult.MailDeleted:
+                {
+                    if (result.Data is string email)
+                    {
+                        format = ResponseFormat.MailDeleted;
+                        formatArguments = new object[] {email};
+                    }
+                    else
+                    {
+                        format = ResponseFormat.MailIsEmpty;
                     }
                     break;
                 }
@@ -333,15 +412,8 @@ namespace AliceInventory.Logic.AliceResponseRender
                 default: break;
             }
 
-            ResponseTemplate template;
-            if (isError || !responseTemplates.ContainsKey(format))
-            {
-                template = ErrorTemplate;
-            }
-            else
-            {
-                template = responseTemplates[format];
-            }
+            var template = !responseTemplates.ContainsKey(format) ?
+                ErrorTemplate : responseTemplates[format];
 
             var textAndSpeechTemplate = template.TextAndSpeechTemplates.GetRandomItem();
 
