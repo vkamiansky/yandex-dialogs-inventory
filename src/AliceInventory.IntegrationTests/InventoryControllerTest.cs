@@ -35,13 +35,11 @@ namespace AliceInventory.IntegrationTests
         {
             _server = new TestServer(WebHost.CreateDefaultBuilder()
                 .UseStartup<Startup>()
-                .ConfigureTestServices(ConfigureTestServices));
+                .ConfigureTestServices(services =>
+                {
+                    services.AddSingleton<Logic.IConfigurationService, TestConfigurationService>();
+                }));
             _client = _server.CreateClient();
-        }
-
-        protected virtual void ConfigureTestServices(IServiceCollection services)
-        {
-            services.AddSingleton<Logic.IConfigurationService, TestConfigurationService>();
         }
 
         private async Task<AliceResponse> SendRequest(HttpClient client, AliceRequest request)
