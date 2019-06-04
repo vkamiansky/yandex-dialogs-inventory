@@ -29,31 +29,33 @@ namespace AliceInventory.Logic
                 var vaultClientSettings = new VaultClientSettings($"http://{secretIp}:{secretPort}", authMethod);
                 _VaultClient = new VaultClient(vaultClientSettings);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                _VaultClientError = e;
             }
         }
         private IVaultClient _VaultClient;
+        private Exception _VaultClientError;
 
-        public async Task<bool> GetIsConfigured()
+        public async Task<string> GetIsConfigured()
         {
-            if (_VaultClient == null)
-                return false;
             try
             {
+                if (_VaultClient == null)
+                    return _VaultClientError.StackTrace;
+
                 Secret<SecretData> smtpAddress = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_address");
                 Secret<SecretData> smtpPort = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_port");
                 Secret<SecretData> emailLogin = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_login");
                 Secret<SecretData> emailPassword = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_password");
-                
+
                 var configValues = new[] { smtpAddress, smtpPort, emailLogin, emailPassword };
                 var result = configValues.Any(x => !x.Data.Data.ContainsKey("CURRENT"));
-                return result;
+                return result ? "Vault value empty" : string.Empty;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                return new String(e.StackTrace + "\n" + _VaultClientError?.StackTrace ?? string.Empty);
             }
         }
     }

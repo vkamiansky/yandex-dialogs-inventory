@@ -11,7 +11,7 @@ namespace AliceInventory.Logic
         string MailingAccountPassword { get; }
         string MailingSmtpHost { get; }
         string MailingSmtpPort { get; }
-        Task<bool> GetIsConfigured();
+        Task<string> GetIsConfigured();
     }
 
 }
