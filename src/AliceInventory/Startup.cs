@@ -48,9 +48,6 @@ namespace AliceInventory
 
                 options.SupportedUICultures = supportedCultures;
             });
-            services
-                .AddSingleton<Logic.AliceResponseRender.IAliceResponseRender,
-                    Logic.AliceResponseRender.AliceResponseRender>();
             services.AddSingleton<Logic.IConfigurationService, Logic.ConfigurationService>();
             services.AddSingleton<Logic.Email.IAliceEmailService, Logic.Email.AliceEmailService>();
             services.AddSingleton<Logic.ICommandCache, Logic.CommandCache>();

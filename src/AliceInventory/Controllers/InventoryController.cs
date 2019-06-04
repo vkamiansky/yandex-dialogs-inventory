@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 
 
 namespace AliceInventory.Controllers
@@ -33,11 +34,11 @@ namespace AliceInventory.Controllers
         public InventoryController(
             Logic.IInventoryDialogService inventoryDialogService,
             Logic.IConfigurationService configurationService,
-            Logic.AliceResponseRender.IAliceResponseRender renderer)
+            IStringLocalizer<AliceResponseRender> localizer)
         {
             this.InventoryDialogService = inventoryDialogService;
             this.ConfigurationService = configurationService;
-            this._renderer = renderer;
+            this._renderer = new AliceResponseRender(localizer);
         }
 
         // GET api/inventory
