@@ -16,7 +16,14 @@ namespace AliceInventory.Logic.Email
         public async void SendListAsync(string email, Logic.Entry[] entries)
         {
             var message = CreateListMessage(email, entries);
-            await SendEmailAsync(message);
+            try
+            {
+                await SendEmailAsync(message);
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         private MimeMessage CreateListMessage(string email, Logic.Entry[] entries)

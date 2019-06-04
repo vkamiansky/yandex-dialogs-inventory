@@ -60,7 +60,7 @@ namespace AliceInventory.Logic
                 {
                     if (!(prevCommand.Data is SingleEntry singleEntry)) goto default;
                     storage.DeleteEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
-                    resultData = prevCommand.Data as Logic.Entry;
+                    resultData = (Logic.SingleEntry) prevCommand.Data;
                     resultType = InputProcessingResult.AddCanceled;
                     break;
                 }
@@ -69,7 +69,7 @@ namespace AliceInventory.Logic
                 {
                     if (!(prevCommand.Data is SingleEntry singleEntry)) goto default;
                     storage.AddEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
-                    resultData = prevCommand.Data as Logic.Entry;
+                    resultData = (Logic.SingleEntry) prevCommand.Data;
                     resultType = InputProcessingResult.DeleteCanceled;
                     break;
                 }
@@ -137,7 +137,7 @@ namespace AliceInventory.Logic
                     }
                     else if (string.IsNullOrEmpty(email))
                     {
-                        resultType = InputProcessingResult.RequestMail;
+                        resultType = InputProcessingResult.RequestedMail;
                     }
                     else
                     {

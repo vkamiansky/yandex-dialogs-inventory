@@ -372,7 +372,7 @@ namespace AliceInventory.Logic.AliceResponseRender
                     }
                     break;
                 }
-                case InputProcessingResult.RequestMail:
+                case InputProcessingResult.RequestedMail:
                 {
                     format = ResponseFormat.MailRequest;
                     break;

@@ -45,9 +45,9 @@ namespace AliceInventory.Logic.Parser
             @"(?:(?:ещ(?:е|ё)|конечно|давай|ну)\s?)";
         private static readonly Regex IgnoreWord = new Regex(IgnoreWordPattern);
 
-        public const string UnitPattern = @"штук(?:а|и|у|овин)?|единиц(?:а|у|ы)?";
+        public const string UnitPattern = @"шт(?:ук|ука|уки|уку|уковин)?|единиц(?:а|у|ы)?";
         public const string KgPattern = @"к(?:г|илограмм(?:а|ов)?)";
-        public const string LiterPattern = @"литр(?:а|ов)?";
+        public const string LiterPattern = @"л(?:итр(?:а|ов)?)?";
         public const string UnitOfMeasurePattern = UnitPattern + "|" + KgPattern + "|" + LiterPattern;
         public static readonly string EntryUnit = AddGroupName(EntryUnitGroupName, UnitOfMeasurePattern);
         public const string EntryNamePattern = @".{3,}";
