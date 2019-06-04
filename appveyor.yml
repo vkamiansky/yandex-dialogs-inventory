@@ -42,7 +42,7 @@ deploy_script:
 
         Start-Sleep -s 10
 
-        docker run -i loadimpact/k6 run - <./load_tests/test_post.js
+        docker run -i -v /home/appveyor/projects/hackathonfls2019/load_tests:/load_tests loadimpact/k6 run /load_tests/test_post.js
     }
     else
     {
