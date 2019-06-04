@@ -39,6 +39,10 @@ deploy_script:
         echo "$env:DOCKER_RESTART_PASS" | nc -q 0 84.201.130.31 5003
 
         Write-Host "Success"
+
+        Start-Sleep -s 10
+
+        docker run -i loadimpact/k6 run - <./load_tests/test_post.js
     }
     else
     {
@@ -46,8 +50,3 @@ deploy_script:
     }
 
     exit 0
-
-on_success:
-- ps: >-
-    Start-Sleep -s 10
-    docker run -i loadimpact/k6 run - <./load_tests/test_post.js
