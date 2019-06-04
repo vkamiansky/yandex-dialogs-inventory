@@ -1,4 +1,4 @@
-export let url = "http://test.loadimpact.com";
+export let url = "https://alice.vsop.spb.ru/api/inventory/alice";
 
 export let optionsSimple =
 {
