@@ -12,7 +12,7 @@ namespace AliceInventory.Logic.Parser
         public CommandTemplate(InputProcessingCommand command, string expression)
         {
             Command = command;
-            Regex = new Regex(@"^" + expression + @"(?:\s+|$)", RegexOptions.Compiled);
+            Regex = new Regex(@"^" + expression + @"(?:\s+|$)", RegexOptions.None);
         }
 
         public bool TryParse(string input, out object data, CultureInfo cultureInfo)

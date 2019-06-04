@@ -21,12 +21,6 @@ namespace AliceInventory.Controllers
     [ApiController]
     public class InventoryController : ControllerBase
     {
-        static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
-        
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args).
-            UseStartup<AliceInventory.Startup>();
-
         public Logic.IInventoryDialogService InventoryDialogService { set; get; }
         public Logic.IConfigurationService ConfigurationService { set; get; }
         public Logic.AliceResponseRender.IAliceResponseRender _renderer { set; get; }

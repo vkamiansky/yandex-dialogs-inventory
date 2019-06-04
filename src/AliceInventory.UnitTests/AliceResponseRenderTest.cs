@@ -18,7 +18,7 @@ namespace AliceInventory.UnitTests
             _output = output;
         }
 
-        private static readonly Entry entry = new Entry()
+        private static readonly SingleEntry entry = new SingleEntry()
         {
             Name = "камни",
             Count = 4,
@@ -26,9 +26,9 @@ namespace AliceInventory.UnitTests
         };
         private static readonly Entry[] entries = new []
         {
-            new Entry() {Name = "яблоки", Count = 10, Unit = UnitOfMeasure.Kg},
-            new Entry() {Name = "арбузы", Count = 10, Unit = UnitOfMeasure.L},
-            new Entry() {Name = "молоко", Count = 10, Unit = UnitOfMeasure.Unit},
+            new Entry("яблоки", 10, UnitOfMeasure.Kg),
+            new Entry("арбузы", 10, UnitOfMeasure.L),
+            new Entry("молоко", 10, UnitOfMeasure.Unit),
         };
 
         private static readonly Session sessionExample = new Session()

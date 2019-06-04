@@ -12,10 +12,58 @@ namespace AliceInventory.Logic
 {
     public class ConfigurationService : IConfigurationService
     {
-        public string MailingAccountLogin { get; }
-        public string MailingAccountPassword { get; }
-        public string MailingSmtpHost { get; }
-        public string MailingSmtpPort { get; }
+        public async Task<string> GetMailingAccountLogin()
+        {
+            try
+            {
+                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_login");
+                return secret.Data.Data["CURRENT"] as string;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        public async Task<string> GetMailingAccountPassword()
+        {
+            try
+            {
+                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_password");
+                return secret.Data.Data["CURRENT"] as string;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        public async Task<string> GetMailingSmtpHost()
+        {
+            try
+            {
+                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_address");
+                return secret.Data.Data["CURRENT"] as string;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        public async Task<int> GetMailingSmtpPort()
+        {
+            try
+            {
+                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_port");
+                var stringPort = secret.Data.Data["CURRENT"] as string;
+                return int.Parse(stringPort);
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
 
         public ConfigurationService()
         {
@@ -48,7 +96,6 @@ namespace AliceInventory.Logic
                 Secret<SecretData> smtpPort = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_port");
                 Secret<SecretData> emailLogin = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_login");
                 Secret<SecretData> emailPassword = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_password");
-
                 var configValues = new[] { smtpAddress, smtpPort, emailLogin, emailPassword };
                 var result = configValues.Any(x => !x.Data.Data.ContainsKey("CURRENT"));
                 return result ? "Vault value empty" : string.Empty;

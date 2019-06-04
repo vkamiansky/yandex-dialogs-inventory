@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace AliceInventory.Logic.Email
 {
-    public interface IAliceEmailService
+    public interface IInventoryEmailService
     {
-        void SendListAsync(string email, Data.Entry[] entries);
+        void SendListAsync(string email, Logic.Entry[] entries);
 
     }
 }
