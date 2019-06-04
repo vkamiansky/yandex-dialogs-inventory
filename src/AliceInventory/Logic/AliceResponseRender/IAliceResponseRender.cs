@@ -9,7 +9,5 @@ namespace AliceInventory.Logic.AliceResponseRender
 {
     public interface IAliceResponseRender
     {
-        AliceResponse CreateAliceResponse(ProcessingResult result, Session session);
-
     }
 }

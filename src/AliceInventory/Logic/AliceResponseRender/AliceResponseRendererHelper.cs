@@ -226,18 +226,18 @@ namespace AliceInventory.Logic.AliceResponseRender
             };
         }
 
-        public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session)
+        public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session, AliceResponseRender render)
         {
             var aliceResponse = new AliceResponse()
             {
-                Response = CreateResponse(result, result.CultureInfo),
+                Response = CreateResponse(result, result.CultureInfo, render.responseTemplates),
                 Session = session,
                 Version = "1.0"
             };
             return aliceResponse;
         }
 
-        private static Response CreateResponse(ProcessingResult result, CultureInfo cultureInfo)
+        private static Response CreateResponse(ProcessingResult result, CultureInfo cultureInfo, Dictionary<ResponseFormat, ResponseTemplate> responseTemplates)
         {
             bool isError = false;
             object[] formatArguments = new object[0];
