@@ -11,6 +11,7 @@ namespace AliceInventory.Logic.Email
         {
             using (var client = new SmtpClient())
             {
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
                 await client.ConnectAsync(host.Url, host.Port, false);
                 await client.AuthenticateAsync(login, password);
                 await client.SendAsync(message);
