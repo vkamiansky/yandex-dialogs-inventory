@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -54,6 +54,8 @@ namespace AliceInventory.Logic.Parser
                 $"{RegexHelper.AcceptWord}"),
             new CommandTemplate(InputProcessingCommand.Decline,
                 $"{RegexHelper.DeclineWord}"),
+            new CommandTemplate(InputProcessingCommand.ReadList,
+                $"что в итоге"),
             new CommandTemplate(InputProcessingCommand.ReadList,
                 $"{RegexHelper.ReadWord}"),
             new CommandTemplate(InputProcessingCommand.ReadList,
