@@ -1,4 +1,6 @@
-# FirstLine Software Practice May 2019
+# Yandex Dialogs Inventory Skill
+
+## Навык "Учёт" для Яндекс Диалогов
 
 [![AppVeyor](https://img.shields.io/appveyor/ci/vkamiansky/hackathonfls2019.svg)](https://ci.appveyor.com/project/vkamiansky/hackathonfls2019)
 
@@ -10,4 +12,4 @@
 
 [![Gitter](https://badges.gitter.im/FirstLine-Software-Practice/community.svg)](https://gitter.im/FirstLine-Software-Practice/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Inventory helper skill using Yandex Dialogs. Originally from FLS Hackathon 2019. Developed as part of FLS coding boot camp.
+Inventory skill working on Yandex Dialogs platform. Originally from FLS Hackathon 2019. Supported by FLS .Net Core bootcamp community.
