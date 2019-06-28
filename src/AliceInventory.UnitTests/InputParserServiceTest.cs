@@ -103,6 +103,7 @@ namespace AliceInventory.UnitTests
         [InlineData("покажи список", InputProcessingCommand.ReadList)]
         [InlineData("список", InputProcessingCommand.ReadList)]
         [InlineData("выведи список", InputProcessingCommand.ReadList)]
+        [InlineData("итого", InputProcessingCommand.ReadList)]
         [InlineData("прочитай список", InputProcessingCommand.ReadList)]
         [InlineData("зачитай список", InputProcessingCommand.ReadList)]
         [InlineData("читай список", InputProcessingCommand.ReadList)]
