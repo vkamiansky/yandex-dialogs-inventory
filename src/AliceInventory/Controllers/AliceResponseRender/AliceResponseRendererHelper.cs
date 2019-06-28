@@ -63,7 +63,7 @@ namespace AliceInventory.Logic.AliceResponseRender
             TextAndSpeechTemplates = new[]
             {
                 new TextAndSpeechTemplate(
-                    "Здравствуй, я рюкзак! Добавь в меня 5 яблок, а потом ещё 6. Почему бы ещё и немного груш не положить? Собери свой рюкзак и узнай \"Что в итоге?\" насчиталось. Так я работаю :)\nНо ты всегда можешь сказать Помощь"),
+                    "Здравствуй, я навык Учёт! Скажи \"добавь 5 яблок\", или \"добавь яблочный сок 5 литров\". Я понимаю единицы измерения. Могу вывести итоговый список, или отправить его на почту. Так я работаю :)\n Но ты всегда можешь сказать \"Помощь\".")
             },
             Buttons = MainButtons
         };
@@ -125,7 +125,7 @@ namespace AliceInventory.Logic.AliceResponseRender
             TextAndSpeechTemplates = new[]
             {
                 new TextAndSpeechTemplate("Список очищен"),
-                new TextAndSpeechTemplate("Рюкзак чист"),
+                new TextAndSpeechTemplate("Список был очищен"),
                 new TextAndSpeechTemplate("Готово"),
             },
             Buttons = MainButtons
@@ -215,7 +215,7 @@ namespace AliceInventory.Logic.AliceResponseRender
             TextAndSpeechTemplates = new[]
             {
                 new TextAndSpeechTemplate(
-                    "Примеры:\nДобавь 5 килограмм яблок\nУдали 3 груши\nОчисти всё\nОтправь на Email\nНо не обязательно говорить именно яблоки и груши, говори как хочешь, а я постараюсь понять"),
+                    "Примеры команд:\nДобавь 5 килограмм яблок.\nУдали 3 груши\nОчисти всё.\nОтправь на Email.\nНо не обязательно говорить именно яблоки и груши, говори как хочешь, а я постараюсь понять.")
             },
             Buttons = MainButtons
         };

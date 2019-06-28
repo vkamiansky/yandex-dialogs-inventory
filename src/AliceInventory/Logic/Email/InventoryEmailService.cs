@@ -35,9 +35,9 @@ namespace AliceInventory.Logic.Email
         private MimeMessage CreateListMessage(string receiverEmail, string senderEmail, Logic.Entry[] entries)
         {
             var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress("Навык Алисы - Рюкзак", senderEmail));
+            emailMessage.From.Add(new MailboxAddress("Навык Алисы - Учёт", senderEmail));
             emailMessage.To.Add(new MailboxAddress("", receiverEmail));
-            emailMessage.Subject = $"Ваш отчёт от {DateTime.Now.Date:dd.MM.yyyy}";
+            emailMessage.Subject = $"Ваш список от {DateTime.Now.Date:dd.MM.yyyy}";
             emailMessage.Body = CreateHtmlBodyFromList(entries);
             return emailMessage;
         }
