@@ -67,7 +67,7 @@ namespace AliceInventory.Logic.Parser
         public const string LiterPattern = @"л(?:итр(?:а|ов)?)?";
         public const string UnitOfMeasurePattern = UnitPattern + "|" + KgPattern + "|" + LiterPattern;
         public static readonly string EntryUnit = AddGroupName(EntryUnitGroupName, UnitOfMeasurePattern);
-        public const string EntryNamePattern = @".{3,}";
+        public const string EntryNamePattern = @".{2}.+?";
         public static readonly string EntryName = AddGroupName(EntryNameGroupName, EntryNamePattern);
         public const string Number = @"-?\d+(?:(?:\.|,)\d+)?";
         public static readonly string EntryCount = AddGroupName(EntryCountGroupName, Number);
