@@ -103,7 +103,7 @@ namespace AliceInventory.UnitTests
         [InlineData("убери 2 килограмм яблок", "яблок", 2, UnitOfMeasure.Kg)]
         [InlineData("убери 3 яблока", "яблока", 3, null)]
         [InlineData("убери ещё 3 яблока", "яблока", 3, null)]
-        [InlineData("убери яблок 3", "яблок", 3, null)]
+        [InlineData("убери яблок 5", "яблок", 5, null)]
         [InlineData("давай убери яблок 3 штуки", "яблок", 3, UnitOfMeasure.Unit)]
         [InlineData("сотри килограмм яблок", "яблок", null, UnitOfMeasure.Kg)]
         public void DeleteCommandParsing(string input, string entryName, double? entryCount, UnitOfMeasure? entryUnitOfMeasure)
