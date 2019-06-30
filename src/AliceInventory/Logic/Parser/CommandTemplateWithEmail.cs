@@ -9,7 +9,7 @@ namespace AliceInventory.Logic.Parser
 {
     public class CommandTemplateWithEmail : CommandTemplate
     {
-        public CommandTemplateWithEmail(InputProcessingCommand command, string expression) : base(command, expression) { }
+        public CommandTemplateWithEmail(ParsedCommandType commandType, params string[] regexParts) : base(commandType, regexParts) { }
 
         protected override object GetObject(Match match, CultureInfo cultureInfo)
         {

@@ -285,19 +285,19 @@ namespace AliceInventory.Logic.AliceResponseRender
 
             ResponseFormat format = ResponseFormat.Error;
 
-            switch (result.Result)
+            switch (result.Type)
             {
-                case InputProcessingResult.GreetingRequested:
+                case ProcessingResultType.GreetingRequested:
                 {
                     format = ResponseFormat.GreetingRequested;
                     break;
                 }
-                case InputProcessingResult.Declined:
+                case ProcessingResultType.Declined:
                 {
                     format = ResponseFormat.Declined;
                     break;
                 }
-                case InputProcessingResult.Added:
+                case ProcessingResultType.Added:
                 {
                     if (result.Data is SingleEntry entry)
                     {
@@ -307,7 +307,7 @@ namespace AliceInventory.Logic.AliceResponseRender
 
                     break;
                 }
-                case InputProcessingResult.AddCanceled:
+                case ProcessingResultType.AddCanceled:
                 {
                     if (result.Data is SingleEntry entry)
                     {
@@ -317,7 +317,7 @@ namespace AliceInventory.Logic.AliceResponseRender
 
                     break;
                 }
-                case InputProcessingResult.Deleted:
+                case ProcessingResultType.Deleted:
                 {
                     if (result.Data is SingleEntry entry)
                     {
@@ -327,7 +327,7 @@ namespace AliceInventory.Logic.AliceResponseRender
 
                     break;
                 }
-                case InputProcessingResult.DeleteCanceled:
+                case ProcessingResultType.DeleteCanceled:
                 {
                     if (result.Data is SingleEntry entry)
                     {
@@ -337,15 +337,15 @@ namespace AliceInventory.Logic.AliceResponseRender
 
                     break;
                 }
-                case InputProcessingResult.ClearRequested:
+                case ProcessingResultType.ClearRequested:
                     format = ResponseFormat.ClearRequested;
                     break;
-                case InputProcessingResult.Cleared:
+                case ProcessingResultType.Cleared:
                 {
                     format = ResponseFormat.Cleared;
                     break;
                 }
-                case InputProcessingResult.ListRead:
+                case ProcessingResultType.ListRead:
                 {
                     if (result.Data is Logic.Entry[] entries)
                     {
@@ -363,7 +363,7 @@ namespace AliceInventory.Logic.AliceResponseRender
 
                     break;
                 }
-                case InputProcessingResult.MailSent:
+                case ProcessingResultType.MailSent:
                 {
                     if (result.Data is string email)
                     {
@@ -372,12 +372,12 @@ namespace AliceInventory.Logic.AliceResponseRender
                     }
                     break;
                 }
-                case InputProcessingResult.RequestedMail:
+                case ProcessingResultType.RequestedMail:
                 {
                     format = ResponseFormat.MailRequest;
                     break;
                 }
-                case InputProcessingResult.MailAdded:
+                case ProcessingResultType.MailAdded:
                 {
                     if (result.Data is string email)
                     {
@@ -386,7 +386,7 @@ namespace AliceInventory.Logic.AliceResponseRender
                     }
                     break;
                 }
-                case InputProcessingResult.MailDeleted:
+                case ProcessingResultType.MailDeleted:
                 {
                     if (result.Data is string email)
                     {
@@ -399,12 +399,12 @@ namespace AliceInventory.Logic.AliceResponseRender
                     }
                     break;
                 }
-                case InputProcessingResult.HelpRequested:
+                case ProcessingResultType.HelpRequested:
                 {
                     format = ResponseFormat.HelpRequested;
                     break;
                 }
-                case InputProcessingResult.ExitRequested:
+                case ProcessingResultType.ExitRequested:
                 {
                     format = ResponseFormat.ExitRequested;
                     break;

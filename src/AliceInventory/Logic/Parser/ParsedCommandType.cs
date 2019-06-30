@@ -1,8 +1,11 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace AliceInventory.Logic
+namespace AliceInventory.Logic.Parser
 {
-    public enum InputProcessingCommand
+    public enum ParsedCommandType
     {
         SayHello,
         Accept,
@@ -10,6 +13,7 @@ namespace AliceInventory.Logic
         Cancel,
         Add,
         Delete,
+        More,
         Clear,
         ReadList,
         SendMail,
@@ -18,6 +22,6 @@ namespace AliceInventory.Logic
         DeleteMail,
         RequestHelp,
         RequestExit,
-        SayUnknownCommand,
+        SayUnknownCommand
     }
 }

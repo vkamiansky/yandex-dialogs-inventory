@@ -27,23 +27,40 @@ namespace AliceInventory.Logic.Parser
             @"(?:не(?:т|\sнадо)?|от(?:вали|стань))";
         public const string CancelWord =
             @"(?:отмен(?:а|и(?:ть)?|я(?:й|ю)))";
+        public const string MoreWord =
+            @"(?:ещ(?:е|ё))";
         public const string HelpWord =
             @"(?:помо(?:ги(?:те)?|щь)|хелп|спас(?:и|а(?:й(?:те)?))|выручай(?:те)?|что ты (?:уме|мож)ешь\??)";
         public const string ReadWord =
-            @"(?:п(?:ока(?:жи|зать))|выведи|(?:за|про)?читай|список|итого|что в списке\??)";
+            @"(?:пока(?:жи|зать)|выведи|(?:за|про)?читай)";
         public const string SendWord =
             @"(?:отправ(?:ь(?:те)?|ить|ляй)|вы(?:шли|слать)|по(?:шли|слать)|ски(?:дывай|нь)(?:ка)?)";
         public const string ExitWord =
             @"(?:п(?:ока|рощай)|выход|хватит)";
 
         public const string ListWord =
-            @"(?:вс(?:е|ё)|список|инвентарь)";
+            @"(?:вс(?:е|ё)|спис(?:ок|ке)|опись|(?:от|у)ч(?:е|ё)т|итог(?:е|о)?|результате?)";
         public const string MailWord =
             @"(?:(?:мо(?:я|й|ю|ё|е)\s)?(?:почт(?:а|у|ой)|(?:и|е)?мейл|e?mail|мыло))";
 
-        private const string IgnoreWordPattern =
-            @"(?:(?:ещ(?:е|ё)|конечно|давай|ну)\s?)";
-        private static readonly Regex IgnoreWord = new Regex(IgnoreWordPattern);
+        /// <summary>
+        /// CanBeIgnoreWordPattern - шаблон слов, которые в большинстве случаев могут быть проигнорированы.
+        /// "Давай добавим 5 яблок" - слово "давай" можно проигнорировать,
+        /// но если же у нас только слово "Давай", то это можно воспринять, как согласие.
+        /// </summary>
+        public const string CanBeIgnoreWordPattern = @"(?:ещ(?:е|ё)|конечно|давай)";
+
+        /// <summary>
+        /// IgnoreWord - слова, которые должны быть проигнорированы.
+        /// </summary>
+        private const string IgnoreWordPattern = @"(?:ну)";
+        public static readonly Regex IgnoreWord = new Regex(IgnoreWordPattern);
+
+        /// <summary>
+        /// MultipleSpaces - шаблон нескольких пробелов подряд
+        /// </summary>
+        private const string MultipleSpacesPattern = @"(?:[ ]{2,})";
+        public static readonly Regex MultipleSpaces = new Regex(MultipleSpacesPattern);
 
         public const string UnitPattern = @"шт(?:ук|ука|уки|уку|уковин)?|единиц(?:а|у|ы)?";
         public const string KgPattern = @"к(?:г|илограмм(?:а|ов)?)";
@@ -71,11 +88,6 @@ namespace AliceInventory.Logic.Parser
         private static string AddGroupName(string name, string pattern)
         {
             return $"(?<{name}>{pattern})";
-        }
-
-        public static string RemoveIgnoreWords(string input)
-        {
-            return IgnoreWord.Replace(input, "");
         }
 
         public static UnitOfMeasure ParseUnitOfMeasure(string unit)

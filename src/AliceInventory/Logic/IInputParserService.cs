@@ -1,10 +1,11 @@
 using System;
 using System.Globalization;
+using AliceInventory.Logic.Parser;
 
 namespace AliceInventory.Logic
 {
     public interface IInputParserService
     {
-        ProcessingCommand ParseInput(string input, CultureInfo culture);
+        ParsedCommand ParseInput(string input, CultureInfo culture);
     }
 }

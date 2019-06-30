@@ -2,7 +2,7 @@ using System;
 
 namespace AliceInventory.Logic
 {
-    public enum InputProcessingResult
+    public enum ProcessingResultType
     {
         GreetingRequested,
         Declined,

@@ -12,7 +12,7 @@ namespace AliceInventory.Logic.Parser
         private readonly int _countGroupId;
         private readonly int _unitGroupId;
 
-        public CommandTemplateWithSingleEntry(InputProcessingCommand command, string expression) : base(command, expression)
+        public CommandTemplateWithSingleEntry(ParsedCommandType commandType, params string[] regexParts) : base(commandType, regexParts)
         {
             var groups = this.Regex.GetGroupNames();
 
@@ -24,17 +24,13 @@ namespace AliceInventory.Logic.Parser
         protected override object GetObject(Match match, CultureInfo cultureInfo)
         {
             var groups = match.Groups;
-            
-            var name = _nameGroupId > -1 ? groups[_nameGroupId].Value : "noname";
-            var count = _countGroupId > -1 ? Convert.ToDouble(groups[RegexHelper.EntryCountGroupName].Value, cultureInfo) : 1;
-            var unit = _unitGroupId > -1 ? RegexHelper.ParseUnitOfMeasure(groups[RegexHelper.EntryUnitGroupName].Value) : UnitOfMeasure.Unit;
+            var entry = new ParsedSingleEntry();
 
-            return new SingleEntry()
-            {
-                Name = name,
-                Count = count,
-                Unit = unit,
-            };
+            if (_nameGroupId > -1) entry.Name = groups[_nameGroupId].Value;
+            if (_countGroupId > -1) entry.Count = Convert.ToDouble(groups[_countGroupId].Value, cultureInfo);
+            if (_unitGroupId > -1) entry.Unit = RegexHelper.ParseUnitOfMeasure(groups[_unitGroupId].Value);
+
+            return entry;
         }
     }
 }

@@ -39,32 +39,32 @@ namespace AliceInventory.UnitTests
         };
 
         [Theory]
-        [InlineData(InputProcessingResult.Added)]
-        [InlineData(InputProcessingResult.AddCanceled)]
-        [InlineData(InputProcessingResult.Deleted)]
-        [InlineData(InputProcessingResult.ClearRequested)]
-        [InlineData(InputProcessingResult.Cleared)]
-        [InlineData(InputProcessingResult.MailSent)]
-        [InlineData(InputProcessingResult.Error)]
-        [InlineData(InputProcessingResult.ListRead)]
-        [InlineData(InputProcessingResult.GreetingRequested)]
-        [InlineData(InputProcessingResult.HelpRequested)]
-        [InlineData(InputProcessingResult.ExitRequested)]
-        public void Rendering(InputProcessingResult type)
+        [InlineData(ProcessingResultType.Added)]
+        [InlineData(ProcessingResultType.AddCanceled)]
+        [InlineData(ProcessingResultType.Deleted)]
+        [InlineData(ProcessingResultType.ClearRequested)]
+        [InlineData(ProcessingResultType.Cleared)]
+        [InlineData(ProcessingResultType.MailSent)]
+        [InlineData(ProcessingResultType.Error)]
+        [InlineData(ProcessingResultType.ListRead)]
+        [InlineData(ProcessingResultType.GreetingRequested)]
+        [InlineData(ProcessingResultType.HelpRequested)]
+        [InlineData(ProcessingResultType.ExitRequested)]
+        public void Rendering(ProcessingResultType type)
         {
-            var result = new ProcessingResult() { Result = type };
+            var result = new ProcessingResult() { Type = type };
 
             switch (type)
             {
-                case InputProcessingResult.Added:
-                case InputProcessingResult.AddCanceled:
-                case InputProcessingResult.Deleted:
+                case ProcessingResultType.Added:
+                case ProcessingResultType.AddCanceled:
+                case ProcessingResultType.Deleted:
                     result.Data = entry;
                     break;
-                case InputProcessingResult.ListRead:
+                case ProcessingResultType.ListRead:
                     result.Data = entries;
                     break;
-                case InputProcessingResult.MailSent:
+                case ProcessingResultType.MailSent:
                     result.Data = "somemail@mail.ru";
                     break;
             }

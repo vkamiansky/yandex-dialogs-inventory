@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using AliceInventory.Data;
 using AliceInventory.Logic.Email;
+using AliceInventory.Logic.Parser;
 
 namespace AliceInventory.Logic
 {
@@ -21,186 +22,250 @@ namespace AliceInventory.Logic
             this.emailService = emailService;
         }
 
-        public ProcessingResult ProcessInput(string userId, string input, CultureInfo culture)
+        public ProcessingResult ProcessInput(string userId, string input, CultureInfo cultureInfo)
         {
-            ProcessingCommand parsedCommand = parser.ParseInput(input, culture);
+            ParsedCommand parsedCommand = parser.ParseInput(input, cultureInfo);
 
-            InputProcessingResult resultType = InputProcessingResult.Error;
-            object resultData = null;
+            ProcessingCommand currentCommand = new ProcessingCommand();
             ProcessingCommand prevCommand = commandCache.Get(userId);
 
-            switch (parsedCommand.Command)
+            ProcessingResult result = null;
+
+            switch (parsedCommand.Type)
             {
-                case InputProcessingCommand.SayHello:
-                {
-                    resultType = InputProcessingResult.GreetingRequested;
-                    break;
-                }
-
-                case InputProcessingCommand.Accept when prevCommand.Command == InputProcessingCommand.Clear:
-                {
-                    storage.ClearInventory(userId);
-                    resultType = InputProcessingResult.Cleared;
-
-                    break;
-                }
-
-                case InputProcessingCommand.Accept when prevCommand.Command == InputProcessingCommand.AddMail:
-                {
-                    goto case InputProcessingCommand.SendMail;
-                }
-
-                case InputProcessingCommand.Decline:
-                {
-                    resultType = InputProcessingResult.Declined;
-                    break;
-                }
-
-                case InputProcessingCommand.Cancel when prevCommand.Command == InputProcessingCommand.Add:
-                {
-                    if (!(prevCommand.Data is SingleEntry singleEntry)) goto default;
-                    storage.DeleteEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
-                    resultData = (Logic.SingleEntry) prevCommand.Data;
-                    resultType = InputProcessingResult.AddCanceled;
-                    break;
-                }
-                
-                case InputProcessingCommand.Cancel when prevCommand.Command == InputProcessingCommand.Delete:
-                {
-                    if (!(prevCommand.Data is SingleEntry singleEntry)) goto default;
-                    storage.AddEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
-                    resultData = (Logic.SingleEntry) prevCommand.Data;
-                    resultType = InputProcessingResult.DeleteCanceled;
-                    break;
-                }
-
-                case InputProcessingCommand.Add:
-                {
-                    if (!(parsedCommand.Data is SingleEntry singleEntry)) goto default;
-                    storage.AddEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
-                    resultData = parsedCommand.Data;
-                    resultType = InputProcessingResult.Added;
-                    break;
-                }
-
-                case InputProcessingCommand.Delete:
-                {
-                    if (!(parsedCommand.Data is SingleEntry singleEntry)) goto default;
-                    storage.DeleteEntry(userId, singleEntry.Name, singleEntry.Count, singleEntry.Unit.ToData());
-                    resultData = parsedCommand.Data;
-                    resultType = InputProcessingResult.Deleted;
-                    break;
-                }
-
-                case InputProcessingCommand.Clear:
-                {
-                    resultType = InputProcessingResult.ClearRequested;
-                    break;
-                }
-
-                case InputProcessingCommand.ReadList:
-                {
-                    resultData = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
-                    resultType = InputProcessingResult.ListRead;
-                    break;
-                }
-
-                case InputProcessingCommand.SendMailTo:
-                {
-                    var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
-
-                    if (entries.Length < 1)
+                case ParsedCommandType.SayHello:
                     {
-                        resultType = InputProcessingResult.ListRead;
-                        resultData = entries;
-                    }
-                    else if (parsedCommand.Data is string email)
-                    {
-                        emailService.SendListAsync(email, entries);
-                        storage.SetUserEmail(userId, email);
-                        resultType = InputProcessingResult.MailSent;
-                        resultData = email;
+                        currentCommand.Type = ProcessingCommandType.SayHello;
+                        result = new ProcessingResult(ProcessingResultType.GreetingRequested);
+                        break;
                     }
 
-                    break;
-                }
-
-                case InputProcessingCommand.SendMail:
-                {
-                    var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
-                    var email = storage.GetUserEmail(userId);
-
-                    if (entries.Length < 1)
+                case ParsedCommandType.Accept when prevCommand.Type == ProcessingCommandType.RequestClear:
                     {
-                        resultType = InputProcessingResult.ListRead;
-                        resultData = entries;
-                    }
-                    else if (string.IsNullOrEmpty(email))
-                    {
-                        resultType = InputProcessingResult.RequestedMail;
-                    }
-                    else
-                    {
-                        emailService.SendListAsync(email, entries);
-                        resultType = InputProcessingResult.MailSent;
-                        resultData = email;
+                        currentCommand.Type = ProcessingCommandType.Clear;
+                        storage.ClearInventory(userId);
+                        result = new ProcessingResult(ProcessingResultType.Cleared);
+                        break;
                     }
 
-                    break;
-                }
-                
-                case InputProcessingCommand.AddMail:
-                {
-                    if (parsedCommand.Data is string email)
+                case ParsedCommandType.Accept when prevCommand.Type == ProcessingCommandType.AddMail:
                     {
-                        storage.SetUserEmail(userId, email);
-                        resultType = InputProcessingResult.MailAdded;
-                        resultData = email;
+                        goto case ParsedCommandType.SendMail;
                     }
-                    break;
-                }
 
-                case InputProcessingCommand.DeleteMail:
-                {
-                    var email = storage.DeleteUserEmail(userId);
-                    resultType = InputProcessingResult.MailDeleted;
-                    resultData = email;
-                    break;
-                }
+                case ParsedCommandType.Decline:
+                    {
+                        currentCommand.Type = ProcessingCommandType.None;
+                        result = new ProcessingResult(ProcessingResultType.Declined);
+                        break;
+                    }
 
-                case InputProcessingCommand.RequestHelp:
-                {
-                    resultType = InputProcessingResult.HelpRequested;
-                    break;
-                }
+                case ParsedCommandType.Cancel when prevCommand.Type == ProcessingCommandType.Add:
+                    {
+                        if (!(prevCommand.Data is SingleEntry prevEntry)) goto default;
 
-                case InputProcessingCommand.RequestExit:
-                {
-                    resultType = InputProcessingResult.ExitRequested;
-                    break;
-                }
+                        DeleteEntry(userId, ref currentCommand, prevEntry);
+                        result = new ProcessingResult(ProcessingResultType.AddCanceled, prevEntry);
+                        break;
+                    }
 
-                case InputProcessingCommand.SayUnknownCommand:
-                {
-                    resultData = parsedCommand.Command;
-                    resultType = InputProcessingResult.Error;
-                    break;
-                }
+                case ParsedCommandType.Cancel when prevCommand.Type == ProcessingCommandType.Delete:
+                    {
+                        if (!(prevCommand.Data is SingleEntry prevEntry)) goto default;
+
+                        AddEntry(userId, ref currentCommand, prevEntry);
+                        result = new ProcessingResult(ProcessingResultType.DeleteCanceled, prevEntry);
+                        break;
+                    }
+
+                case ParsedCommandType.Add:
+                    {
+                        if (!(parsedCommand.Data is ParsedSingleEntry parsedEntry)) goto default;
+                        if (parsedEntry.Name is null) goto default;
+
+                        var entry = ConvertToSingleEntry(parsedEntry);
+                        result = AddEntry(userId, ref currentCommand, entry);
+                        break;
+                    }
+
+                case ParsedCommandType.Delete:
+                    {
+                        if (!(parsedCommand.Data is ParsedSingleEntry parsedEntry)) goto default;
+                        if (parsedEntry.Name is null) goto default;
+
+                        var entry = ConvertToSingleEntry(parsedEntry);
+                        result = DeleteEntry(userId, ref currentCommand, entry);
+                        break;
+                    }
+
+                case ParsedCommandType.More:
+                    {
+                        if (!(parsedCommand.Data is ParsedSingleEntry parsedEntry)) goto default;
+
+                        ProcessingCommandType type;
+                        if (prevCommand.Type == ProcessingCommandType.Add ||
+                            prevCommand.Type == ProcessingCommandType.Delete)
+                        {
+                            type = prevCommand.Type;
+                            if (!(prevCommand.Data is SingleEntry prevEntry)) goto default;
+
+                            if (parsedEntry.Name is null)
+                            {
+                                parsedEntry.Name = prevEntry.Name;
+
+                                if (parsedEntry.Unit is null) parsedEntry.Unit = prevEntry.Unit;
+                            }
+                        }
+                        else
+                            type = ProcessingCommandType.Add;
+
+                        var entry = ConvertToSingleEntry(parsedEntry);
+
+                        if (entry.Name == null) goto default;
+
+                        if (type == ProcessingCommandType.Add)
+                            result = AddEntry(userId, ref currentCommand, entry);
+                        else if (type == ProcessingCommandType.Delete)
+                            result = DeleteEntry(userId, ref currentCommand, entry);
+                        else goto default;
+
+                        break;
+                    }
+
+                case ParsedCommandType.Clear:
+                    {
+                        currentCommand.Type = ProcessingCommandType.RequestClear;
+                        result = new ProcessingResult(ProcessingResultType.ClearRequested);
+                        break;
+                    }
+
+                case ParsedCommandType.ReadList:
+                    {
+                        currentCommand.Type = ProcessingCommandType.ReadList;
+                        var data = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
+                        result = new ProcessingResult(ProcessingResultType.ListRead, data);
+                        break;
+                    }
+
+                case ParsedCommandType.SendMailTo:
+                    {
+                        currentCommand.Type = ProcessingCommandType.SendMail;
+                        var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
+
+                        if (entries.Length < 1)
+                        {
+                            result = new ProcessingResult(ProcessingResultType.ListRead, entries);
+                        }
+                        else if (parsedCommand.Data is string email)
+                        {
+                            emailService.SendListAsync(email, entries);
+                            storage.SetUserEmail(userId, email);
+                            result = new ProcessingResult(ProcessingResultType.MailSent, email);
+                        }
+                        else goto default;
+
+                        break;
+                    }
+
+                case ParsedCommandType.SendMail:
+                    {
+                        currentCommand.Type = ProcessingCommandType.SendMail;
+                        var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
+                        var email = storage.GetUserEmail(userId);
+
+                        if (entries.Length < 1)
+                        {
+                            result = new ProcessingResult(ProcessingResultType.ListRead, entries);
+                        }
+                        else if (string.IsNullOrEmpty(email))
+                        {
+                            result = new ProcessingResult(ProcessingResultType.RequestedMail);
+                        }
+                        else
+                        {
+                            emailService.SendListAsync(email, entries);
+                            result = new ProcessingResult(ProcessingResultType.MailSent, email);
+                        }
+
+                        break;
+                    }
+
+                case ParsedCommandType.AddMail:
+                    {
+                        currentCommand.Type = ProcessingCommandType.AddMail;
+
+                        if (parsedCommand.Data is string email)
+                        {
+                            storage.SetUserEmail(userId, email);
+                            result = new ProcessingResult(ProcessingResultType.MailAdded, email);
+                        }
+                        else goto default;
+
+                        break;
+                    }
+
+                case ParsedCommandType.DeleteMail:
+                    {
+                        currentCommand.Type = ProcessingCommandType.DeleteMail;
+                        var email = storage.DeleteUserEmail(userId);
+                        result = new ProcessingResult(ProcessingResultType.MailDeleted, email);
+                        break;
+                    }
+
+                case ParsedCommandType.RequestHelp:
+                    {
+                        currentCommand.Type = ProcessingCommandType.RequestHelp;
+                        result = new ProcessingResult(ProcessingResultType.HelpRequested);
+                        break;
+                    }
+
+                case ParsedCommandType.RequestExit:
+                    {
+                        currentCommand.Type = ProcessingCommandType.RequestExit;
+                        result = new ProcessingResult(ProcessingResultType.ExitRequested);
+                        break;
+                    }
 
                 default:
-                {
-                    resultType = InputProcessingResult.Error;
-                    break;
-                }
+                    {
+                        currentCommand.Type = ProcessingCommandType.None;
+                        result = new ProcessingResult(ProcessingResultType.Error);
+                        break;
+                    }
             }
 
-            commandCache.Set(userId, parsedCommand);
+            commandCache.Set(userId, currentCommand);
 
-            return new ProcessingResult
+            return result;
+        }
+
+        private ProcessingResult AddEntry(string userId, ref ProcessingCommand currentCommand, SingleEntry entry)
+        {
+            currentCommand.Type = ProcessingCommandType.Add;
+            currentCommand.Data = entry;
+
+            storage.AddEntry(userId, entry.Name, entry.Count, entry.Unit.ToData());
+
+            return new ProcessingResult(ProcessingResultType.Added, entry);
+        }
+
+        private ProcessingResult DeleteEntry(string userId, ref ProcessingCommand currentCommand, SingleEntry entry)
+        {
+            currentCommand.Type = ProcessingCommandType.Delete;
+            currentCommand.Data = entry;
+
+            storage.DeleteEntry(userId, entry.Name, entry.Count, entry.Unit.ToData());
+
+            return new ProcessingResult(ProcessingResultType.Deleted, entry);
+        }
+
+        private SingleEntry ConvertToSingleEntry(ParsedSingleEntry parsedSingleEntry)
+        {
+            return new SingleEntry()
             {
-                Result = resultType,
-                Data = resultData,
-                CultureInfo = culture,
+                Name = parsedSingleEntry.Name,
+                Count = parsedSingleEntry.Count ?? 1,
+                Unit = parsedSingleEntry.Unit ?? UnitOfMeasure.Unit
             };
         }
     }

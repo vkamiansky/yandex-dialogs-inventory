@@ -1,4 +1,5 @@
 using System;
+using AliceInventory.Logic.Parser;
 
 namespace AliceInventory.Logic
 {
