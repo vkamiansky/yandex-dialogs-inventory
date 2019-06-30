@@ -5,7 +5,7 @@ namespace AliceInventory.Logic
 {
     public interface ICommandCache
     {
-        void Set(string userId, ProcessingCommand command);
-        ProcessingCommand Get(string userId);
+        void Set(string userId, ProcessingResult command);
+        ProcessingResult Get(string userId);
     }
 }

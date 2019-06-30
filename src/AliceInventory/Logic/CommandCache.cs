@@ -5,19 +5,19 @@ namespace AliceInventory.Logic
 {
     public class CommandCache : ICommandCache
     {
-        private Dictionary<string, ProcessingCommand> usersCommands;
+        private Dictionary<string, ProcessingResult> usersCommands;
 
         public CommandCache()
         {
-            usersCommands = new Dictionary<string, ProcessingCommand>();
+            usersCommands = new Dictionary<string, ProcessingResult>();
         }
 
-        public ProcessingCommand Get(string userId)
+        public ProcessingResult Get(string userId)
         {
             return usersCommands.ContainsKey(userId) ? usersCommands[userId] : null;
         }
 
-        public void Set(string userId, ProcessingCommand command)
+        public void Set(string userId, ProcessingResult command)
         {
             if (usersCommands.ContainsKey(userId))
                 usersCommands[userId] = command;

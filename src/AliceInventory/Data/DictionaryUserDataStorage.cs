@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using AliceInventory.Data.Exceptions;
 
 namespace AliceInventory.Data
 {
@@ -14,10 +15,8 @@ namespace AliceInventory.Data
             storage = new Dictionary<string, UserData>();
         }
 
-        public bool AddEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
+        public void AddEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
         {
-            bool isSuccessful = true;
-
             UserData data = GetUserData(userId);
             var entries = data.Entries;
 
@@ -30,29 +29,32 @@ namespace AliceInventory.Data
                 userItem.UnitValues.Add(unit, count);
             else
                 userItem.UnitValues[unit] += count;
-
-            return isSuccessful;
         }
 
-        public bool DeleteEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
+        public void DeleteEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
         {
             UserData data = GetUserData(userId);
             var entries = data.Entries;
             var userItem = entries.FirstOrDefault(x => x.Name == entryName);
 
-            if (userItem == null) return false;
-            if (!userItem.UnitValues.ContainsKey(unit)) return false;
+            if (userItem == null)
+                throw new EntryNotFoundException(userId, entryName);
+            if (!userItem.UnitValues.ContainsKey(unit))
+                throw new EntryUnitNotFoundException(userId, userItem, unit);
 
+            var currentCount = userItem.UnitValues[unit];
             // Removing
+            if (currentCount < count)
+                throw new NotEnoughEntryToDeleteException(userId, count, currentCount, userItem);
+
             userItem.UnitValues[unit] -= count;
             
             // Data cleaning
-            if (userItem.UnitValues[unit] > 0) return true;
+            if (userItem.UnitValues[unit] <= 0) return;
             userItem.UnitValues.Remove(unit);
             
-            if (userItem.UnitValues.Count > 0) return true;
+            if (userItem.UnitValues.Count > 0) return;
             entries.Remove(userItem);
-            return true;
         }
 
         public Data.Entry[] ReadAllEntries(string userId)

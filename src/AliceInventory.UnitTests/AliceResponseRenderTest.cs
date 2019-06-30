@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using AliceInventory.Controllers;
+using AliceInventory.Controllers.AliceResponseRender;
+using AliceInventory.Data.Exceptions;
 using AliceInventory.Logic;
-using AliceInventory.Logic.AliceResponseRender;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -70,10 +69,10 @@ namespace AliceInventory.UnitTests
             }
 
             var jsonResponse = AliceResponseRendererHelper.CreateAliceResponse(result, sessionExample);
-            
+
             var response = jsonResponse.Response;
             _output.WriteLine($"Text: {response.Text}\nTts: {response.Tts}\nButtons: {response.Buttons.Length}\nEndSession: {response.EndSession}");
-            
+
             var session = jsonResponse.Session;
             Assert.Equal(sessionExample.UserId, session.UserId);
             Assert.Equal(sessionExample.MessageId, session.MessageId);
@@ -81,6 +80,53 @@ namespace AliceInventory.UnitTests
 
 
             Assert.NotEmpty(response.Text);
+        }
+
+        [Fact]
+        public void ExceptionsOutput()
+        {
+            var entryNotFoundExceptionResult = new ProcessingResult()
+            {
+                Type = ProcessingResultType.Error,
+                Exception = new EntryNotFoundException("someId",
+                    "яблоки")
+            };
+
+            var entryUnitNotFoundExceptionResult = new ProcessingResult()
+            {
+                Type = ProcessingResultType.Error,
+                Exception = new EntryUnitNotFoundException("someId",
+                    new Data.Entry("камни"), Data.UnitOfMeasure.L)
+            };
+
+            var notEnoughEntryToDeleteExceptionResult = new ProcessingResult()
+            {
+                Type = ProcessingResultType.Error,
+                Exception = new NotEnoughEntryToDeleteException("someId",
+                    4, 2, new Data.Entry("камни"))
+            };
+
+            foreach (var result in new[]
+            {
+                entryNotFoundExceptionResult,
+                entryUnitNotFoundExceptionResult,
+                notEnoughEntryToDeleteExceptionResult
+            })
+            {
+                _output.WriteLine(result.Exception.GetType().Name);
+                var jsonResponse = AliceResponseRendererHelper.CreateAliceResponse(result, sessionExample);
+
+                var response = jsonResponse.Response;
+                _output.WriteLine($"Text: {response.Text}\nTts: {response.Tts}\nButtons: {response.Buttons.Length}\nEndSession: {response.EndSession}\n");
+
+                var session = jsonResponse.Session;
+                Assert.Equal(sessionExample.UserId, session.UserId);
+                Assert.Equal(sessionExample.MessageId, session.MessageId);
+                Assert.Equal(sessionExample.SessionId, session.SessionId);
+
+
+                Assert.NotEmpty(response.Text);
+            }
         }
     }
 }

@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using AliceInventory.Controllers;
-using AliceInventory;
+using AliceInventory.Data.Exceptions;
+using AliceInventory.Logic;
+using AliceInventory.Logic.AliceResponseRender;
 
-namespace AliceInventory.Logic.AliceResponseRender
+namespace AliceInventory.Controllers.AliceResponseRender
 {
     public static class AliceResponseRendererHelper
     {
@@ -53,9 +50,9 @@ namespace AliceInventory.Logic.AliceResponseRender
             Hide = false
         };
 
-        private static readonly Button[] YesNoButtons = {YesButton, NoButton};
-        private static readonly Button[] MainButtons = {HelpButton, ReadListButton, ExitButton};
-        private static readonly Button[] MainButtonsWithCancel = {CancelButton, HelpButton, ReadListButton, ExitButton};
+        private static readonly Button[] YesNoButtons = { YesButton, NoButton };
+        private static readonly Button[] MainButtons = { HelpButton, ReadListButton, ExitButton };
+        private static readonly Button[] MainButtonsWithCancel = { CancelButton, HelpButton, ReadListButton, ExitButton };
 
 
         private static readonly ResponseTemplate GreetingRequestTemplate = new ResponseTemplate()
@@ -141,7 +138,7 @@ namespace AliceInventory.Logic.AliceResponseRender
             },
             Buttons = MainButtons
         };
-        
+
         private static readonly ResponseTemplate ListReadTemplate = new ResponseTemplate()
         {
             TextAndSpeechTemplates = new[]
@@ -241,6 +238,38 @@ namespace AliceInventory.Logic.AliceResponseRender
             Buttons = MainButtons
         };
 
+        private static readonly ResponseTemplate EntryNotFoundErrorTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Но в списке нет {0}"),
+                new TextAndSpeechTemplate("В списке нет {0}"),
+                new TextAndSpeechTemplate("Я не смогла найти {0} в отчёте"),
+            },
+            Buttons = MainButtons
+        };
+
+        private static readonly ResponseTemplate EntryUnitNotFoundErrorTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Вы не добавляли {0} в {1}"),
+                new TextAndSpeechTemplate("У вас {0} не храниться в {1}"),
+                new TextAndSpeechTemplate("Не нашла {0} в {1} в вашем списке"),
+            },
+            Buttons = MainButtons
+        };
+
+        private static readonly ResponseTemplate NotEnoughEntryToDeleteErrorTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Не могу удалить {0} {1}, в список добавлено только {2}"),
+                new TextAndSpeechTemplate("У вас только {2} {1}")
+            },
+            Buttons = MainButtons
+        };
+
         private static readonly Dictionary<ResponseFormat, ResponseTemplate> responseTemplates;
 
         static AliceResponseRendererHelper()
@@ -264,6 +293,10 @@ namespace AliceInventory.Logic.AliceResponseRender
                 [ResponseFormat.MailIsEmpty] = MailIsEmptyTemplate,
                 [ResponseFormat.MailAdded] = MailAddedTemplate,
                 [ResponseFormat.MailDeleted] = MailDeletedTemplate,
+
+                [ResponseFormat.EntryNotFoundError] = EntryNotFoundErrorTemplate,
+                [ResponseFormat.EntryUnitNotFoundError] = EntryUnitNotFoundErrorTemplate,
+                [ResponseFormat.NotEnoughEntryToDeleteError] = NotEnoughEntryToDeleteErrorTemplate,
             };
         }
 
@@ -283,137 +316,165 @@ namespace AliceInventory.Logic.AliceResponseRender
             object[] formatArguments = new object[0];
 
 
-            ResponseFormat format = ResponseFormat.Error;
+            ResponseFormat format;
 
             switch (result.Type)
             {
                 case ProcessingResultType.GreetingRequested:
-                {
-                    format = ResponseFormat.GreetingRequested;
-                    break;
-                }
+                    {
+                        format = ResponseFormat.GreetingRequested;
+                        break;
+                    }
                 case ProcessingResultType.Declined:
-                {
-                    format = ResponseFormat.Declined;
-                    break;
-                }
-                case ProcessingResultType.Added:
-                {
-                    if (result.Data is SingleEntry entry)
+                    {
+                        format = ResponseFormat.Declined;
+                        break;
+                    }
+                case ProcessingResultType.Added
+                    when result.Data is SingleEntry entry:
                     {
                         format = ResponseFormat.Added;
-                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
-                    }
+                        formatArguments = new object[] { entry.Name, entry.Count, entry.Unit.ToText() };
 
-                    break;
-                }
-                case ProcessingResultType.AddCanceled:
-                {
-                    if (result.Data is SingleEntry entry)
+                        break;
+                    }
+                case ProcessingResultType.AddCanceled
+                    when result.Data is SingleEntry entry:
                     {
                         format = ResponseFormat.AddCanceled;
-                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
-                    }
+                        formatArguments = new object[] { entry.Name, entry.Count, entry.Unit.ToText() };
 
-                    break;
-                }
-                case ProcessingResultType.Deleted:
-                {
-                    if (result.Data is SingleEntry entry)
+                        break;
+                    }
+                case ProcessingResultType.Deleted
+                    when result.Data is SingleEntry entry:
                     {
                         format = ResponseFormat.Deleted;
-                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
-                    }
+                        formatArguments = new object[] { entry.Name, entry.Count, entry.Unit.ToText() };
 
-                    break;
-                }
-                case ProcessingResultType.DeleteCanceled:
-                {
-                    if (result.Data is SingleEntry entry)
+                        break;
+                    }
+                case ProcessingResultType.DeleteCanceled
+                    when result.Data is SingleEntry entry:
                     {
                         format = ResponseFormat.DeleteCanceled;
-                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                        formatArguments = new object[] { entry.Name, entry.Count, entry.Unit.ToText() };
+
+                        break;
                     }
 
-                    break;
-                }
                 case ProcessingResultType.ClearRequested:
-                    format = ResponseFormat.ClearRequested;
-                    break;
+                    {
+                        format = ResponseFormat.ClearRequested;
+                        break;
+                    }
+
                 case ProcessingResultType.Cleared:
-                {
-                    format = ResponseFormat.Cleared;
-                    break;
-                }
-                case ProcessingResultType.ListRead:
-                {
-                    if (result.Data is Logic.Entry[] entries)
+                    {
+                        format = ResponseFormat.Cleared;
+                        break;
+                    }
+
+                case ProcessingResultType.ListRead
+                    when result.Data is Logic.Entry[] entries && entries.Length > 0:
                     {
                         if (entries.Length > 0)
                         {
                             format = ResponseFormat.ListRead;
-                            formatArguments = new object[] {entries.ToTextList()};
+                            formatArguments = new object[] { entries.ToTextList() };
                         }
                         else
                         {
                             format = ResponseFormat.EmptyListRead;
                         }
 
+                        break;
                     }
 
-                    break;
-                }
-                case ProcessingResultType.MailSent:
-                {
-                    if (result.Data is string email)
+                case ProcessingResultType.MailSent
+                    when result.Data is string email:
                     {
                         format = ResponseFormat.MailSent;
-                        formatArguments = new object[] {email};
+                        formatArguments = new object[] { email };
+                        break;
                     }
-                    break;
-                }
+
                 case ProcessingResultType.RequestedMail:
-                {
-                    format = ResponseFormat.MailRequest;
-                    break;
-                }
-                case ProcessingResultType.MailAdded:
-                {
-                    if (result.Data is string email)
+                    {
+                        format = ResponseFormat.MailRequest;
+                        break;
+                    }
+
+                case ProcessingResultType.MailAdded
+                    when result.Data is string email:
                     {
                         format = ResponseFormat.MailAdded;
-                        formatArguments = new object[] {email};
+                        formatArguments = new object[] { email };
+                        break;
                     }
-                    break;
-                }
-                case ProcessingResultType.MailDeleted:
-                {
-                    if (result.Data is string email)
+
+                case ProcessingResultType.MailDeleted
+                    when result.Data is string email:
                     {
                         format = ResponseFormat.MailDeleted;
-                        formatArguments = new object[] {email};
+                        formatArguments = new object[] { email };
+                        break;
                     }
-                    else
+
+                case ProcessingResultType.MailDeleted:
                     {
                         format = ResponseFormat.MailIsEmpty;
+                        break;
                     }
-                    break;
-                }
+
                 case ProcessingResultType.HelpRequested:
-                {
-                    format = ResponseFormat.HelpRequested;
-                    break;
-                }
+                    {
+                        format = ResponseFormat.HelpRequested;
+                        break;
+                    }
+
                 case ProcessingResultType.ExitRequested:
-                {
-                    format = ResponseFormat.ExitRequested;
-                    break;
-                }
-                default: break;
+                    {
+                        format = ResponseFormat.ExitRequested;
+                        break;
+                    }
+
+                case ProcessingResultType.Error
+                    when result.Exception is EntryNotFoundException exception:
+                    {
+                        format = ResponseFormat.EntryNotFoundError;
+                        formatArguments = new object[] { exception.EntryName };
+                        break;
+                    }
+
+                case ProcessingResultType.Error
+                    when result.Exception is EntryUnitNotFoundException exception:
+                    {
+                        format = ResponseFormat.EntryUnitNotFoundError;
+                        formatArguments = new object[] { exception.Entry.Name, exception.Unit.ToLogic().ToText() };
+                        break;
+                    }
+
+                case ProcessingResultType.Error
+                    when result.Exception is NotEnoughEntryToDeleteException exception:
+                    {
+                        format = ResponseFormat.NotEnoughEntryToDeleteError;
+                        formatArguments = new object[] { exception.Actual, exception.Entry.Name, exception.Count };
+                        break;
+                    }
+
+                default:
+                    {
+                        format = ResponseFormat.Error;
+                        break;
+                    }
             }
 
-            var template = !responseTemplates.ContainsKey(format) ?
-                ErrorTemplate : responseTemplates[format];
+            ResponseTemplate template;
+            if (responseTemplates.ContainsKey(format))
+                template = responseTemplates[format];
+            else
+                template = ErrorTemplate;
 
             var textAndSpeechTemplate = template.TextAndSpeechTemplates.GetRandomItem();
 

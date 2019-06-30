@@ -48,7 +48,7 @@ namespace AliceInventory.UnitTests
             Type = ParsedCommandType.Cancel
         };
 
-        private static readonly ProcessingCommand addProcessingCommand= new ProcessingCommand()
+        private static readonly ProcessingCommand addProcessingCommand = new ProcessingCommand()
         {
             Type = ProcessingCommandType.Add,
             Data = entry
@@ -56,6 +56,17 @@ namespace AliceInventory.UnitTests
         private static readonly ProcessingCommand deleteProcessingCommand = new ProcessingCommand()
         {
             Type = ProcessingCommandType.Delete,
+            Data = entry
+        };
+
+        private static readonly ProcessingResult addProcessingResult = new ProcessingResult()
+        {
+            Type = ProcessingResultType.Added,
+            Data = entry
+        };
+        private static readonly ProcessingResult deleteProcessingResult = new ProcessingResult()
+        {
+            Type = ProcessingResultType.Deleted,
             Data = entry
         };
 
@@ -67,8 +78,7 @@ namespace AliceInventory.UnitTests
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == entry.Name),
                     It.Is<double>(y => Math.Abs(y - entry.Count) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())))
-                .Returns(true);
+                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())));
 
             var parserMock = new Mock<IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
@@ -79,11 +89,11 @@ namespace AliceInventory.UnitTests
             var commandCacheMock = new Mock<ICommandCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x => x.Get(
                     It.Is<string>(y => y == userId)))
-                .Returns(new ProcessingCommand());
+                .Returns(new ProcessingResult());
             commandCacheMock.Setup(x => x.Set(
                 It.Is<string>(y => y == userId),
-                It.Is<ProcessingCommand>(command =>
-                    command.Type == ProcessingCommandType.Add &&
+                It.Is<ProcessingResult>(command =>
+                    command.Type == ProcessingResultType.Added &&
                     command.Data is SingleEntry &&
                     ((SingleEntry) command.Data).Name == entry.Name &&
                     Math.Abs(((SingleEntry) command.Data).Count - entry.Count) < Tolerance &&
@@ -119,7 +129,7 @@ namespace AliceInventory.UnitTests
             commandCacheMock.Verify(x =>
                 x.Set(
                     It.IsAny<string>(),
-                    It.IsAny<Logic.ProcessingCommand>()), Times.Once);
+                    It.IsAny<Logic.ProcessingResult>()), Times.Once);
         }
 
         [Fact]
@@ -130,8 +140,7 @@ namespace AliceInventory.UnitTests
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == entry.Name),
                     It.Is<double>(y => Math.Abs(y - entry.Count) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())))
-                .Returns(true);
+                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())));
 
             var parserMock = new Mock<IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
@@ -142,11 +151,11 @@ namespace AliceInventory.UnitTests
             var commandCacheMock = new Mock<ICommandCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x => x.Get(
                     It.Is<string>(y => y == userId)))
-                .Returns(new ProcessingCommand());
+                .Returns(new ProcessingResult());
             commandCacheMock.Setup(x => x.Set(
                 It.Is<string>(y => y == userId),
-                It.Is<ProcessingCommand>(command =>
-                    command.Type == ProcessingCommandType.Delete &&
+                It.Is<ProcessingResult>(command =>
+                    command.Type == ProcessingResultType.Deleted &&
                     command.Data is SingleEntry &&
                     ((SingleEntry)command.Data).Name == entry.Name &&
                     Math.Abs(((SingleEntry)command.Data).Count - entry.Count) < Tolerance &&
@@ -182,7 +191,7 @@ namespace AliceInventory.UnitTests
             commandCacheMock.Verify(x =>
                 x.Set(
                     It.IsAny<string>(),
-                    It.IsAny<Logic.ProcessingCommand>()), Times.Once);
+                    It.IsAny<Logic.ProcessingResult>()), Times.Once);
         }
 
         [Fact]
@@ -193,8 +202,7 @@ namespace AliceInventory.UnitTests
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == entry.Name),
                     It.Is<double>(y => Math.Abs(y - entry.Count) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())))
-                .Returns(true);
+                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())));
 
             var parserMock = new Mock<Logic.IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
@@ -204,11 +212,11 @@ namespace AliceInventory.UnitTests
 
             var commandCacheMock = new Mock<ICommandCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x =>
-                x.Get(It.Is<string>(y => y == userId))).Returns(addProcessingCommand);
+                x.Get(It.Is<string>(y => y == userId))).Returns(addProcessingResult);
             commandCacheMock.Setup(x =>
                 x.Set(It.Is<string>(y => y == userId),
-                    It.Is<ProcessingCommand>(command =>
-                        command.Type == ProcessingCommandType.Delete &&
+                    It.Is<ProcessingResult>(command =>
+                        command.Type == ProcessingResultType.AddCanceled &&
                         command.Data is SingleEntry &&
                         ((SingleEntry)command.Data).Name == entry.Name &&
                         Math.Abs(((SingleEntry)command.Data).Count - entry.Count) < Tolerance &&
@@ -244,7 +252,7 @@ namespace AliceInventory.UnitTests
             commandCacheMock.Verify(x =>
                 x.Set(
                     It.IsAny<string>(),
-                    It.IsAny<Logic.ProcessingCommand>()), Times.Once);
+                    It.IsAny<Logic.ProcessingResult>()), Times.Once);
         }
 
         [Fact]
@@ -255,8 +263,7 @@ namespace AliceInventory.UnitTests
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == entry.Name),
                     It.Is<double>(y => Math.Abs(y - entry.Count) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())))
-                .Returns(true);
+                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())));
 
             var parserMock = new Mock<IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
@@ -266,11 +273,11 @@ namespace AliceInventory.UnitTests
 
             var commandCacheMock = new Mock<Logic.ICommandCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x =>
-                x.Get(It.Is<string>(y => y == userId))).Returns(deleteProcessingCommand);
+                x.Get(It.Is<string>(y => y == userId))).Returns(deleteProcessingResult);
             commandCacheMock.Setup(x =>
                 x.Set(It.Is<string>(y => y == userId),
-                    It.Is<ProcessingCommand>(command =>
-                        command.Type == ProcessingCommandType.Add &&
+                    It.Is<ProcessingResult>(command =>
+                        command.Type == ProcessingResultType.DeleteCanceled &&
                         command.Data is SingleEntry &&
                         ((SingleEntry)command.Data).Name == entry.Name &&
                         Math.Abs(((SingleEntry)command.Data).Count - entry.Count) < Tolerance &&
@@ -306,7 +313,7 @@ namespace AliceInventory.UnitTests
             commandCacheMock.Verify(x =>
                 x.Set(
                     It.IsAny<string>(),
-                    It.IsAny<Logic.ProcessingCommand>()), Times.Once);
+                    It.IsAny<Logic.ProcessingResult>()), Times.Once);
         }
 
         [Theory]
@@ -348,16 +355,15 @@ namespace AliceInventory.UnitTests
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == currentName),
                     It.Is<double>(y => Math.Abs(y - currentCount) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())))
-                .Returns(true);
+                    It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())));
 
             var commandCacheMock = new Mock<Logic.ICommandCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x =>
-                x.Get(It.Is<string>(y => y == userId))).Returns(addProcessingCommand);
+                x.Get(It.Is<string>(y => y == userId))).Returns(addProcessingResult);
             commandCacheMock.Setup(x =>
                 x.Set(It.Is<string>(y => y == userId),
-                    It.Is<ProcessingCommand>(command =>
-                        command.Type == ProcessingCommandType.Add &&
+                    It.Is<ProcessingResult>(command =>
+                        command.Type == ProcessingResultType.Added &&
                         command.Data is SingleEntry &&
                         ((SingleEntry)command.Data).Name == currentName &&
                         Math.Abs(((SingleEntry)command.Data).Count - currentCount) < Tolerance &&
@@ -393,7 +399,7 @@ namespace AliceInventory.UnitTests
             commandCacheMock.Verify(x =>
                 x.Set(
                     It.IsAny<string>(),
-                    It.IsAny<Logic.ProcessingCommand>()), Times.Once);
+                    It.IsAny<Logic.ProcessingResult>()), Times.Once);
         }
 
         [Theory]
@@ -435,16 +441,15 @@ namespace AliceInventory.UnitTests
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == currentName),
                     It.Is<double>(y => Math.Abs(y - currentCount) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())))
-                .Returns(true);
+                    It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())));
 
             var commandCacheMock = new Mock<Logic.ICommandCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x =>
-                x.Get(It.Is<string>(y => y == userId))).Returns(deleteProcessingCommand);
+                x.Get(It.Is<string>(y => y == userId))).Returns(deleteProcessingResult);
             commandCacheMock.Setup(x =>
                 x.Set(It.Is<string>(y => y == userId),
-                    It.Is<ProcessingCommand>(command =>
-                        command.Type == ProcessingCommandType.Delete &&
+                    It.Is<ProcessingResult>(command =>
+                        command.Type == ProcessingResultType.Deleted &&
                         command.Data is SingleEntry &&
                         ((SingleEntry)command.Data).Name == currentName &&
                         Math.Abs(((SingleEntry)command.Data).Count - currentCount) < Tolerance &&
@@ -480,7 +485,7 @@ namespace AliceInventory.UnitTests
             commandCacheMock.Verify(x =>
                 x.Set(
                     It.IsAny<string>(),
-                    It.IsAny<Logic.ProcessingCommand>()), Times.Once);
+                    It.IsAny<Logic.ProcessingResult>()), Times.Once);
         }
     }
 }

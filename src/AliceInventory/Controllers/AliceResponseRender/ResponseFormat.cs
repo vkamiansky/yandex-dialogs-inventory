@@ -25,5 +25,9 @@ namespace AliceInventory.Logic.AliceResponseRender
         HelpRequested,
         Error,
         ExitRequested,
+
+        EntryNotFoundError,
+        EntryUnitNotFoundError,
+        NotEnoughEntryToDeleteError
     }
 }

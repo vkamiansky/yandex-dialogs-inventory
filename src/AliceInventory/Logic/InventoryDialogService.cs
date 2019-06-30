@@ -26,8 +26,7 @@ namespace AliceInventory.Logic
         {
             ParsedCommand parsedCommand = parser.ParseInput(input, cultureInfo);
 
-            ProcessingCommand currentCommand = new ProcessingCommand();
-            ProcessingCommand prevCommand = commandCache.Get(userId);
+            ProcessingResult prevResult = commandCache.Get(userId);
 
             ProcessingResult result = null;
 
@@ -35,45 +34,42 @@ namespace AliceInventory.Logic
             {
                 case ParsedCommandType.SayHello:
                     {
-                        currentCommand.Type = ProcessingCommandType.SayHello;
                         result = new ProcessingResult(ProcessingResultType.GreetingRequested);
                         break;
                     }
 
-                case ParsedCommandType.Accept when prevCommand.Type == ProcessingCommandType.RequestClear:
+                case ParsedCommandType.Accept when prevResult.Type == ProcessingResultType.ClearRequested:
                     {
-                        currentCommand.Type = ProcessingCommandType.Clear;
                         storage.ClearInventory(userId);
                         result = new ProcessingResult(ProcessingResultType.Cleared);
                         break;
                     }
 
-                case ParsedCommandType.Accept when prevCommand.Type == ProcessingCommandType.AddMail:
+                case ParsedCommandType.Accept when prevResult.Type == ProcessingResultType.RequestedMail:
                     {
                         goto case ParsedCommandType.SendMail;
                     }
 
                 case ParsedCommandType.Decline:
                     {
-                        currentCommand.Type = ProcessingCommandType.None;
                         result = new ProcessingResult(ProcessingResultType.Declined);
                         break;
                     }
 
-                case ParsedCommandType.Cancel when prevCommand.Type == ProcessingCommandType.Add:
+                case ParsedCommandType.Cancel when prevResult.Type == ProcessingResultType.Added:
                     {
-                        if (!(prevCommand.Data is SingleEntry prevEntry)) goto default;
+                        if (!(prevResult.Data is SingleEntry prevEntry)) goto default;
 
-                        DeleteEntry(userId, ref currentCommand, prevEntry);
+                        DeleteEntry(userId, prevEntry);
                         result = new ProcessingResult(ProcessingResultType.AddCanceled, prevEntry);
                         break;
                     }
 
-                case ParsedCommandType.Cancel when prevCommand.Type == ProcessingCommandType.Delete:
+                case ParsedCommandType.Cancel when prevResult.Type == ProcessingResultType.Deleted:
                     {
-                        if (!(prevCommand.Data is SingleEntry prevEntry)) goto default;
+                        if (!(prevResult.Data is SingleEntry prevEntry)) goto default;
 
-                        AddEntry(userId, ref currentCommand, prevEntry);
+                        AddEntry(userId, prevEntry);
                         result = new ProcessingResult(ProcessingResultType.DeleteCanceled, prevEntry);
                         break;
                     }
@@ -84,7 +80,7 @@ namespace AliceInventory.Logic
                         if (parsedEntry.Name is null) goto default;
 
                         var entry = ConvertToSingleEntry(parsedEntry);
-                        result = AddEntry(userId, ref currentCommand, entry);
+                        result = AddEntry(userId, entry);
                         break;
                     }
 
@@ -94,7 +90,7 @@ namespace AliceInventory.Logic
                         if (parsedEntry.Name is null) goto default;
 
                         var entry = ConvertToSingleEntry(parsedEntry);
-                        result = DeleteEntry(userId, ref currentCommand, entry);
+                        result = DeleteEntry(userId, entry);
                         break;
                     }
 
@@ -102,12 +98,12 @@ namespace AliceInventory.Logic
                     {
                         if (!(parsedCommand.Data is ParsedSingleEntry parsedEntry)) goto default;
 
-                        ProcessingCommandType type;
-                        if (prevCommand.Type == ProcessingCommandType.Add ||
-                            prevCommand.Type == ProcessingCommandType.Delete)
+                        ProcessingResultType type;
+                        if (prevResult.Type == ProcessingResultType.Added ||
+                            prevResult.Type == ProcessingResultType.Deleted)
                         {
-                            type = prevCommand.Type;
-                            if (!(prevCommand.Data is SingleEntry prevEntry)) goto default;
+                            type = prevResult.Type;
+                            if (!(prevResult.Data is SingleEntry prevEntry)) goto default;
 
                             if (parsedEntry.Name is null)
                             {
@@ -117,16 +113,16 @@ namespace AliceInventory.Logic
                             }
                         }
                         else
-                            type = ProcessingCommandType.Add;
+                            type = ProcessingResultType.Added;
 
                         var entry = ConvertToSingleEntry(parsedEntry);
 
                         if (entry.Name == null) goto default;
 
-                        if (type == ProcessingCommandType.Add)
-                            result = AddEntry(userId, ref currentCommand, entry);
-                        else if (type == ProcessingCommandType.Delete)
-                            result = DeleteEntry(userId, ref currentCommand, entry);
+                        if (type == ProcessingResultType.Added)
+                            result = AddEntry(userId, entry);
+                        else if (type == ProcessingResultType.Deleted)
+                            result = DeleteEntry(userId, entry);
                         else goto default;
 
                         break;
@@ -134,14 +130,12 @@ namespace AliceInventory.Logic
 
                 case ParsedCommandType.Clear:
                     {
-                        currentCommand.Type = ProcessingCommandType.RequestClear;
                         result = new ProcessingResult(ProcessingResultType.ClearRequested);
                         break;
                     }
 
                 case ParsedCommandType.ReadList:
                     {
-                        currentCommand.Type = ProcessingCommandType.ReadList;
                         var data = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
                         result = new ProcessingResult(ProcessingResultType.ListRead, data);
                         break;
@@ -149,7 +143,6 @@ namespace AliceInventory.Logic
 
                 case ParsedCommandType.SendMailTo:
                     {
-                        currentCommand.Type = ProcessingCommandType.SendMail;
                         var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
 
                         if (entries.Length < 1)
@@ -169,7 +162,6 @@ namespace AliceInventory.Logic
 
                 case ParsedCommandType.SendMail:
                     {
-                        currentCommand.Type = ProcessingCommandType.SendMail;
                         var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
                         var email = storage.GetUserEmail(userId);
 
@@ -192,8 +184,6 @@ namespace AliceInventory.Logic
 
                 case ParsedCommandType.AddMail:
                     {
-                        currentCommand.Type = ProcessingCommandType.AddMail;
-
                         if (parsedCommand.Data is string email)
                         {
                             storage.SetUserEmail(userId, email);
@@ -206,7 +196,6 @@ namespace AliceInventory.Logic
 
                 case ParsedCommandType.DeleteMail:
                     {
-                        currentCommand.Type = ProcessingCommandType.DeleteMail;
                         var email = storage.DeleteUserEmail(userId);
                         result = new ProcessingResult(ProcessingResultType.MailDeleted, email);
                         break;
@@ -214,47 +203,52 @@ namespace AliceInventory.Logic
 
                 case ParsedCommandType.RequestHelp:
                     {
-                        currentCommand.Type = ProcessingCommandType.RequestHelp;
                         result = new ProcessingResult(ProcessingResultType.HelpRequested);
                         break;
                     }
 
                 case ParsedCommandType.RequestExit:
                     {
-                        currentCommand.Type = ProcessingCommandType.RequestExit;
                         result = new ProcessingResult(ProcessingResultType.ExitRequested);
                         break;
                     }
 
                 default:
                     {
-                        currentCommand.Type = ProcessingCommandType.None;
                         result = new ProcessingResult(ProcessingResultType.Error);
                         break;
                     }
             }
 
-            commandCache.Set(userId, currentCommand);
+            commandCache.Set(userId, result);
 
             return result;
         }
 
-        private ProcessingResult AddEntry(string userId, ref ProcessingCommand currentCommand, SingleEntry entry)
+        private ProcessingResult AddEntry(string userId, SingleEntry entry)
         {
-            currentCommand.Type = ProcessingCommandType.Add;
-            currentCommand.Data = entry;
-
-            storage.AddEntry(userId, entry.Name, entry.Count, entry.Unit.ToData());
+            try
+            {
+                storage.AddEntry(userId, entry.Name, entry.Count, entry.Unit.ToData());
+            }
+            catch (Exception e)
+            {
+                return new ProcessingResult(e);
+            }
 
             return new ProcessingResult(ProcessingResultType.Added, entry);
         }
 
-        private ProcessingResult DeleteEntry(string userId, ref ProcessingCommand currentCommand, SingleEntry entry)
+        private ProcessingResult DeleteEntry(string userId, SingleEntry entry)
         {
-            currentCommand.Type = ProcessingCommandType.Delete;
-            currentCommand.Data = entry;
-
-            storage.DeleteEntry(userId, entry.Name, entry.Count, entry.Unit.ToData());
+            try
+            {
+                storage.DeleteEntry(userId, entry.Name, entry.Count, entry.Unit.ToData());
+            }
+            catch (Exception e)
+            {
+                return new ProcessingResult(e);
+            }
 
             return new ProcessingResult(ProcessingResultType.Deleted, entry);
         }
