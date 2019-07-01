@@ -2,9 +2,9 @@
 
 ## Навык "Учёт" для Яндекс Диалогов
 
-[![AppVeyor](https://img.shields.io/appveyor/ci/vkamiansky/hackathonfls2019.svg)](https://ci.appveyor.com/project/vkamiansky/hackathonfls2019)
+[![AppVeyor](https://img.shields.io/appveyor/ci/vkamiansky/yandex-dialogs-inventory.svg)](https://ci.appveyor.com/project/vkamiansky/yandex-dialogs-inventory)
 
-[![AppVeyor tests](https://img.shields.io/appveyor/tests/vkamiansky/hackathonfls2019.svg)](https://ci.appveyor.com/project/vkamiansky/hackathonfls2019/build/tests)
+[![AppVeyor tests](https://img.shields.io/appveyor/tests/vkamiansky/yandex-dialogs-inventory.svg)](https://ci.appveyor.com/project/vkamiansky/yandex-dialogs-inventory/build/tests)
 
 [![Website](https://img.shields.io/website/https/alice.vsop.spb.ru/api/inventory.svg)](alice.vsop.spb.ru/api/inventory)
 
