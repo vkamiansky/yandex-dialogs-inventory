@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AliceInventory.Logic;
 
-namespace AliceInventory.Data.Exceptions
+namespace AliceInventory.Data.Errors
 {
-    public class EntryNotFoundException : Exception
+    public class EntryNotFoundError : Error
     {
         public string UserId { get; }
         public string EntryName { get; }
 
-        public EntryNotFoundException(string userId, string entryName)
+        public EntryNotFoundError(string userId, string entryName)
         : base($"{entryName} not found in database for user {userId}")
         {
             UserId = userId;

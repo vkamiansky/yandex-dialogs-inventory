@@ -135,15 +135,21 @@ namespace AliceInventory.Logic
                     }
 
                 case ParsedCommandType.ReadList:
-                    {
-                        var data = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
+                {
+                    var operationResult = storage.ReadAllEntries(userId);
+                        if (operationResult.IsError) goto default;
+
+                        var data = Array.ConvertAll(operationResult.Object, x => x.ToLogic());
                         result = new ProcessingResult(ProcessingResultType.ListRead, data);
                         break;
                     }
 
                 case ParsedCommandType.SendMailTo:
                     {
-                        var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
+                        var storageOperationResult = storage.ReadAllEntries(userId);
+                        if (storageOperationResult.IsError) goto default;
+
+                        var entries = Array.ConvertAll(storageOperationResult.Object, x => x.ToLogic());
 
                         if (entries.Length < 1)
                         {
@@ -162,8 +168,13 @@ namespace AliceInventory.Logic
 
                 case ParsedCommandType.SendMail:
                     {
-                        var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
-                        var email = storage.GetUserEmail(userId);
+                        var entriesOperationResult = storage.ReadAllEntries(userId);
+                        if (entriesOperationResult.IsError) goto default;
+                        var entries = Array.ConvertAll(entriesOperationResult.Object, x => x.ToLogic());
+
+                        var emailOperationResult = storage.GetUserEmail(userId);
+                        if (emailOperationResult.IsError) goto default;
+                        var email = emailOperationResult.Object;
 
                         if (entries.Length < 1)
                         {

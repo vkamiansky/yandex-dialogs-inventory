@@ -7,11 +7,10 @@ namespace AliceInventory.Logic
     {
         public ProcessingResultType Type { get; set; }
         public object Data { get; set; }
+        public Error Error { get; set; }
+
         public Exception Exception { get; set; }
-        public CultureInfo CultureInfo { get; set; }
-
-
-
+        public CultureInfo CultureInfo { get; private set; }
 
         public ProcessingResult()
         { }
@@ -20,6 +19,8 @@ namespace AliceInventory.Logic
         public ProcessingResult(ProcessingResultType type, object data)
         { Type = type; Data = data; }
         public ProcessingResult(Exception exception)
-        { Type = ProcessingResultType.Error; Exception = exception; }
+        { Type = ProcessingResultType.Exception; Exception = exception; }
+        public ProcessingResult(Error error)
+        { Type = ProcessingResultType.Error; Error = error; }
     }
 }

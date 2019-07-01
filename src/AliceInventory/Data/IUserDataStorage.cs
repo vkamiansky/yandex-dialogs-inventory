@@ -1,15 +1,16 @@
 using System;
+using AliceInventory.Logic;
 
 namespace AliceInventory.Data
 {
     public interface IUserDataStorage
     {
-        void AddEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit);
-        void DeleteEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit);
-        Data.Entry[] ReadAllEntries(string userId);
-        bool ClearInventory(string userId);
-        string GetUserEmail(string userId);
-        bool SetUserEmail(string userId, string email);
-        string DeleteUserEmail(string userId);
+        OperationResult AddEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit);
+        OperationResult DeleteEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit);
+        OperationResult<Data.Entry[]> ReadAllEntries(string userId);
+        OperationResult ClearInventory(string userId);
+        OperationResult<string> GetUserEmail(string userId);
+        OperationResult SetUserEmail(string userId, string email);
+        OperationResult<string> DeleteUserEmail(string userId);
     }
 }

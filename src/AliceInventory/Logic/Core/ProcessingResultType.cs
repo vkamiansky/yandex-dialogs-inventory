@@ -19,6 +19,7 @@ namespace AliceInventory.Logic
         MailDeleted,
         HelpRequested,
         Error,
+        Exception,
         ExitRequested,
     }
 }

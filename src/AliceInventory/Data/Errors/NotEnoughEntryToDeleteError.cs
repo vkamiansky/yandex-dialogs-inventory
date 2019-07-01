@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AliceInventory.Logic;
 
-namespace AliceInventory.Data.Exceptions
+namespace AliceInventory.Data.Errors
 {
-    public class NotEnoughEntryToDeleteException : Exception
+    public class NotEnoughEntryToDeleteError : Error
     {
         public string UserId { get; set; }
         public double Actual { get; }
         public double Count { get; }
         public Entry Entry { get; }
 
-        public NotEnoughEntryToDeleteException(string userId, double actual, double count, Entry entry)
+        public NotEnoughEntryToDeleteError(string userId, double actual, double count, Entry entry)
             : base($"Can't delete {actual} from {count} entry(ies)")
         {
             UserId = userId;

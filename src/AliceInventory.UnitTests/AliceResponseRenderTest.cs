@@ -1,7 +1,7 @@
 using System;
 using AliceInventory.Controllers;
 using AliceInventory.Controllers.AliceResponseRender;
-using AliceInventory.Data.Exceptions;
+using AliceInventory.Data.Errors;
 using AliceInventory.Logic;
 using Xunit;
 using Xunit.Abstractions;
@@ -88,21 +88,21 @@ namespace AliceInventory.UnitTests
             var entryNotFoundExceptionResult = new ProcessingResult()
             {
                 Type = ProcessingResultType.Error,
-                Exception = new EntryNotFoundException("someId",
+                Error = new EntryNotFoundError("someId",
                     "яблоки")
             };
 
             var entryUnitNotFoundExceptionResult = new ProcessingResult()
             {
                 Type = ProcessingResultType.Error,
-                Exception = new EntryUnitNotFoundException("someId",
+                Error = new EntryUnitNotFoundError("someId",
                     new Data.Entry("камни"), Data.UnitOfMeasure.L)
             };
 
             var notEnoughEntryToDeleteExceptionResult = new ProcessingResult()
             {
                 Type = ProcessingResultType.Error,
-                Exception = new NotEnoughEntryToDeleteException("someId",
+                Error = new NotEnoughEntryToDeleteError("someId",
                     4, 2, new Data.Entry("камни"))
             };
 

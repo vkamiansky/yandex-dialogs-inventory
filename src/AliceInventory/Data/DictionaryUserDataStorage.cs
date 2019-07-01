@@ -2,7 +2,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using AliceInventory.Data.Exceptions;
+using AliceInventory.Data.Errors;
+using AliceInventory.Logic;
 
 namespace AliceInventory.Data
 {
@@ -15,7 +16,7 @@ namespace AliceInventory.Data
             storage = new Dictionary<string, UserData>();
         }
 
-        public void AddEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
+        public OperationResult AddEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
         {
             UserData data = GetUserData(userId);
             var entries = data.Entries;
@@ -29,67 +30,69 @@ namespace AliceInventory.Data
                 userItem.UnitValues.Add(unit, count);
             else
                 userItem.UnitValues[unit] += count;
+
+            return OperationResult.Ok;
         }
 
-        public void DeleteEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
+        public OperationResult DeleteEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
         {
             UserData data = GetUserData(userId);
             var entries = data.Entries;
             var userItem = entries.FirstOrDefault(x => x.Name == entryName);
 
             if (userItem == null)
-                throw new EntryNotFoundException(userId, entryName);
+                return new EntryNotFoundError(userId, entryName);
             if (!userItem.UnitValues.ContainsKey(unit))
-                throw new EntryUnitNotFoundException(userId, userItem, unit);
+                return new EntryUnitNotFoundError(userId, userItem, unit);
 
             var currentCount = userItem.UnitValues[unit];
             // Removing
             if (currentCount < count)
-                throw new NotEnoughEntryToDeleteException(userId, count, currentCount, userItem);
+                return new NotEnoughEntryToDeleteError(userId, count, currentCount, userItem);
 
             userItem.UnitValues[unit] -= count;
             
             // Data cleaning
-            if (userItem.UnitValues[unit] <= 0) return;
+            if (userItem.UnitValues[unit] <= 0)
+                return OperationResult.Ok;
             userItem.UnitValues.Remove(unit);
             
-            if (userItem.UnitValues.Count > 0) return;
+            if (userItem.UnitValues.Count > 0)
+                return OperationResult.Ok;
             entries.Remove(userItem);
+
+            return OperationResult.Ok;
         }
 
-        public Data.Entry[] ReadAllEntries(string userId)
+        public OperationResult<Data.Entry[]> ReadAllEntries(string userId)
         {
             UserData data = GetUserData(userId);
             return data.Entries.ToArray();
         }
 
-        public bool ClearInventory(string userId)
+        public OperationResult ClearInventory(string userId)
         {
-            bool isSuccessful = true;
-
             UserData data = GetUserData(userId);
             data.Entries.Clear();
 
-            return isSuccessful;
+            return OperationResult.Ok;
         }
 
-        public string GetUserEmail(string userId)
+        public OperationResult<string> GetUserEmail(string userId)
         {
             UserData data = GetUserData(userId);
             return data.LastEmail;
         }
 
-        public bool SetUserEmail(string userId, string email)
+        public OperationResult SetUserEmail(string userId, string email)
         {
-            bool isSuccessful = true;
-
             UserData data = GetUserData(userId);
             data.LastEmail = email;
 
-            return isSuccessful;
+            return OperationResult.Ok;
         }
 
-        public string DeleteUserEmail(string userId)
+        public OperationResult<string> DeleteUserEmail(string userId)
         {
             UserData data = GetUserData(userId);
             var email = data.LastEmail;

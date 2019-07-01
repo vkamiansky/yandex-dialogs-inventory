@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
-using AliceInventory.Data.Exceptions;
+using AliceInventory.Data.Errors;
 using AliceInventory.Logic;
 using AliceInventory.Logic.AliceResponseRender;
 
@@ -440,26 +440,26 @@ namespace AliceInventory.Controllers.AliceResponseRender
                     }
 
                 case ProcessingResultType.Error
-                    when result.Exception is EntryNotFoundException exception:
+                    when result.Error is EntryNotFoundError error:
                     {
                         format = ResponseFormat.EntryNotFoundError;
-                        formatArguments = new object[] { exception.EntryName };
+                        formatArguments = new object[] { error.EntryName };
                         break;
                     }
 
                 case ProcessingResultType.Error
-                    when result.Exception is EntryUnitNotFoundException exception:
+                    when result.Error is EntryUnitNotFoundError error:
                     {
                         format = ResponseFormat.EntryUnitNotFoundError;
-                        formatArguments = new object[] { exception.Entry.Name, exception.Unit.ToLogic().ToText() };
+                        formatArguments = new object[] { error.Entry.Name, error.Unit.ToLogic().ToText() };
                         break;
                     }
 
                 case ProcessingResultType.Error
-                    when result.Exception is NotEnoughEntryToDeleteException exception:
+                    when result.Error is NotEnoughEntryToDeleteError error:
                     {
                         format = ResponseFormat.NotEnoughEntryToDeleteError;
-                        formatArguments = new object[] { exception.Actual, exception.Entry.Name, exception.Count };
+                        formatArguments = new object[] { error.Actual, error.Entry.Name, error.Count };
                         break;
                     }
 
