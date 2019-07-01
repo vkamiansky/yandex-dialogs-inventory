@@ -7,6 +7,9 @@
 *.userosscache
 *.sln.docstates
 
+# ionide symbols cache
+symbolCache.db
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

@@ -7,10 +7,10 @@ namespace AliceInventory.Logic
 {
     public interface IConfigurationService
     {
-        string MailingAccountLogin { get; }
-        string MailingAccountPassword { get; }
-        string MailingSmtpHost { get; }
-        string MailingSmtpPort { get; }
+        Task<string> GetMailingAccountLogin();
+        Task<string> GetMailingAccountPassword();
+        Task<string> GetMailingSmtpHost();
+        Task<int> GetMailingSmtpPort();
         Task<string> GetIsConfigured();
     }
 

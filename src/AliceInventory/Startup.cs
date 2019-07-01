@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,12 +16,18 @@ namespace AliceInventory
 {
     public class Startup
     {
+        private static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
+
+        private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>();
+        
+        public IConfiguration Configuration { get; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-         }
-        public IConfiguration Configuration { get; }
- 
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -34,10 +41,10 @@ namespace AliceInventory
             services.AddJaegerTracing_Working();
 
             services.AddSingleton<Logic.IConfigurationService, Logic.ConfigurationService>();
-            services.AddSingleton<Logic.Email.IAliceEmailService, Logic.Email.AliceEmailService>();
+            services.AddSingleton<Logic.Email.IInventoryEmailService, Logic.Email.InventoryEmailService>();
             services.AddSingleton<Logic.ICommandCache, Logic.CommandCache>();
             services.AddSingleton<Logic.IInputParserService, Logic.Parser.InputParserService>();
-            services.AddSingleton<Data.IInventoryStorage, Data.DictionaryStorage>();
+            services.AddSingleton<Data.IUserDataStorage, Data.DictionaryUserDataStorage>();
             services.AddSingleton<Logic.IInventoryDialogService, Logic.InventoryDialogService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using AliceInventory.Controllers;
 using Newtonsoft.Json;
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AliceInventory.IntegrationTests
 {
@@ -31,10 +33,15 @@ namespace AliceInventory.IntegrationTests
 
         public InventoryControllerTest()
         {
-            _server = new TestServer(WebHost.CreateDefaultBuilder().UseStartup<AliceInventory.Startup>());
+            _server = new TestServer(WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>()
+                .ConfigureTestServices(services =>
+                {
+                    services.AddSingleton<Logic.IConfigurationService, TestConfigurationService>();
+                }));
             _client = _server.CreateClient();
         }
-        
+
         private async Task<AliceResponse> SendRequest(HttpClient client, AliceRequest request)
         {
             var requestJson = JsonConvert.SerializeObject(request);
@@ -54,15 +61,15 @@ namespace AliceInventory.IntegrationTests
             }
         }
 
-        // [Fact]
-        // public async Task ServerRunningTest()
-        // {
-        //     // using(var response = await _client.GetAsync("/api/inventory/"))
-        //     // {
-        //     //     var responseString = await response.Content.ReadAsStringAsync();
-        //     //     Assert.Contains("Server is working...", responseString);
-        //     // }
-        // }
+        [Fact]
+        public async Task ServerRunningTest()
+        {
+            using (var response = await _client.GetAsync("/api/inventory/"))
+            {
+                var responseString = await response.Content.ReadAsStringAsync();
+                Assert.Contains("Server is working...", responseString);
+            }
+        }
 
         [Fact]
         public async Task ServerAvailableTest()
@@ -70,7 +77,7 @@ namespace AliceInventory.IntegrationTests
             var request = new HttpRequestMessage(HttpMethod.Head, "/api/inventory/");
             using(HttpResponseMessage response = await _client.SendAsync(request))
             {
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);   
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             }
         }
 

@@ -13,8 +13,11 @@ namespace AliceInventory.Logic
         Clear,
         ReadList,
         SendMail,
+        SendMailTo,
+        AddMail,
+        DeleteMail,
         RequestHelp,
         RequestExit,
-        SayUnknownCommand
+        SayUnknownCommand,
     }
 }
