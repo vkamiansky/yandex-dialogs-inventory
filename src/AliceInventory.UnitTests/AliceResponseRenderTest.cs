@@ -113,7 +113,7 @@ namespace AliceInventory.UnitTests
                 notEnoughEntryToDeleteExceptionResult
             })
             {
-                _output.WriteLine(result.Exception.GetType().Name);
+                _output.WriteLine(result.Error.GetType().Name);
                 var jsonResponse = AliceResponseRendererHelper.CreateAliceResponse(result, sessionExample);
 
                 var response = jsonResponse.Response;

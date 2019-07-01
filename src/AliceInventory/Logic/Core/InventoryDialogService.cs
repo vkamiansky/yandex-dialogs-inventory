@@ -25,9 +25,7 @@ namespace AliceInventory.Logic
         public ProcessingResult ProcessInput(string userId, string input, CultureInfo cultureInfo)
         {
             ParsedCommand parsedCommand = parser.ParseInput(input, cultureInfo);
-
             ProcessingResult prevResult = commandCache.Get(userId);
-
             ProcessingResult result = null;
 
             switch (parsedCommand.Type)
@@ -135,21 +133,25 @@ namespace AliceInventory.Logic
                     }
 
                 case ParsedCommandType.ReadList:
-                {
-                    var operationResult = storage.ReadAllEntries(userId);
-                        if (operationResult.IsError) goto default;
+                    {
+                        // Read list of entries
+                        var entriesOperation = storage.ReadAllEntries(userId);
+                        if (entriesOperation.HasError)
+                            return new ProcessingResult(entriesOperation.Error);
 
-                        var data = Array.ConvertAll(operationResult.Object, x => x.ToLogic());
+                        var data = Array.ConvertAll(entriesOperation.Object, x => x.ToLogic());
                         result = new ProcessingResult(ProcessingResultType.ListRead, data);
                         break;
                     }
 
                 case ParsedCommandType.SendMailTo:
                     {
-                        var storageOperationResult = storage.ReadAllEntries(userId);
-                        if (storageOperationResult.IsError) goto default;
+                        // Read list of entries
+                        var entriesOperation = storage.ReadAllEntries(userId);
+                        if (entriesOperation.HasError)
+                            return new ProcessingResult(entriesOperation.Error);
 
-                        var entries = Array.ConvertAll(storageOperationResult.Object, x => x.ToLogic());
+                        var entries = Array.ConvertAll(entriesOperation.Object, x => x.ToLogic());
 
                         if (entries.Length < 1)
                         {
@@ -168,13 +170,17 @@ namespace AliceInventory.Logic
 
                 case ParsedCommandType.SendMail:
                     {
-                        var entriesOperationResult = storage.ReadAllEntries(userId);
-                        if (entriesOperationResult.IsError) goto default;
-                        var entries = Array.ConvertAll(entriesOperationResult.Object, x => x.ToLogic());
+                        // Read list of entries
+                        var entriesOperation = storage.ReadAllEntries(userId);
+                        if (entriesOperation.HasError)
+                            return new ProcessingResult(entriesOperation.Error);
+                        var entries = Array.ConvertAll(entriesOperation.Object, x => x.ToLogic());
 
-                        var emailOperationResult = storage.GetUserEmail(userId);
-                        if (emailOperationResult.IsError) goto default;
-                        var email = emailOperationResult.Object;
+                        // Read user email
+                        var emailOperation = storage.GetUserEmail(userId);
+                        if (emailOperation.HasError)
+                            return new ProcessingResult(emailOperation.Error);
+                        var email = emailOperation.Object;
 
                         if (entries.Length < 1)
                         {

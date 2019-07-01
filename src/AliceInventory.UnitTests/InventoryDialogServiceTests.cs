@@ -78,7 +78,8 @@ namespace AliceInventory.UnitTests
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == entry.Name),
                     It.Is<double>(y => Math.Abs(y - entry.Count) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())));
+                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())))
+                .Returns(OperationResult.Ok);
 
             var parserMock = new Mock<IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
@@ -140,7 +141,8 @@ namespace AliceInventory.UnitTests
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == entry.Name),
                     It.Is<double>(y => Math.Abs(y - entry.Count) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())));
+                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())))
+                .Returns(OperationResult.Ok);
 
             var parserMock = new Mock<IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
@@ -355,7 +357,8 @@ namespace AliceInventory.UnitTests
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == currentName),
                     It.Is<double>(y => Math.Abs(y - currentCount) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())));
+                    It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())))
+                .Returns(OperationResult.Ok);
 
             var commandCacheMock = new Mock<Logic.ICommandCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x =>
@@ -441,7 +444,8 @@ namespace AliceInventory.UnitTests
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == currentName),
                     It.Is<double>(y => Math.Abs(y - currentCount) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())));
+                    It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())))
+                .Returns(OperationResult.Ok);
 
             var commandCacheMock = new Mock<Logic.ICommandCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x =>

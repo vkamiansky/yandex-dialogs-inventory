@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using AliceInventory.Data.Errors;
@@ -313,10 +314,8 @@ namespace AliceInventory.Controllers.AliceResponseRender
 
         private static Response CreateResponse(ProcessingResult result, CultureInfo cultureInfo)
         {
-            object[] formatArguments = new object[0];
-
-
             ResponseFormat format;
+            object[] formatArguments = new object[0];
 
             switch (result.Type)
             {
@@ -376,7 +375,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
                     }
 
                 case ProcessingResultType.ListRead
-                    when result.Data is Logic.Entry[] entries && entries.Length > 0:
+                    when result.Data is Logic.Entry[] entries:
                     {
                         if (entries.Length > 0)
                         {
@@ -462,7 +461,6 @@ namespace AliceInventory.Controllers.AliceResponseRender
                         formatArguments = new object[] { error.Actual, error.Entry.Name, error.Count };
                         break;
                     }
-
                 default:
                     {
                         format = ResponseFormat.Error;

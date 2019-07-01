@@ -6,16 +6,14 @@ using AliceInventory.Logic;
 
 namespace AliceInventory.Data.Errors
 {
-    public class EntryUnitNotFoundError : Error
+    public class EntryUnitNotFoundError : StorageError
     {
-        public string UserId { get; }
         public Entry Entry { get; }
         public UnitOfMeasure Unit { get; }
 
         public EntryUnitNotFoundError(string userId, Entry entry, UnitOfMeasure unit)
-            : base($"{unit} not found for {entry.Name} in database for user {userId}")
+            : base($"{unit} not found for {entry.Name} in database")
         {
-            UserId = userId;
             Entry = entry;
             Unit = unit;
         }

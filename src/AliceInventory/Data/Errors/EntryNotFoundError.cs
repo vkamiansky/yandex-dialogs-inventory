@@ -6,15 +6,13 @@ using AliceInventory.Logic;
 
 namespace AliceInventory.Data.Errors
 {
-    public class EntryNotFoundError : Error
+    public class EntryNotFoundError : StorageError
     {
-        public string UserId { get; }
         public string EntryName { get; }
 
         public EntryNotFoundError(string userId, string entryName)
-        : base($"{entryName} not found in database for user {userId}")
+        : base($"{entryName} not found in database")
         {
-            UserId = userId;
             EntryName = entryName;
         }
     }

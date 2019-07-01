@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace AliceInventory.Logic
 {
-    public class Error : OperationResult
+    public class Error
     {
-        public string Message { get; set; }
+        public string Message { get; }
 
         public Error()
         { }
