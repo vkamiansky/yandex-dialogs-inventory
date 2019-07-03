@@ -5,12 +5,17 @@ namespace AliceInventory.Logic
 {
     public class ProcessingResult
     {
-        public ProcessingResultType Type { get; set; }
-        public object Data { get; set; }
-        public Error Error { get; set; }
+        public static implicit operator ProcessingResult(Error e)
+        {
+            return new ProcessingResult(e);
+        }
 
-        public Exception Exception { get; set; }
-        public CultureInfo CultureInfo { get; private set; }
+        public ProcessingResultType Type { get; }
+        public object Data { get; }
+        public Error Error { get; }
+
+        public Exception Exception { get; }
+        public CultureInfo CultureInfo { get; set; }
 
         public ProcessingResult()
         { }

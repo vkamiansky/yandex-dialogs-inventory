@@ -8,15 +8,15 @@ namespace AliceInventory.Logic
 {
     public static class Extensions
     {
-        public static string ToText(this UnitOfMeasure unit)
+        public static string ToText(this Logic.UnitOfMeasure unit)
         {
             switch (unit)
             {
-                case UnitOfMeasure.Kg:
+                case Logic.UnitOfMeasure.Kg:
                     return "кг";
-                case UnitOfMeasure.L:
+                case Logic.UnitOfMeasure.L:
                     return "л";
-                case UnitOfMeasure.Unit:
+                case Logic.UnitOfMeasure.Unit:
                     return "шт";
                 default:
                     return "error";
@@ -66,32 +66,11 @@ namespace AliceInventory.Logic
             if (entry == null)
                 return null;
 
-            var unitValues = new Dictionary<Logic.UnitOfMeasure, double>();
-            foreach (var (unit, count) in entry.UnitValues)
+            return new Logic.Entry()
             {
-                unitValues.Add(unit.ToLogic(), count);
-            }
-            
-            return new Logic.Entry(entry.Name)
-            {
-                UnitValues = unitValues
-            };
-        }
-
-        public static Data.Entry ToData(this Logic.Entry entry)
-        {
-            if (entry == null)
-                return null;
-            
-            var unitValues = new Dictionary<Data.UnitOfMeasure, double>();
-            foreach (var (unit, count) in entry.UnitValues)
-            {
-                unitValues.Add(unit.ToData(), count);
-            }
-            
-            return new Data.Entry(entry.Name)
-            {
-                UnitValues = unitValues
+                Name = entry.Name,
+                Quantity = entry.Quantity,
+                UnitOfMeasure = entry.UnitOfMeasure.ToLogic()
             };
         }
 

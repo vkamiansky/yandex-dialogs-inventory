@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AliceInventory.Logic;
 
-namespace AliceInventory.Data.Errors
+namespace AliceInventory.Logic.Core.Errors
 {
-    public class EntryNotFoundError : StorageError
+    public class EntryNotFoundError : Error
     {
         public string EntryName { get; }
 
         public EntryNotFoundError(string userId, string entryName)
-        : base($"{entryName} not found in database")
+            : base($"{entryName} not found in database")
         {
             EntryName = entryName;
         }

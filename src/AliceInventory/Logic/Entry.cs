@@ -1,22 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AliceInventory.Logic
 {
     public class Entry
     {
         public string Name { get; set; }
-        public Dictionary<Logic.UnitOfMeasure, double> UnitValues { get; set; }
-        public Entry(string name)
-        {
-            Name = name;
-            UnitValues = new Dictionary<Logic.UnitOfMeasure, double>();
-        }
-
-        public Entry(string name, double count, Logic.UnitOfMeasure unit)
-        {
-            Name = name;
-            UnitValues = new Dictionary<UnitOfMeasure, double> { {unit, count} };
-        }
+        public double Quantity { get; set; }
+        public UnitOfMeasure UnitOfMeasure { get; set; }
     }
 }

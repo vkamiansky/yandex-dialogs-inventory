@@ -2,13 +2,14 @@ namespace AliceInventory.Data
 {
     public interface IUserDataStorage
     {
-        OperationResult<int> AddEntry(string userId, string entryName, double quantity, Data.UnitOfMeasure unit);
-        OperationResult DeleteEntry(int id);
-        OperationResult UpdateEntry(int id, double quantity);
-        OperationResult<Data.Entry[]> ReadAllEntries(string userId);
-        OperationResult DeleteAllEntries(string userId);
-        OperationResult<string> GetUserEmail(string userId);
-        OperationResult SetUserEmail(string userId, string email);
-        OperationResult<string> DeleteUserEmail(string userId);
+        int CreateEntry(string userId, string entryName, double quantity, Data.UnitOfMeasure unit);
+        Data.Entry[] ReadAllEntries(string userId);
+        void UpdateEntry(int id, double quantity);
+        void DeleteEntry(int id);
+        void DeleteAllEntries(string userId);
+
+        string ReadUserEmail(string userId);
+        void SetUserEmail(string userId, string email);
+        string DeleteUserEmail(string userId);
     }
 }

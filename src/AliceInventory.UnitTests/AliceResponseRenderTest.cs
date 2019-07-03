@@ -1,7 +1,6 @@
 using System;
 using AliceInventory.Controllers;
 using AliceInventory.Controllers.AliceResponseRender;
-using AliceInventory.Data.Errors;
 using AliceInventory.Logic;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,11 +16,11 @@ namespace AliceInventory.UnitTests
             _output = output;
         }
 
-        private static readonly SingleEntry entry = new SingleEntry()
+        private static readonly Entry entry = new Entry()
         {
             Name = "камни",
-            Count = 4,
-            Unit = UnitOfMeasure.Unit
+            Quantity = 4,
+            UnitOfMeasure = UnitOfMeasure.Unit
         };
         private static readonly Entry[] entries = new []
         {

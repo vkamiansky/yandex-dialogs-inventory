@@ -44,16 +44,16 @@ namespace AliceInventory.UnitTests
         [InlineData("6 яблок", "яблок", 6, null)]
         [InlineData("Килограмм яблок", "яблок", null, UnitOfMeasure.Kg)]
         [InlineData("закинь яблоко", "яблоко", null, null)]
-        public void AddCommandParsing(string input, string entryName, double? entryCount, UnitOfMeasure? entryUnitOfMeasure)
+        public void AddCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
         {
             ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
             Assert.Equal(ParsedCommandType.Add, parsedCommand.Type);
 
-            var data = parsedCommand.Data as ParsedSingleEntry;
+            var data = parsedCommand.Data as ParsedEntry;
 
             Assert.Equal(entryName, data?.Name);
-            Assert.Equal(entryCount, data?.Count);
+            Assert.Equal(entryQuantity, data?.Quantity);
             Assert.Equal(entryUnitOfMeasure, data?.Unit);
         }
 
@@ -64,16 +64,16 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь молоко 1 литр 5 штук", "молоко 1 литр", 5, UnitOfMeasure.Unit)]
         [InlineData("ну давай добавим 5 кг яблок", "яблок", 5, UnitOfMeasure.Kg)]
         [InlineData("добавь яблок 4", "яблок", 4, null)]
-        public void SpecificAddCommandParsing(string input, string entryName, double? entryCount, UnitOfMeasure? entryUnitOfMeasure)
+        public void SpecificAddCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
         {
             ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
             Assert.Equal(ParsedCommandType.Add, parsedCommand.Type);
 
-            var data = parsedCommand.Data as ParsedSingleEntry;
+            var data = parsedCommand.Data as ParsedEntry;
 
             Assert.Equal(entryName, data?.Name);
-            Assert.Equal(entryCount, data?.Count);
+            Assert.Equal(entryQuantity, data?.Quantity);
             Assert.Equal(entryUnitOfMeasure, data?.Unit);
         }
 
@@ -84,16 +84,16 @@ namespace AliceInventory.UnitTests
         [InlineData("ещё молоко 1 литр 5 штук", "молоко 1 литр", 5, UnitOfMeasure.Unit)]
         [InlineData("ну ещё 5 кг яблок", "яблок", 5, UnitOfMeasure.Kg)]
         [InlineData("ещё яблок 4", "яблок", 4, null)]
-        public void MoreCommandParsing(string input, string entryName, double? entryCount, UnitOfMeasure? entryUnitOfMeasure)
+        public void MoreCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
         {
             ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
             Assert.Equal(ParsedCommandType.More, parsedCommand.Type);
 
-            var data = parsedCommand.Data as ParsedSingleEntry;
+            var data = parsedCommand.Data as ParsedEntry;
 
             Assert.Equal(entryName, data?.Name);
-            Assert.Equal(entryCount, data?.Count);
+            Assert.Equal(entryQuantity, data?.Quantity);
             Assert.Equal(entryUnitOfMeasure, data?.Unit);
         }
 
@@ -107,16 +107,16 @@ namespace AliceInventory.UnitTests
         [InlineData("убери молоко", "молоко", null, null)]
         [InlineData("давай убери яблок 3 штуки", "яблок", 3, UnitOfMeasure.Unit)]
         [InlineData("сотри килограмм яблок", "яблок", null, UnitOfMeasure.Kg)]
-        public void DeleteCommandParsing(string input, string entryName, double? entryCount, UnitOfMeasure? entryUnitOfMeasure)
+        public void DeleteCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
         {
             ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
             Assert.Equal(ParsedCommandType.Delete, parsedCommand.Type);
 
-            var data = parsedCommand.Data as ParsedSingleEntry;
+            var data = parsedCommand.Data as ParsedEntry;
 
             Assert.Equal(entryName, data?.Name);
-            Assert.Equal(entryCount, data?.Count);
+            Assert.Equal(entryQuantity, data?.Quantity);
             Assert.Equal(entryUnitOfMeasure, data?.Unit);
         }
 
@@ -212,12 +212,12 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь предмет -1,1 кг", "ru-RU", -1.1)]
         [InlineData("добавь предмет 0.1 кг", "en-US", 0.1)]
         [InlineData("добавь предмет -1.1 кг", "en-US", -1.1)]
-        public void CommandParsingCultureTest(string input, string culture, double entryCount)
+        public void CommandParsingCultureTest(string input, string culture, double entryQuantity)
         {
             var parsedCommand = _parser.ParseInput(input, new CultureInfo(culture));
-            var data = parsedCommand.Data as ParsedSingleEntry;
+            var data = parsedCommand.Data as ParsedEntry;
 
-            Assert.Equal(entryCount, data?.Count);
+            Assert.Equal(entryQuantity, data?.Quantity);
         }
     }
 }

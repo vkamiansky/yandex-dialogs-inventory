@@ -7,6 +7,7 @@ using AliceInventory.Data;
 using AliceInventory.Logic;
 using AliceInventory.Logic.Parser;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Entry = AliceInventory.Logic.Entry;
 using UnitOfMeasure = AliceInventory.Data.UnitOfMeasure;
 
 namespace AliceInventory.UnitTests
@@ -19,19 +20,19 @@ namespace AliceInventory.UnitTests
         private const string delteInputText = "удали объект1 123.123 кг";
         private const string cancelInputText = "отмена";
         private const string entryName = "объект1";
-        private const double entryCount = 123.123d;
+        private const double entryQuantity = 123.123d;
         private const Logic.UnitOfMeasure entryUnit = Logic.UnitOfMeasure.Kg;
-        private static readonly ParsedSingleEntry parsedEntry = new ParsedSingleEntry()
+        private static readonly ParsedEntry parsedEntry = new ParsedEntry()
         {
             Name = entryName,
-            Count = entryCount,
+            Quantity = entryQuantity,
             Unit = entryUnit
         };
-        private static readonly SingleEntry entry = new SingleEntry()
+        private static readonly Entry entry = new Entry()
         {
             Name = entryName,
-            Count = entryCount,
-            Unit = entryUnit
+            Quantity = entryQuantity,
+            UnitOfMeasure = entryUnit
         };
         private static readonly ParsedCommand addParsedCommand = new ParsedCommand()
         {
@@ -74,11 +75,11 @@ namespace AliceInventory.UnitTests
         public void ProcessInputAddTest()
         {
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
-            storageMock.Setup(x => x.AddEntry(
+            storageMock.Setup(x => x.CreateEntry(
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == entry.Name),
-                    It.Is<double>(y => Math.Abs(y - entry.Count) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())))
+                    It.Is<double>(y => Math.Abs(y - entry.Quantity) < Tolerance),
+                    It.Is<Data.UnitOfMeasure>(y => y == entry.UnitOfMeasure.ToData())))
                 .Returns(OperationResult.Ok);
 
             var parserMock = new Mock<IInputParserService>();
@@ -95,10 +96,10 @@ namespace AliceInventory.UnitTests
                 It.Is<string>(y => y == userId),
                 It.Is<ProcessingResult>(command =>
                     command.Type == ProcessingResultType.Added &&
-                    command.Data is SingleEntry &&
-                    ((SingleEntry) command.Data).Name == entry.Name &&
-                    Math.Abs(((SingleEntry) command.Data).Count - entry.Count) < Tolerance &&
-                    ((SingleEntry) command.Data).Unit == entry.Unit)));
+                    command.Data is Entry &&
+                    ((Entry) command.Data).Name == entry.Name &&
+                    Math.Abs(((Entry) command.Data).Quantity - entry.Quantity) < Tolerance &&
+                    ((Entry) command.Data).UnitOfMeasure == entry.UnitOfMeasure)));
 
             var emailMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
 
@@ -111,14 +112,14 @@ namespace AliceInventory.UnitTests
             var result = sut.ProcessInput(userId, addInputText, CultureInfo.CurrentCulture);
             Assert.Equal(ProcessingResultType.Added, result.Type);
 
-            var resultEntry = result.Data as SingleEntry;
+            var resultEntry = result.Data as Entry;
             Assert.NotNull(resultEntry);
             Assert.Equal(entry.Name, resultEntry.Name);
-            Assert.Equal(entry.Count, resultEntry.Count);
-            Assert.Equal(entry.Unit, resultEntry.Unit);
+            Assert.Equal(entry.Quantity, resultEntry.Quantity);
+            Assert.Equal(entry.UnitOfMeasure, resultEntry.UnitOfMeasure);
 
             storageMock.Verify(x =>
-                x.AddEntry(
+                x.CreateEntry(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<double>(),
@@ -140,8 +141,8 @@ namespace AliceInventory.UnitTests
             storageMock.Setup(x => x.DeleteEntry(
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == entry.Name),
-                    It.Is<double>(y => Math.Abs(y - entry.Count) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())))
+                    It.Is<double>(y => Math.Abs(y - entry.Quantity) < Tolerance),
+                    It.Is<Data.UnitOfMeasure>(y => y == entry.UnitOfMeasure.ToData())))
                 .Returns(OperationResult.Ok);
 
             var parserMock = new Mock<IInputParserService>();
@@ -158,10 +159,10 @@ namespace AliceInventory.UnitTests
                 It.Is<string>(y => y == userId),
                 It.Is<ProcessingResult>(command =>
                     command.Type == ProcessingResultType.Deleted &&
-                    command.Data is SingleEntry &&
-                    ((SingleEntry)command.Data).Name == entry.Name &&
-                    Math.Abs(((SingleEntry)command.Data).Count - entry.Count) < Tolerance &&
-                    ((SingleEntry)command.Data).Unit == entry.Unit)));
+                    command.Data is Entry &&
+                    ((Entry)command.Data).Name == entry.Name &&
+                    Math.Abs(((Entry)command.Data).Quantity - entry.Quantity) < Tolerance &&
+                    ((Entry)command.Data).UnitOfMeasure == entry.UnitOfMeasure)));
 
             var emailMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
 
@@ -174,11 +175,11 @@ namespace AliceInventory.UnitTests
             var result = sut.ProcessInput(userId, delteInputText, CultureInfo.CurrentCulture);
             Assert.Equal(ProcessingResultType.Deleted, result.Type);
 
-            var resultEntry = result.Data as SingleEntry;
+            var resultEntry = result.Data as Entry;
             Assert.NotNull(resultEntry);
             Assert.Equal(entry.Name, resultEntry.Name);
-            Assert.Equal(entry.Count, resultEntry.Count);
-            Assert.Equal(entry.Unit, resultEntry.Unit);
+            Assert.Equal(entry.Quantity, resultEntry.Quantity);
+            Assert.Equal(entry.UnitOfMeasure, resultEntry.UnitOfMeasure);
 
             storageMock.Verify(x =>
                 x.DeleteEntry(
@@ -203,8 +204,8 @@ namespace AliceInventory.UnitTests
             storageMock.Setup(x => x.DeleteEntry(
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == entry.Name),
-                    It.Is<double>(y => Math.Abs(y - entry.Count) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())));
+                    It.Is<double>(y => Math.Abs(y - entry.Quantity) < Tolerance),
+                    It.Is<Data.UnitOfMeasure>(y => y == entry.UnitOfMeasure.ToData())));
 
             var parserMock = new Mock<Logic.IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
@@ -219,10 +220,10 @@ namespace AliceInventory.UnitTests
                 x.Set(It.Is<string>(y => y == userId),
                     It.Is<ProcessingResult>(command =>
                         command.Type == ProcessingResultType.AddCanceled &&
-                        command.Data is SingleEntry &&
-                        ((SingleEntry)command.Data).Name == entry.Name &&
-                        Math.Abs(((SingleEntry)command.Data).Count - entry.Count) < Tolerance &&
-                        ((SingleEntry)command.Data).Unit == entry.Unit)));
+                        command.Data is Entry &&
+                        ((Entry)command.Data).Name == entry.Name &&
+                        Math.Abs(((Entry)command.Data).Quantity - entry.Quantity) < Tolerance &&
+                        ((Entry)command.Data).UnitOfMeasure == entry.UnitOfMeasure)));
 
             var emailMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
 
@@ -235,11 +236,11 @@ namespace AliceInventory.UnitTests
             var result = sut.ProcessInput(userId, cancelInputText, CultureInfo.CurrentCulture);
             Assert.Equal(ProcessingResultType.AddCanceled, result.Type);
 
-            var resultEntry = result.Data as SingleEntry;
+            var resultEntry = result.Data as Entry;
             Assert.NotNull(resultEntry);
             Assert.Equal(entry.Name, resultEntry.Name);
-            Assert.Equal(entry.Count, resultEntry.Count);
-            Assert.Equal(entry.Unit, resultEntry.Unit);
+            Assert.Equal(entry.Quantity, resultEntry.Quantity);
+            Assert.Equal(entry.UnitOfMeasure, resultEntry.UnitOfMeasure);
 
             storageMock.Verify(x =>
                 x.DeleteEntry(
@@ -261,11 +262,11 @@ namespace AliceInventory.UnitTests
         public void ProcessInputDeleteCancelTest()
         {
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
-            storageMock.Setup(x => x.AddEntry(
+            storageMock.Setup(x => x.CreateEntry(
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == entry.Name),
-                    It.Is<double>(y => Math.Abs(y - entry.Count) < Tolerance),
-                    It.Is<Data.UnitOfMeasure>(y => y == entry.Unit.ToData())));
+                    It.Is<double>(y => Math.Abs(y - entry.Quantity) < Tolerance),
+                    It.Is<Data.UnitOfMeasure>(y => y == entry.UnitOfMeasure.ToData())));
 
             var parserMock = new Mock<IInputParserService>();
             parserMock.Setup(x => x.ParseInput(
@@ -280,10 +281,10 @@ namespace AliceInventory.UnitTests
                 x.Set(It.Is<string>(y => y == userId),
                     It.Is<ProcessingResult>(command =>
                         command.Type == ProcessingResultType.DeleteCanceled &&
-                        command.Data is SingleEntry &&
-                        ((SingleEntry)command.Data).Name == entry.Name &&
-                        Math.Abs(((SingleEntry)command.Data).Count - entry.Count) < Tolerance &&
-                        ((SingleEntry)command.Data).Unit == entry.Unit)));
+                        command.Data is Entry &&
+                        ((Entry)command.Data).Name == entry.Name &&
+                        Math.Abs(((Entry)command.Data).Quantity - entry.Quantity) < Tolerance &&
+                        ((Entry)command.Data).UnitOfMeasure == entry.UnitOfMeasure)));
 
             var emailMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
 
@@ -296,14 +297,14 @@ namespace AliceInventory.UnitTests
             var result = sut.ProcessInput(userId, cancelInputText, CultureInfo.CurrentCulture);
             Assert.Equal(ProcessingResultType.DeleteCanceled, result.Type);
 
-            var resultEntry = result.Data as SingleEntry;
+            var resultEntry = result.Data as Entry;
             Assert.NotNull(resultEntry);
             Assert.Equal(entry.Name, resultEntry.Name);
-            Assert.Equal(entry.Count, resultEntry.Count);
-            Assert.Equal(entry.Unit, resultEntry.Unit);
+            Assert.Equal(entry.Quantity, resultEntry.Quantity);
+            Assert.Equal(entry.UnitOfMeasure, resultEntry.UnitOfMeasure);
 
             storageMock.Verify(x =>
-                x.AddEntry(
+                x.CreateEntry(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<double>(),
@@ -332,16 +333,16 @@ namespace AliceInventory.UnitTests
         [InlineData("ещё 5 литров яблоки", "яблоки", 5, Logic.UnitOfMeasure.L,
             "яблоки", 5, Logic.UnitOfMeasure.L)]
         public void ProcessInputMoreAddTest(
-            string input, string parsedName, double? parsedCount, Logic.UnitOfMeasure? parsedUnit,
-            string currentName, double currentCount, Logic.UnitOfMeasure currentUnit)
+            string input, string parsedName, double? parsedQuantity, Logic.UnitOfMeasure? parsedUnit,
+            string currentName, double currentQuantity, Logic.UnitOfMeasure currentUnit)
         {
             var parsedCommand = new ParsedCommand()
             {
                 Type = ParsedCommandType.More,
-                Data = new ParsedSingleEntry()
+                Data = new ParsedEntry()
                 {
                     Name = parsedName,
-                    Count = parsedCount,
+                    Quantity = parsedQuantity,
                     Unit = parsedUnit
                 }
             };
@@ -353,10 +354,10 @@ namespace AliceInventory.UnitTests
 
 
             var storageMock = new Mock<IUserDataStorage>(MockBehavior.Strict);
-            storageMock.Setup(x => x.AddEntry(
+            storageMock.Setup(x => x.CreateEntry(
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == currentName),
-                    It.Is<double>(y => Math.Abs(y - currentCount) < Tolerance),
+                    It.Is<double>(y => Math.Abs(y - currentQuantity) < Tolerance),
                     It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())))
                 .Returns(OperationResult.Ok);
 
@@ -367,10 +368,10 @@ namespace AliceInventory.UnitTests
                 x.Set(It.Is<string>(y => y == userId),
                     It.Is<ProcessingResult>(command =>
                         command.Type == ProcessingResultType.Added &&
-                        command.Data is SingleEntry &&
-                        ((SingleEntry)command.Data).Name == currentName &&
-                        Math.Abs(((SingleEntry)command.Data).Count - currentCount) < Tolerance &&
-                        ((SingleEntry)command.Data).Unit == currentUnit)));
+                        command.Data is Entry &&
+                        ((Entry)command.Data).Name == currentName &&
+                        Math.Abs(((Entry)command.Data).Quantity - currentQuantity) < Tolerance &&
+                        ((Entry)command.Data).UnitOfMeasure == currentUnit)));
 
             var emailMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
 
@@ -383,14 +384,14 @@ namespace AliceInventory.UnitTests
             var result = sut.ProcessInput(userId, input, CultureInfo.CurrentCulture);
             Assert.Equal(ProcessingResultType.Added, result.Type);
 
-            var resultEntry = result.Data as SingleEntry;
+            var resultEntry = result.Data as Entry;
             Assert.NotNull(resultEntry);
             Assert.Equal(currentName, resultEntry.Name);
-            Assert.Equal(currentCount, resultEntry.Count);
-            Assert.Equal(currentUnit, resultEntry.Unit);
+            Assert.Equal(currentQuantity, resultEntry.Quantity);
+            Assert.Equal(currentUnit, resultEntry.UnitOfMeasure);
 
             storageMock.Verify(x =>
-                x.AddEntry(
+                x.CreateEntry(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<double>(),
@@ -419,16 +420,16 @@ namespace AliceInventory.UnitTests
         [InlineData("ещё 5 литров яблоки", "яблоки", 5, Logic.UnitOfMeasure.L,
             "яблоки", 5, Logic.UnitOfMeasure.L)]
         public void ProcessInputMoreDeleteTest(
-            string input, string parsedName, double? parsedCount, Logic.UnitOfMeasure? parsedUnit,
-            string currentName, double currentCount, Logic.UnitOfMeasure currentUnit)
+            string input, string parsedName, double? parsedQuantity, Logic.UnitOfMeasure? parsedUnit,
+            string currentName, double currentQuantity, Logic.UnitOfMeasure currentUnit)
         {
             var parsedCommand = new ParsedCommand()
             {
                 Type = ParsedCommandType.More,
-                Data = new ParsedSingleEntry()
+                Data = new ParsedEntry()
                 {
                     Name = parsedName,
-                    Count = parsedCount,
+                    Quantity = parsedQuantity,
                     Unit = parsedUnit
                 }
             };
@@ -443,7 +444,7 @@ namespace AliceInventory.UnitTests
             storageMock.Setup(x => x.DeleteEntry(
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == currentName),
-                    It.Is<double>(y => Math.Abs(y - currentCount) < Tolerance),
+                    It.Is<double>(y => Math.Abs(y - currentQuantity) < Tolerance),
                     It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())))
                 .Returns(OperationResult.Ok);
 
@@ -454,10 +455,10 @@ namespace AliceInventory.UnitTests
                 x.Set(It.Is<string>(y => y == userId),
                     It.Is<ProcessingResult>(command =>
                         command.Type == ProcessingResultType.Deleted &&
-                        command.Data is SingleEntry &&
-                        ((SingleEntry)command.Data).Name == currentName &&
-                        Math.Abs(((SingleEntry)command.Data).Count - currentCount) < Tolerance &&
-                        ((SingleEntry)command.Data).Unit == currentUnit)));
+                        command.Data is Entry &&
+                        ((Entry)command.Data).Name == currentName &&
+                        Math.Abs(((Entry)command.Data).Quantity - currentQuantity) < Tolerance &&
+                        ((Entry)command.Data).UnitOfMeasure == currentUnit)));
 
             var emailMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
 
@@ -470,11 +471,11 @@ namespace AliceInventory.UnitTests
             var result = sut.ProcessInput(userId, input, CultureInfo.CurrentCulture);
             Assert.Equal(ProcessingResultType.Deleted, result.Type);
 
-            var resultEntry = result.Data as SingleEntry;
+            var resultEntry = result.Data as Entry;
             Assert.NotNull(resultEntry);
             Assert.Equal(currentName, resultEntry.Name);
-            Assert.Equal(currentCount, resultEntry.Count);
-            Assert.Equal(currentUnit, resultEntry.Unit);
+            Assert.Equal(currentQuantity, resultEntry.Quantity);
+            Assert.Equal(currentUnit, resultEntry.UnitOfMeasure);
 
             storageMock.Verify(x =>
                 x.DeleteEntry(

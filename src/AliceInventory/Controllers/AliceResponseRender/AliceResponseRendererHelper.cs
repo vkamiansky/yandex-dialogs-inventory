@@ -330,34 +330,34 @@ namespace AliceInventory.Controllers.AliceResponseRender
                         break;
                     }
                 case ProcessingResultType.Added
-                    when result.Data is SingleEntry entry:
+                    when result.Data is Entry entry:
                     {
                         format = ResponseFormat.Added;
-                        formatArguments = new object[] { entry.Name, entry.Count, entry.Unit.ToText() };
+                        formatArguments = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() };
 
                         break;
                     }
                 case ProcessingResultType.AddCanceled
-                    when result.Data is SingleEntry entry:
+                    when result.Data is Entry entry:
                     {
                         format = ResponseFormat.AddCanceled;
-                        formatArguments = new object[] { entry.Name, entry.Count, entry.Unit.ToText() };
+                        formatArguments = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() };
 
                         break;
                     }
                 case ProcessingResultType.Deleted
-                    when result.Data is SingleEntry entry:
+                    when result.Data is Entry entry:
                     {
                         format = ResponseFormat.Deleted;
-                        formatArguments = new object[] { entry.Name, entry.Count, entry.Unit.ToText() };
+                        formatArguments = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() };
 
                         break;
                     }
                 case ProcessingResultType.DeleteCanceled
-                    when result.Data is SingleEntry entry:
+                    when result.Data is Entry entry:
                     {
                         format = ResponseFormat.DeleteCanceled;
-                        formatArguments = new object[] { entry.Name, entry.Count, entry.Unit.ToText() };
+                        formatArguments = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() };
 
                         break;
                     }

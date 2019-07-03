@@ -9,7 +9,7 @@ namespace AliceInventory.Logic.Parser
     public static class RegexHelper
     {
         public const string EntryNameGroupName = "g1";
-        public const string EntryCountGroupName = "g2";
+        public const string EntryQuantityGroupName = "g2";
         public const string EntryUnitGroupName = "g3";
         public const string EmailGroupName = "g4";
 
@@ -70,7 +70,7 @@ namespace AliceInventory.Logic.Parser
         public const string EntryNamePattern = @".{2}.+?";
         public static readonly string EntryName = AddGroupName(EntryNameGroupName, EntryNamePattern);
         public const string Number = @"-?\d+(?:(?:\.|,)\d+)?";
-        public static readonly string EntryCount = AddGroupName(EntryCountGroupName, Number);
+        public static readonly string EntryQuantity = AddGroupName(EntryQuantityGroupName, Number);
         public const string EmailPattern = @"[a-z0-9!#$%&'*+\=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
         public static readonly string Email = AddGroupName(EmailGroupName, EmailPattern);
         
