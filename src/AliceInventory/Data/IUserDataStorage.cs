@@ -1,14 +1,12 @@
-using System;
-using AliceInventory.Logic;
-
 namespace AliceInventory.Data
 {
     public interface IUserDataStorage
     {
-        OperationResult AddEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit);
-        OperationResult DeleteEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit);
+        OperationResult<int> AddEntry(string userId, string entryName, double quantity, Data.UnitOfMeasure unit);
+        OperationResult DeleteEntry(int id);
+        OperationResult UpdateEntry(int id, double quantity);
         OperationResult<Data.Entry[]> ReadAllEntries(string userId);
-        OperationResult ClearInventory(string userId);
+        OperationResult DeleteAllEntries(string userId);
         OperationResult<string> GetUserEmail(string userId);
         OperationResult SetUserEmail(string userId, string email);
         OperationResult<string> DeleteUserEmail(string userId);
