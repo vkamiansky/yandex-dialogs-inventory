@@ -9,12 +9,21 @@ namespace AliceInventory.Logic
         {
             return new ProcessingResult(e);
         }
+        public static implicit operator ProcessingResult(Exception e)
+        {
+            return new ProcessingResult(e);
+        }
+        public static implicit operator ProcessingResult(ProcessingResultType type)
+        {
+            return new ProcessingResult(type);
+        }
 
         public ProcessingResultType Type { get; }
         public object Data { get; }
-        public Error Error { get; }
 
+        public Error Error { get; }
         public Exception Exception { get; }
+
         public CultureInfo CultureInfo { get; set; }
 
         public ProcessingResult()

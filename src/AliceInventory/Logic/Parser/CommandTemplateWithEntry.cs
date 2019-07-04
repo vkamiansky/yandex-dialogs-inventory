@@ -12,7 +12,7 @@ namespace AliceInventory.Logic.Parser
         private readonly int _quantityGroupId;
         private readonly int _unitGroupId;
 
-        public CommandTemplateWithEntry(ParsedCommandType commandType, params string[] regexParts) : base(commandType, regexParts)
+        public CommandTemplateWithEntry(ParsedPhraseType phraseType, params string[] regexParts) : base(phraseType, regexParts)
         {
             var groups = this.Regex.GetGroupNames();
 

@@ -7,7 +7,7 @@ namespace AliceInventory.Logic.Parser
 {
     public class ParsedCommand
     {
-        public ParsedCommandType Type { get; set; }
+        public ParsedPhraseType Type { get; set; }
         public object Data { get; set; }
     }
 }

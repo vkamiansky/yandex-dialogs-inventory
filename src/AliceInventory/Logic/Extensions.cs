@@ -74,6 +74,11 @@ namespace AliceInventory.Logic
             };
         }
 
+        public static Logic.Entry[] ToLogic(this Data.Entry[] entries)
+        {
+            return entries == null ? null : Array.ConvertAll(entries, x => x.ToLogic());
+        }
+
         public static Logic.UnitOfMeasure ToLogic(this Data.UnitOfMeasure unit)
         {
             switch (unit)

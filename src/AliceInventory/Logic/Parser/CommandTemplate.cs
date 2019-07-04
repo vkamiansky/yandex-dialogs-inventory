@@ -31,12 +31,12 @@ namespace AliceInventory.Logic.Parser
             return builder.ToString();
         }
 
-        public ParsedCommandType CommandType { get; }
+        public ParsedPhraseType PhraseType { get; }
         protected readonly Regex Regex;
 
-        public CommandTemplate(ParsedCommandType commandType, params string[] regexParts)
+        public CommandTemplate(ParsedPhraseType phraseType, params string[] regexParts)
         {
-            CommandType = commandType;
+            PhraseType = phraseType;
             var expression = InsertWordAroundWords(regexParts, RegexHelper.CanBeIgnoreWordPattern);
             Regex = new Regex(@"^" + expression + @"$", RegexOptions.None);
         }

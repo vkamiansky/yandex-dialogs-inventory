@@ -12,108 +12,108 @@ namespace AliceInventory.Logic.Parser
         private static readonly CommandTemplate[] CommandsTemplates = 
         {
             //Email
-            new CommandTemplate(ParsedCommandType.SendMail,
+            new CommandTemplate(ParsedPhraseType.SendMail,
                 RegexHelper.SendWord, RegexHelper.MailWord),
-            new CommandTemplate(ParsedCommandType.SendMail,
+            new CommandTemplate(ParsedPhraseType.SendMail,
                 RegexHelper.SendWord, "на", RegexHelper.MailWord),
-            new CommandTemplateWithEmail(ParsedCommandType.SendMailTo,
+            new CommandTemplateWithEmail(ParsedPhraseType.SendMail,
                 RegexHelper.SendWord, "на", RegexHelper.Email),
-            new CommandTemplateWithEmail(ParsedCommandType.AddMail,
+            new CommandTemplateWithEmail(ParsedPhraseType.Email,
                 RegexHelper.Email),
-            new CommandTemplate(ParsedCommandType.DeleteMail,
+            new CommandTemplate(ParsedPhraseType.DeleteMail,
                 RegexHelper.DeleteWord, RegexHelper.MailWord),
 
             //Cancel
-            new CommandTemplate(ParsedCommandType.Cancel, RegexHelper.CancelWord),
+            new CommandTemplate(ParsedPhraseType.Cancel, RegexHelper.CancelWord),
 
             //Accept and decline
-            new CommandTemplate(ParsedCommandType.Accept, RegexHelper.AcceptWord),
-            new CommandTemplate(ParsedCommandType.Decline, RegexHelper.DeclineWord),
+            new CommandTemplate(ParsedPhraseType.Accept, RegexHelper.AcceptWord),
+            new CommandTemplate(ParsedPhraseType.Decline, RegexHelper.DeclineWord),
 
             //Read List
-            new CommandTemplate(ParsedCommandType.ReadList, $"что в {RegexHelper.ListWord}"),
-            new CommandTemplate(ParsedCommandType.ReadList, RegexHelper.ReadWord),
-            new CommandTemplate(ParsedCommandType.ReadList, RegexHelper.ListWord),
-            new CommandTemplate(ParsedCommandType.ReadList, RegexHelper.ReadWord, RegexHelper.ListWord),
+            new CommandTemplate(ParsedPhraseType.ReadList, $"что в {RegexHelper.ListWord}"),
+            new CommandTemplate(ParsedPhraseType.ReadList, RegexHelper.ReadWord),
+            new CommandTemplate(ParsedPhraseType.ReadList, RegexHelper.ListWord),
+            new CommandTemplate(ParsedPhraseType.ReadList, RegexHelper.ReadWord, RegexHelper.ListWord),
 
             //Clear
-            new CommandTemplate(ParsedCommandType.Clear, RegexHelper.ClearWord),
-            new CommandTemplate(ParsedCommandType.Clear, RegexHelper.ClearWord, RegexHelper.ListWord),
+            new CommandTemplate(ParsedPhraseType.Clear, RegexHelper.ClearWord),
+            new CommandTemplate(ParsedPhraseType.Clear, RegexHelper.ClearWord, RegexHelper.ListWord),
 
             //Greeting
-            new CommandTemplate(ParsedCommandType.SayHello, RegexHelper.HelloPattern),
-            new CommandTemplate(ParsedCommandType.RequestHelp, RegexHelper.HelpWord),
-            new CommandTemplate(ParsedCommandType.RequestExit, RegexHelper.ExitWord),
+            new CommandTemplate(ParsedPhraseType.Hello, RegexHelper.HelloPattern),
+            new CommandTemplate(ParsedPhraseType.Help, RegexHelper.HelpWord),
+            new CommandTemplate(ParsedPhraseType.Exit, RegexHelper.ExitWord),
 
             //Delete
-            new CommandTemplateWithEntry(ParsedCommandType.Delete,
+            new CommandTemplateWithEntry(ParsedPhraseType.Delete,
                 RegexHelper.DeleteWord, RegexHelper.EntryName, RegexHelper.EntryQuantity, RegexHelper.EntryUnit),
-            new CommandTemplateWithEntry(ParsedCommandType.Delete,
+            new CommandTemplateWithEntry(ParsedPhraseType.Delete,
                 RegexHelper.DeleteWord, RegexHelper.EntryName, RegexHelper.EntryQuantity),
-            new CommandTemplateWithEntry(ParsedCommandType.Delete,
+            new CommandTemplateWithEntry(ParsedPhraseType.Delete,
                 RegexHelper.DeleteWord, RegexHelper.EntryQuantity, RegexHelper.EntryUnit, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.Delete,
+            new CommandTemplateWithEntry(ParsedPhraseType.Delete,
                 RegexHelper.DeleteWord, RegexHelper.EntryQuantity, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.Delete,
+            new CommandTemplateWithEntry(ParsedPhraseType.Delete,
                 RegexHelper.DeleteWord, RegexHelper.EntryUnit, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.Delete,
+            new CommandTemplateWithEntry(ParsedPhraseType.Delete,
                 RegexHelper.DeleteWord, RegexHelper.EntryName),
             
             //More
-            new CommandTemplateWithEntry(ParsedCommandType.More,
+            new CommandTemplateWithEntry(ParsedPhraseType.More,
                 RegexHelper.MoreWord, RegexHelper.EntryQuantity),
-            new CommandTemplateWithEntry(ParsedCommandType.More,
+            new CommandTemplateWithEntry(ParsedPhraseType.More,
                 RegexHelper.MoreWord, RegexHelper.EntryUnit),
-            new CommandTemplateWithEntry(ParsedCommandType.More,
+            new CommandTemplateWithEntry(ParsedPhraseType.More,
                 RegexHelper.MoreWord, RegexHelper.EntryQuantity, RegexHelper.EntryUnit),
-            new CommandTemplateWithEntry(ParsedCommandType.More,
+            new CommandTemplateWithEntry(ParsedPhraseType.More,
                 RegexHelper.MoreWord, RegexHelper.EntryUnit, RegexHelper.EntryQuantity),
-            new CommandTemplateWithEntry(ParsedCommandType.More,
+            new CommandTemplateWithEntry(ParsedPhraseType.More,
                 RegexHelper.MoreWord, RegexHelper.EntryName, RegexHelper.EntryQuantity, RegexHelper.EntryUnit),
-            new CommandTemplateWithEntry(ParsedCommandType.More,
+            new CommandTemplateWithEntry(ParsedPhraseType.More,
                 RegexHelper.MoreWord, RegexHelper.EntryName, RegexHelper.EntryQuantity),
-            new CommandTemplateWithEntry(ParsedCommandType.More,
+            new CommandTemplateWithEntry(ParsedPhraseType.More,
                 RegexHelper.MoreWord, RegexHelper.EntryQuantity, RegexHelper.EntryUnit, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.More,
+            new CommandTemplateWithEntry(ParsedPhraseType.More,
                 RegexHelper.MoreWord, RegexHelper.EntryQuantity, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.More,
+            new CommandTemplateWithEntry(ParsedPhraseType.More,
                 RegexHelper.MoreWord, RegexHelper.EntryUnit, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.More,
+            new CommandTemplateWithEntry(ParsedPhraseType.More,
                 RegexHelper.MoreWord, RegexHelper.EntryName),
 
             // Add
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.AddWord, RegexHelper.EntryName, RegexHelper.EntryQuantity, RegexHelper.EntryUnit),
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.AddWord, RegexHelper.EntryQuantity, RegexHelper.EntryUnit, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.EntryQuantity, RegexHelper.EntryUnit, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.EntryUnit, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.AddWord, RegexHelper.EntryQuantity, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.AddWord, RegexHelper.EntryUnit, RegexHelper.EntryQuantity, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.AddWord, RegexHelper.EntryName, RegexHelper.EntryUnit, RegexHelper.EntryQuantity),
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.AddWord, RegexHelper.EntryUnit, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.AddWord, RegexHelper.EntryName, RegexHelper.EntryQuantity),
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.AddWord, RegexHelper.EntryName),
 
             //Low priority command
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.EntryName, RegexHelper.EntryQuantity, RegexHelper.EntryUnit),
-            new CommandTemplateWithEntry(ParsedCommandType.Add,
+            new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.EntryQuantity, RegexHelper.EntryName),
         };
 
         public ParsedCommand ParseInput(string input, CultureInfo cultureInfo)
         {
             if (string.IsNullOrEmpty(input))
-                return new ParsedCommand() { Type = ParsedCommandType.SayHello};
+                return new ParsedCommand() { Type = ParsedPhraseType.Hello};
 
             input = NormalizeString(input, cultureInfo);
 
@@ -123,7 +123,7 @@ namespace AliceInventory.Logic.Parser
                 {
                     return new ParsedCommand()
                     {
-                        Type = template.CommandType,
+                        Type = template.PhraseType,
                         Data = data
                     };
                 }
@@ -131,7 +131,7 @@ namespace AliceInventory.Logic.Parser
 
             return new ParsedCommand()
             {
-                Type = ParsedCommandType.SayUnknownCommand
+                Type = ParsedPhraseType.UnknownCommand
             };
         }
 

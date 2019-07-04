@@ -4,6 +4,7 @@ using System.Globalization;
 using AliceInventory.Data.Errors;
 using AliceInventory.Logic;
 using AliceInventory.Logic.AliceResponseRender;
+using AliceInventory.Logic.Core.Errors;
 
 namespace AliceInventory.Controllers.AliceResponseRender
 {
@@ -239,24 +240,16 @@ namespace AliceInventory.Controllers.AliceResponseRender
             Buttons = MainButtons
         };
 
-        private static readonly ResponseTemplate EntryNotFoundErrorTemplate = new ResponseTemplate()
-        {
-            TextAndSpeechTemplates = new[]
-            {
-                new TextAndSpeechTemplate("Но в списке нет {0}"),
-                new TextAndSpeechTemplate("В списке нет {0}"),
-                new TextAndSpeechTemplate("Я не смогла найти {0} в отчёте"),
-            },
-            Buttons = MainButtons
-        };
-
-        private static readonly ResponseTemplate EntryUnitNotFoundErrorTemplate = new ResponseTemplate()
+        private static readonly ResponseTemplate EntryNotFoundTemplate = new ResponseTemplate()
         {
             TextAndSpeechTemplates = new[]
             {
                 new TextAndSpeechTemplate("Вы не добавляли {0} в {1}"),
                 new TextAndSpeechTemplate("У вас {0} не храниться в {1}"),
                 new TextAndSpeechTemplate("Не нашла {0} в {1} в вашем списке"),
+                new TextAndSpeechTemplate("Но в списке нет {0} в {1}"),
+                new TextAndSpeechTemplate("В списке нет {0} в {1}"),
+                new TextAndSpeechTemplate("Я не смогла найти ни одного {1} {0} в отчёте"),
             },
             Buttons = MainButtons
         };
@@ -294,10 +287,8 @@ namespace AliceInventory.Controllers.AliceResponseRender
                 [ResponseFormat.MailIsEmpty] = MailIsEmptyTemplate,
                 [ResponseFormat.MailAdded] = MailAddedTemplate,
                 [ResponseFormat.MailDeleted] = MailDeletedTemplate,
-
-                [ResponseFormat.EntryNotFoundError] = EntryNotFoundErrorTemplate,
-                [ResponseFormat.EntryUnitNotFoundError] = EntryUnitNotFoundErrorTemplate,
-                [ResponseFormat.NotEnoughEntryToDeleteError] = NotEnoughEntryToDeleteErrorTemplate,
+                [ResponseFormat.EntryNotFound] = EntryNotFoundTemplate,
+                [ResponseFormat.NotEnoughEntryToDelete] = NotEnoughEntryToDeleteErrorTemplate,
             };
         }
 
@@ -420,12 +411,6 @@ namespace AliceInventory.Controllers.AliceResponseRender
                         break;
                     }
 
-                case ProcessingResultType.MailDeleted:
-                    {
-                        format = ResponseFormat.MailIsEmpty;
-                        break;
-                    }
-
                 case ProcessingResultType.HelpRequested:
                     {
                         format = ResponseFormat.HelpRequested;
@@ -439,25 +424,17 @@ namespace AliceInventory.Controllers.AliceResponseRender
                     }
 
                 case ProcessingResultType.Error
-                    when result.Error is EntryNotFoundError error:
+                    when result.Error is EntryNotFoundInDatabaseError error:
                     {
-                        format = ResponseFormat.EntryNotFoundError;
-                        formatArguments = new object[] { error.EntryName };
-                        break;
-                    }
-
-                case ProcessingResultType.Error
-                    when result.Error is EntryUnitNotFoundError error:
-                    {
-                        format = ResponseFormat.EntryUnitNotFoundError;
-                        formatArguments = new object[] { error.Entry.Name, error.Unit.ToLogic().ToText() };
+                        format = ResponseFormat.EntryNotFound;
+                        formatArguments = new object[] { error.EntryName, error.Unit.ToLogic().ToText() };
                         break;
                     }
 
                 case ProcessingResultType.Error
                     when result.Error is NotEnoughEntryToDeleteError error:
                     {
-                        format = ResponseFormat.NotEnoughEntryToDeleteError;
+                        format = ResponseFormat.NotEnoughEntryToDelete;
                         formatArguments = new object[] { error.Actual, error.Entry.Name, error.Count };
                         break;
                     }

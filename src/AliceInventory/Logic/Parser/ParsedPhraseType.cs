@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace AliceInventory.Logic.Parser
 {
-    public enum ParsedCommandType
+    public enum ParsedPhraseType
     {
-        SayHello,
+        Hello,
         Accept,
         Decline,
         Cancel,
@@ -17,11 +17,10 @@ namespace AliceInventory.Logic.Parser
         Clear,
         ReadList,
         SendMail,
-        SendMailTo,
-        AddMail,
+        Mail,
         DeleteMail,
-        RequestHelp,
-        RequestExit,
-        SayUnknownCommand
+        Help,
+        Exit,
+        UnknownCommand
     }
 }

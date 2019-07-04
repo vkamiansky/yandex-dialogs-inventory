@@ -1,9 +1,8 @@
 using System;
-using AliceInventory.Logic.Parser;
 
-namespace AliceInventory.Logic
+namespace AliceInventory.Logic.Cache
 {
-    public interface ICommandCache
+    public interface IResultCache
     {
         void Set(string userId, ProcessingResult command);
         ProcessingResult Get(string userId);

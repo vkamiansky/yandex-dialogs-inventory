@@ -36,17 +36,17 @@ namespace AliceInventory.UnitTests
         };
         private static readonly ParsedCommand addParsedCommand = new ParsedCommand()
         {
-            Type = ParsedCommandType.Add,
+            Type = ParsedPhraseType.Add,
             Data = parsedEntry
         };
         private static readonly ParsedCommand deleteParsedCommand = new ParsedCommand()
         {
-            Type = ParsedCommandType.Delete,
+            Type = ParsedPhraseType.Delete,
             Data = parsedEntry
         };
         private static readonly ParsedCommand cancelParsedCommand = new ParsedCommand()
         {
-            Type = ParsedCommandType.Cancel
+            Type = ParsedPhraseType.Cancel
         };
 
         private static readonly ProcessingCommand addProcessingCommand = new ProcessingCommand()
@@ -88,7 +88,7 @@ namespace AliceInventory.UnitTests
                     It.IsAny<CultureInfo>()))
                 .Returns(addParsedCommand);
 
-            var commandCacheMock = new Mock<ICommandCache>(MockBehavior.Strict);
+            var commandCacheMock = new Mock<IResultCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x => x.Get(
                     It.Is<string>(y => y == userId)))
                 .Returns(new ProcessingResult());
@@ -151,7 +151,7 @@ namespace AliceInventory.UnitTests
                     It.IsAny<CultureInfo>()))
                 .Returns(deleteParsedCommand);
 
-            var commandCacheMock = new Mock<ICommandCache>(MockBehavior.Strict);
+            var commandCacheMock = new Mock<IResultCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x => x.Get(
                     It.Is<string>(y => y == userId)))
                 .Returns(new ProcessingResult());
@@ -213,7 +213,7 @@ namespace AliceInventory.UnitTests
                     It.IsAny<CultureInfo>()))
                 .Returns(cancelParsedCommand);
 
-            var commandCacheMock = new Mock<ICommandCache>(MockBehavior.Strict);
+            var commandCacheMock = new Mock<IResultCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x =>
                 x.Get(It.Is<string>(y => y == userId))).Returns(addProcessingResult);
             commandCacheMock.Setup(x =>
@@ -274,7 +274,7 @@ namespace AliceInventory.UnitTests
                     It.IsAny<CultureInfo>()))
                 .Returns(cancelParsedCommand);
 
-            var commandCacheMock = new Mock<Logic.ICommandCache>(MockBehavior.Strict);
+            var commandCacheMock = new Mock<Logic.IResultCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x =>
                 x.Get(It.Is<string>(y => y == userId))).Returns(deleteProcessingResult);
             commandCacheMock.Setup(x =>
@@ -338,7 +338,7 @@ namespace AliceInventory.UnitTests
         {
             var parsedCommand = new ParsedCommand()
             {
-                Type = ParsedCommandType.More,
+                Type = ParsedPhraseType.More,
                 Data = new ParsedEntry()
                 {
                     Name = parsedName,
@@ -361,7 +361,7 @@ namespace AliceInventory.UnitTests
                     It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())))
                 .Returns(OperationResult.Ok);
 
-            var commandCacheMock = new Mock<Logic.ICommandCache>(MockBehavior.Strict);
+            var commandCacheMock = new Mock<Logic.IResultCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x =>
                 x.Get(It.Is<string>(y => y == userId))).Returns(addProcessingResult);
             commandCacheMock.Setup(x =>
@@ -425,7 +425,7 @@ namespace AliceInventory.UnitTests
         {
             var parsedCommand = new ParsedCommand()
             {
-                Type = ParsedCommandType.More,
+                Type = ParsedPhraseType.More,
                 Data = new ParsedEntry()
                 {
                     Name = parsedName,
@@ -448,7 +448,7 @@ namespace AliceInventory.UnitTests
                     It.Is<Data.UnitOfMeasure>(y => y == currentUnit.ToData())))
                 .Returns(OperationResult.Ok);
 
-            var commandCacheMock = new Mock<Logic.ICommandCache>(MockBehavior.Strict);
+            var commandCacheMock = new Mock<Logic.IResultCache>(MockBehavior.Strict);
             commandCacheMock.Setup(x =>
                 x.Get(It.Is<string>(y => y == userId))).Returns(deleteProcessingResult);
             commandCacheMock.Setup(x =>

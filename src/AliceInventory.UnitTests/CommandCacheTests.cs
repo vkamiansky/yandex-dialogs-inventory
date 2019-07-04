@@ -4,53 +4,53 @@ using AliceInventory.Logic;
 
 namespace AliceInventory.UnitTests
 {
-    public class CommandCacheTests
+    public class ResultCacheTests
     {
         [Fact]
-        public void GetEmptyCommandFromCache()
+        public void GetEmptyResultFromCache()
         {
-            CommandCache sut = new CommandCache();
+            ResultCache sut = new ResultCache();
 
-            ProcessingResult cachedCommandUser1 = sut.Get("testUser1");
+            ProcessingResult cachedResultUser1 = sut.Get("testUser1");
             sut.Set("testUser3", new ProcessingResult());
-            ProcessingResult cachedCommandUser2 = sut.Get("testUser2");
+            ProcessingResult cachedResultUser2 = sut.Get("testUser2");
 
-            Assert.Null(cachedCommandUser1);
-            Assert.Null(cachedCommandUser2);
+            Assert.Null(cachedResultUser1);
+            Assert.Null(cachedResultUser2);
         }
 
         [Fact]
-        public void GetCommandFromCacheAfterInitialAdd()
+        public void GetResultFromCacheAfterInitialAdd()
         {
-            CommandCache sut = new CommandCache();
-            ProcessingResult commandUser1 = new ProcessingResult();
-            ProcessingResult commandUser2 = new ProcessingResult();
+            ResultCache sut = new ResultCache();
+            ProcessingResult resultUser1 = new ProcessingResult();
+            ProcessingResult resultUser2 = new ProcessingResult();
 
-            sut.Set("testUser1", commandUser1);
-            sut.Set("testUser2", commandUser2);
-            ProcessingResult cachedCommandUser1 = sut.Get("testUser1");
-            ProcessingResult cachedCommandUser2 = sut.Get("testUser2");
+            sut.Set("testUser1", resultUser1);
+            sut.Set("testUser2", resultUser2);
+            ProcessingResult cachedResultUser1 = sut.Get("testUser1");
+            ProcessingResult cachedResultUser2 = sut.Get("testUser2");
             
-            Assert.Equal(commandUser1, cachedCommandUser1);
-            Assert.Equal(commandUser2, cachedCommandUser2);
+            Assert.Equal(resultUser1, cachedResultUser1);
+            Assert.Equal(resultUser2, cachedResultUser2);
         }
 
         [Fact]
-        public void GetCommandFromCacheAfterRewrite()
+        public void GetResultFromCacheAfterRewrite()
         {
-            CommandCache sut = new CommandCache();
+            ResultCache sut = new ResultCache();
 
-            ProcessingResult command1 = new ProcessingResult();
-            sut.Set("testUser", command1);
-            ProcessingResult cachedCommand1 = sut.Get("testUser");
+            ProcessingResult result1 = new ProcessingResult();
+            sut.Set("testUser", result1);
+            ProcessingResult cachedResult1 = sut.Get("testUser");
 
-            Assert.Equal(command1, cachedCommand1);
+            Assert.Equal(result1, cachedResult1);
 
-            ProcessingResult command2 = new ProcessingResult();
-            sut.Set("testUser", command2);
-            ProcessingResult cachedCommand2 = sut.Get("testUser");
+            ProcessingResult Result = new ProcessingResult();
+            sut.Set("testUser", Result);
+            ProcessingResult cachedResult2 = sut.Get("testUser");
 
-            Assert.Equal(command2, cachedCommand2);
+            Assert.Equal(Result, cachedResult2);
         }
     }
 }

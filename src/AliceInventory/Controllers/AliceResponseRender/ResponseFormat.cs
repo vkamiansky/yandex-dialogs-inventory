@@ -19,15 +19,14 @@ namespace AliceInventory.Logic.AliceResponseRender
         EmptyListRead,
         MailSent,
         MailRequest,
-        MailIsEmpty,
         MailAdded,
         MailDeleted,
+        MailIsEmpty,
         HelpRequested,
         Error,
         ExitRequested,
 
-        EntryNotFoundError,
-        EntryUnitNotFoundError,
-        NotEnoughEntryToDeleteError
+        EntryNotFound,
+        NotEnoughEntryToDelete
     }
 }

@@ -3,7 +3,9 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using AliceInventory.Data;
+using AliceInventory.Logic.Cache;
 using AliceInventory.Logic.Core.Errors;
+using AliceInventory.Logic.Core.Exceptions;
 using AliceInventory.Logic.Email;
 using AliceInventory.Logic.Parser;
 
@@ -11,28 +13,160 @@ namespace AliceInventory.Logic
 {
     public class InventoryDialogService : IInventoryDialogService
     {
-        // A processing function arguments class
+        private delegate ProcessingResult CommandProcessingMethod(Services services, ProcessingArgs args);
+
+        private class Services
+        {
+            public IUserDataStorage Storage { get; set; }
+            public IInputParserService Parser { get; set; }
+            public IResultCache ResultCache { get; set; }
+            public IInventoryEmailService EmailService { get; set; }
+        }
+
         private class ProcessingArgs
         {
             public ProcessingResult State { get; set; }
-
             public object CommandData { get; set; }
-
             public string UserId { get; set; }
         }
 
-        private readonly IUserDataStorage storage;
-        private readonly IInputParserService parser;
-        private readonly ICommandCache commandCache;
-        private readonly IInventoryEmailService emailService;
-
-        // A storage link is passed sepagately 
-        private readonly Dictionary<ParsedCommandType, Func<IUserDataStorage, ProcessingArgs, ProcessingResult>> commandProcessingMethods
-            = new Dictionary<ParsedCommandType, Func<IUserDataStorage, ProcessingArgs, ProcessingResult>>() {
-                {ParsedCommandType.More, ProcessMore}
+        // A storage link is passed separately
+        private readonly Dictionary<ParsedPhraseType, CommandProcessingMethod> _commandProcessingMethods
+            = new Dictionary<ParsedPhraseType, CommandProcessingMethod>()
+            {
+                [ParsedPhraseType.Hello] = ProcessGreeting,
+                [ParsedPhraseType.Add] = ProcessAdd,
+                [ParsedPhraseType.Delete] = ProcessDelete,
+                [ParsedPhraseType.More] = ProcessMore,
+                [ParsedPhraseType.Cancel] = ProcessCancel,
+                [ParsedPhraseType.Accept] = ProcessAccept,
+                [ParsedPhraseType.Decline] = ProcessDecline,
+                [ParsedPhraseType.Clear] = ProcessClear,
+                [ParsedPhraseType.ReadList] = ProcessReadList,
+                [ParsedPhraseType.SendMail] = ProcessSendMail,
+                [ParsedPhraseType.Email] = ProcessAddEmail,
+                [ParsedPhraseType.DeleteMail] = ProcessDeleteMail,
+                [ParsedPhraseType.Help] = ProcessHelp,
+                [ParsedPhraseType.Exit] = ProcessExit,
+                [ParsedPhraseType.UnknownCommand] = ProcessUnknownCommand,
             };
 
-        private static ProcessingResult ProcessMore(IUserDataStorage storage, ProcessingArgs args)
+        private readonly Services _services;
+
+        public InventoryDialogService(IUserDataStorage storage, IInputParserService parser, IResultCache resultCache, IInventoryEmailService emailService)
+        {
+            _services = new Services
+            {
+                Storage = storage,
+                Parser = parser,
+                ResultCache = resultCache,
+                EmailService = emailService
+            };
+        }
+
+        public ProcessingResult ProcessInput(string userId, string input, CultureInfo cultureInfo)
+        {
+            ParsedCommand command = _services.Parser.ParseInput(input, cultureInfo);
+
+            if (!_commandProcessingMethods.ContainsKey(command.Type))
+                return new ProcessingResult(new KeyNotFoundException());
+
+            var args = new ProcessingArgs
+            {
+                UserId = userId,
+                CommandData = command.Data,
+                State = _services.ResultCache.Get(userId)
+            };
+
+            var result = _commandProcessingMethods[command.Type](_services, args);
+
+            _services.ResultCache.Set(userId, result);
+
+            return result;
+        }
+
+        private static ProcessingResult ProcessGreeting(Services services, ProcessingArgs args)
+        {
+            return new ProcessingResult(ProcessingResultType.GreetingRequested);
+        }
+
+        private static ProcessingResult ProcessAccept(Services services, ProcessingArgs args)
+        {
+            var state = services.ResultCache.Get(args.UserId);
+            switch (state.Type)
+            {
+                case ProcessingResultType.ClearRequested:
+                    services.Storage.DeleteAllEntries(args.UserId);
+                    return new ProcessingResult(ProcessingResultType.Cleared);
+
+                case ProcessingResultType.MailAdded:
+                    return ProcessSendMail(services, args);
+
+                default:
+                    return new ProcessingResult(ProcessingResultType.Error);
+            }
+        }
+
+        private static ProcessingResult ProcessDecline(Services services, ProcessingArgs args)
+        {
+            return new ProcessingResult(ProcessingResultType.Declined);
+        }
+
+        private static ProcessingResult ProcessAdd(Services services, ProcessingArgs args)
+        {
+            if (!(args.CommandData is ParsedEntry parsedEntry))
+                return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
+
+            var entry = ConvertToEntry(parsedEntry);
+            return AddMaterial(services.Storage, args.UserId, entry);
+        }
+
+        private static ProcessingResult ProcessDelete(Services services, ProcessingArgs args)
+        {
+            if (!(args.CommandData is ParsedEntry parsedEntry))
+                return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
+
+            var entry = ConvertToEntry(parsedEntry);
+            return SubtractMaterial(services.Storage, args.UserId, entry);
+        }
+
+        private static ProcessingResult ProcessCancel(Services services, ProcessingArgs args)
+        {
+            var state = services.ResultCache.Get(args.UserId);
+            switch (state.Type)
+            {
+                case ProcessingResultType.Added:
+                {
+                    if (!(state.Data is Entry stateEntry))
+                        return new UnexpectedTypeException(state.Data, typeof(Entry));
+
+                    var result = SubtractMaterial(services.Storage, args.UserId, stateEntry);
+
+                    if (result.Type != ProcessingResultType.Deleted)
+                        return result;
+
+                    return new ProcessingResult(ProcessingResultType.AddCanceled, stateEntry);
+                }
+
+                case ProcessingResultType.Deleted:
+                {
+                    if (!(state.Data is Entry stateEntry))
+                        return new UnexpectedTypeException(state.Data, typeof(Entry));
+
+                    var result = AddMaterial(services.Storage, args.UserId, stateEntry);
+
+                    if (result.Type != ProcessingResultType.Added)
+                        return result;
+
+                    return new ProcessingResult(ProcessingResultType.DeleteCanceled, stateEntry);
+                }
+
+                default:
+                    return ProcessingResultType.Error;
+            }
+        }
+
+        private static ProcessingResult ProcessMore(Services services, ProcessingArgs args)
         {
             if (!(args.CommandData is ParsedEntry commandEntry))
                 return new ProcessingResult(ProcessingResultType.Error);
@@ -55,226 +189,86 @@ namespace AliceInventory.Logic
                 effectiveStateType = ProcessingResultType.Added;
 
             var entry = ConvertToEntry(commandEntry);
-
             if (entry.Name == null)
                 return new ProcessingResult(ProcessingResultType.Error);
 
-            if (effectiveStateType == ProcessingResultType.Added)
-                return AddMaterial(storage, args.UserId, entry);
-            else if (effectiveStateType == ProcessingResultType.Deleted)
-                return SubtractMaterial(storage, args.UserId, entry);
-            else return new ProcessingResult(ProcessingResultType.Error);
-        }
-
-        public InventoryDialogService(IUserDataStorage storage, IInputParserService parser, ICommandCache commandCache, IInventoryEmailService emailService)
-        {
-            this.storage = storage;
-            this.parser = parser;
-            this.commandCache = commandCache;
-            this.emailService = emailService;
-        }
-
-        public ProcessingResult ProcessInput(string userId, string input, CultureInfo cultureInfo)
-        {
-            ParsedCommand command = parser.ParseInput(input, cultureInfo);
-            ProcessingResult result = null;
-
-            if (commandProcessingMethods.ContainsKey(command.Type))
+            switch (effectiveStateType)
             {
-                var args = new ProcessingArgs
-                {
-                    UserId = userId,
-                    CommandData = command.Data,
-                    State = commandCache.Get(userId)
-                };
-                result = commandProcessingMethods[command.Type](storage, args);
+                case ProcessingResultType.Added:
+                    return AddMaterial(services.Storage, args.UserId, entry);
+                case ProcessingResultType.Deleted:
+                    return SubtractMaterial(services.Storage, args.UserId, entry);
+                default:
+                    return new ProcessingResult(ProcessingResultType.Error);
+            }
+        }
+
+        private static ProcessingResult ProcessClear(Services services, ProcessingArgs args)
+        {
+            services.Storage.DeleteAllEntries(args.UserId);
+            return ProcessingResultType.Cleared;
+        }
+
+        private static ProcessingResult ProcessReadList(Services services, ProcessingArgs args)
+        {
+            var entries = services.Storage.ReadAllEntries(args.UserId).ToLogic();
+            return new ProcessingResult(ProcessingResultType.ListRead, entries);
+        }
+
+        private static ProcessingResult ProcessSendMail(Services services, ProcessingArgs args)
+        {
+            var email = args.CommandData as string;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                email = services.Storage.ReadUserEmail(args.UserId);
+
+                if (string.IsNullOrEmpty(email))
+                    return ProcessingResultType.RequestedMail;
             }
             else
-                result = new ProcessingResult(ProcessingResultType.Error);
+            {
+                services.Storage.SetUserEmail(args.UserId, email);
+            }
 
-            // switch (parsedCommand.Type)
-            // {
-            //     case ParsedCommandType.SayHello:
-            //         {
-            //             result = new ProcessingResult(ProcessingResultType.GreetingRequested);
-            //             break;
-            //         }
+            var entries = services.Storage.ReadAllEntries(args.UserId).ToLogic();
+            if (entries.Length < 1) return new EmptyEntryListError();
 
-            //     case ParsedCommandType.Accept when prevResult.Type == ProcessingResultType.ClearRequested:
-            //         {
-            //             storage.DeleteAllEntries(userId);
-            //             result = new ProcessingResult(ProcessingResultType.Cleared);
-            //             break;
-            //         }
+            services.EmailService.SendListAsync(email, entries);
+            return new ProcessingResult(ProcessingResultType.MailSent, email);
+        }
 
-            //     case ParsedCommandType.Accept when prevResult.Type == ProcessingResultType.MailAdded:
-            //         {
-            //             goto case ParsedCommandType.SendMail;
-            //         }
+        private static ProcessingResult ProcessAddEmail(Services services, ProcessingArgs args)
+        {
+            if (!(args.CommandData is string email))
+                return new UnexpectedNullOrEmptyStringException(nameof(email));
 
-            //     case ParsedCommandType.Decline:
-            //         {
-            //             result = new ProcessingResult(ProcessingResultType.Declined);
-            //             break;
-            //         }
+            services.Storage.SetUserEmail(args.UserId, email);
+            return new ProcessingResult(ProcessingResultType.MailAdded, email);
+        }
 
-            //     case ParsedCommandType.Cancel when prevResult.Type == ProcessingResultType.Added:
-            //         {
-            //             if (!(prevResult.Data is Entry prevEntry)) goto default;
+        private static ProcessingResult ProcessDeleteMail(Services services, ProcessingArgs args)
+        {
+            var email = services.Storage.DeleteUserEmail(args.UserId);
+            if (string.IsNullOrEmpty(email))
+                return new MailIsEmptyError();
 
-            //             SubtractEntry(userId, prevEntry);
-            //             result = new ProcessingResult(ProcessingResultType.AddCanceled, prevEntry);
-            //             break;
-            //         }
+            return new ProcessingResult(ProcessingResultType.MailDeleted, email);
+        }
 
-            //     case ParsedCommandType.Cancel when prevResult.Type == ProcessingResultType.Deleted:
-            //         {
-            //             if (!(prevResult.Data is Entry prevEntry)) goto default;
+        private static ProcessingResult ProcessHelp(Services services, ProcessingArgs args)
+        {
+            return ProcessingResultType.HelpRequested;
+        }
 
-            //             AddEntry(userId, prevEntry);
-            //             result = new ProcessingResult(ProcessingResultType.DeleteCanceled, prevEntry);
-            //             break;
-            //         }
+        private static ProcessingResult ProcessExit(Services services, ProcessingArgs args)
+        {
+            return ProcessingResultType.ExitRequested;
+        }
 
-            //     case ParsedCommandType.Add:
-            //         {
-            //             if (!(parsedCommand.Data is ParsedEntry parsedEntry)) goto default;
-            //             if (parsedEntry.Name is null) goto default;
-
-            //             var entry = ConvertToEntry(parsedEntry);
-            //             result = AddEntry(userId, entry);
-            //             break;
-            //         }
-
-            //     case ParsedCommandType.Delete:
-            //         {
-            //             if (!(parsedCommand.Data is ParsedEntry parsedEntry)) goto default;
-            //             if (parsedEntry.Name is null) goto default;
-
-            //             var entry = ConvertToEntry(parsedEntry);
-            //             result = SubtractEntry(userId, entry);
-            //             break;
-            //         }
-
-            //     case ParsedCommandType.More:
-            //         {
-            //             if (!(parsedCommand.Data is ParsedEntry parsedEntry)) goto default;
-
-            //             ProcessingResultType type;
-            //             if (prevResult.Type == ProcessingResultType.Added ||
-            //                 prevResult.Type == ProcessingResultType.Deleted)
-            //             {
-            //                 type = prevResult.Type;
-            //                 if (!(prevResult.Data is Entry prevEntry)) goto default;
-
-            //                 if (parsedEntry.Name is null)
-            //                 {
-            //                     parsedEntry.Name = prevEntry.Name;
-
-            //                     if (parsedEntry.Unit is null) parsedEntry.Unit = prevEntry.UnitOfMeasure;
-            //                 }
-            //             }
-            //             else
-            //                 type = ProcessingResultType.Added;
-
-            //             var entry = ConvertToEntry(parsedEntry);
-
-            //             if (entry.Name == null) goto default;
-
-            //             if (type == ProcessingResultType.Added)
-            //                 result = AddEntry(userId, entry);
-            //             else if (type == ProcessingResultType.Deleted)
-            //                 result = SubtractEntry(userId, entry);
-            //             else goto default;
-
-            //             break;
-            //         }
-
-            //     case ParsedCommandType.Clear:
-            //         {
-            //             result = new ProcessingResult(ProcessingResultType.ClearRequested);
-            //             break;
-            //         }
-
-            //     case ParsedCommandType.ReadList:
-            //         {
-            //             var entries = storage.ReadAllEntries(userId);
-
-            //             var data = Array.ConvertAll(entries, x => x.ToLogic());
-            //             result = new ProcessingResult(ProcessingResultType.ListRead, data);
-            //             break;
-            //         }
-
-            //     case ParsedCommandType.SendMailTo:
-            //         {
-            //                                 var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
-
-            //         if (entries.Length < 1)
-            //         {
-            //             resultType = InputProcessingResult.ListRead;
-            //             resultData = entries;
-            //         }
-            //         else if (parsedCommand.Data is string email)
-            //         {
-            //             emailService.SendListAsync(email, entries);
-            //             storage.SetUserEmail(userId, email);
-            //             resultType = InputProcessingResult.MailSent;
-            //             resultData = email;
-            //         }
-
-            //         break;
-            //         }
-
-            //     case ParsedCommandType.SendMail:
-            //         {
-            //             var entries = Array.ConvertAll(storage.ReadAllEntries(userId), x => x.ToLogic());
-            //             var email = storage.ReadUserEmail(userId);
-
-            //             result = SendMailTo(email, entries);
-            //             break;
-            //         }
-
-            //     case ParsedCommandType.AddMail:
-            //         {
-            //             if (parsedCommand.Data is string email)
-            //             {
-            //                 storage.SetUserEmail(userId, email);
-            //                 result = new ProcessingResult(ProcessingResultType.MailAdded, email);
-            //             }
-            //             else goto default;
-
-            //             break;
-            //         }
-
-            //     case ParsedCommandType.DeleteMail:
-            //         {
-            //             var email = storage.DeleteUserEmail(userId);
-            //             result = new ProcessingResult(ProcessingResultType.MailDeleted, email);
-            //             break;
-            //         }
-
-            //     case ParsedCommandType.RequestHelp:
-            //         {
-            //             result = new ProcessingResult(ProcessingResultType.HelpRequested);
-            //             break;
-            //         }
-
-            //     case ParsedCommandType.RequestExit:
-            //         {
-            //             result = new ProcessingResult(ProcessingResultType.ExitRequested);
-            //             break;
-            //         }
-
-            //     default:
-            //         {
-            //             result = new ProcessingResult(ProcessingResultType.Error);
-            //             break;
-            //         }
-            // }
-
-            commandCache.Set(userId, result);
-
-            return result;
+        private static ProcessingResult ProcessUnknownCommand(Services services, ProcessingArgs args)
+        {
+            return ProcessingResultType.Error;
         }
 
         private static ProcessingResult AddMaterial(IUserDataStorage storage, string userId, Entry entry)
@@ -293,13 +287,13 @@ namespace AliceInventory.Logic
                 {
                     storage.UpdateEntry(dbEntry.Id, entry.Quantity);
                 }
+
+                return new ProcessingResult(ProcessingResultType.Added, entry);
             }
             catch (Exception e)
             {
                 return new ProcessingResult(e);
             }
-
-            return new ProcessingResult(ProcessingResultType.Added, entry);
         }
 
         private static ProcessingResult SubtractMaterial(IUserDataStorage storage, string userId, Entry entry)
@@ -311,31 +305,19 @@ namespace AliceInventory.Logic
                     e.Name == entry.Name && e.UnitOfMeasure == entry.UnitOfMeasure.ToData());
 
                 if (dbEntry is null)
-                    return new EntryNotFoundError(userId, entry.Name);
+                    return new EntryNotFoundInDatabaseError(entry.Name, entry.UnitOfMeasure);
 
                 if (dbEntry.Quantity < entry.Quantity)
                     return new NotEnoughEntryToDeleteError(entry.Quantity, dbEntry);
 
                 storage.UpdateEntry(dbEntry.Id, entry.Quantity);
+
+                return new ProcessingResult(ProcessingResultType.Deleted, entry);
             }
             catch (Exception e)
             {
                 return new ProcessingResult(e);
             }
-
-            return new ProcessingResult(ProcessingResultType.Deleted, entry);
-        }
-
-        private ProcessingResult SendMailTo(string email, Entry[] entries)
-        {
-            if (string.IsNullOrEmpty(email))
-                return new ProcessingResult(ProcessingResultType.RequestedMail);
-
-            if (entries.Length < 1)
-                return new EmptyEntryListError();
-
-            emailService.SendListAsync(email, entries);
-            return new ProcessingResult(ProcessingResultType.MailSent, email);
         }
 
         private static Entry ConvertToEntry(ParsedEntry parsedEntry)

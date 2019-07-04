@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace AliceInventory.Logic
 {
-    public class CommandCache : ICommandCache
+    public class ResultCache : IResultCache
     {
         private Dictionary<string, ProcessingResult> usersCommands;
 
-        public CommandCache()
+        public ResultCache()
         {
             usersCommands = new Dictionary<string, ProcessingResult>();
         }

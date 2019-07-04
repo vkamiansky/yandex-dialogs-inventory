@@ -5,14 +5,16 @@ using System.Threading.Tasks;
 
 namespace AliceInventory.Logic.Core.Errors
 {
-    public class EntryNotFoundError : Error
+    public class EntryNotFoundInDatabaseError : Error
     {
         public string EntryName { get; }
+        public UnitOfMeasure EntryUnit { get; }
 
-        public EntryNotFoundError(string userId, string entryName)
+        public EntryNotFoundInDatabaseError(string entryName, UnitOfMeasure unit)
             : base($"{entryName} not found in database")
         {
             EntryName = entryName;
+            EntryUnit = unit;
         }
     }
 }
