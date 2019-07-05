@@ -1,6 +1,6 @@
 using System;
 
-namespace AliceInventory.Logic.AliceResponseRender
+namespace AliceInventory.Controllers.AliceResponseRender
 {
     public class TextAndSpeechTemplate
     {

@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AliceInventory.Controllers;
 
-namespace AliceInventory.Logic.AliceResponseRender
+namespace AliceInventory.Controllers.AliceResponseRender
 {
     public class ResponseTemplate
     {

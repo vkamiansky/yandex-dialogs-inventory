@@ -2,13 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using AliceInventory.Logic;
-using AliceInventory.Logic.AliceResponseRender;
 using AliceInventory.Logic.Core.Errors;
 
 namespace AliceInventory.Controllers.AliceResponseRender
 {
     public static class AliceResponseRendererHelper
     {
+        class ResponseArgs
+        {
+            public ResponseFormat ResponseType { get; set; }
+            public object[] Data { get; set; } = { };
+        }
+
+
         private static readonly Button HelpButton = new Button()
         {
             Title = "Что ты умеешь?",
@@ -291,77 +297,89 @@ namespace AliceInventory.Controllers.AliceResponseRender
             };
         }
 
-        public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session, Func<int, int> templateVariantSelector)
+        public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session, Func<int, int> variantSelector)
         {
+            var responseArgs = GetResponseArgs(result);
+            var response = CreateResponse(responseArgs, result.CultureInfo, variantSelector);
+
             var aliceResponse = new AliceResponse()
             {
-                Response = CreateResponse(result, result.CultureInfo, templateVariantSelector),
+                Response = response,
                 Session = session,
                 Version = "1.0"
             };
             return aliceResponse;
         }
 
-        private static Response CreateResponse(ProcessingResult result, CultureInfo cultureInfo, Func<int, int> templateVariantSelector)
+        private static ResponseArgs GetResponseArgs(ProcessingResult result)
         {
-            ResponseFormat format;
-            object[] formatArguments = new object[0];
-
             switch (result.Type)
             {
                 case ProcessingResultType.GreetingRequested:
                     {
-                        format = ResponseFormat.GreetingRequested;
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.GreetingRequested
+                        };
                     }
                 case ProcessingResultType.Declined:
                     {
-                        format = ResponseFormat.Declined;
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.Declined
+                        };
                     }
                 case ProcessingResultType.Added
                     when result.Data is Entry entry:
                     {
-                        format = ResponseFormat.Added;
-                        formatArguments = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() };
-
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.Added,
+                            Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                        };
                     }
                 case ProcessingResultType.AddCanceled
                     when result.Data is Entry entry:
                     {
-                        format = ResponseFormat.AddCanceled;
-                        formatArguments = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() };
-
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.AddCanceled,
+                            Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                        };
                     }
                 case ProcessingResultType.Deleted
                     when result.Data is Entry entry:
                     {
-                        format = ResponseFormat.Deleted;
-                        formatArguments = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() };
-
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.Deleted,
+                            Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                        };
                     }
                 case ProcessingResultType.DeleteCanceled
                     when result.Data is Entry entry:
                     {
-                        format = ResponseFormat.DeleteCanceled;
-                        formatArguments = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() };
-
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.DeleteCanceled,
+                            Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                        };
                     }
 
                 case ProcessingResultType.ClearRequested:
                     {
-                        format = ResponseFormat.ClearRequested;
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.ClearRequested
+                        };
                     }
 
                 case ProcessingResultType.Cleared:
                     {
-                        format = ResponseFormat.Cleared;
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.Cleared
+                        };
                     }
 
                 case ProcessingResultType.ListRead
@@ -369,93 +387,135 @@ namespace AliceInventory.Controllers.AliceResponseRender
                     {
                         if (entries.Length > 0)
                         {
-                            format = ResponseFormat.ListRead;
-                            formatArguments = new object[] { entries.ToTextList() };
+                            return new ResponseArgs()
+                            {
+                                ResponseType = ResponseFormat.ListRead,
+                                Data = new object[] { entries.ToTextList() }
+                            };
                         }
                         else
                         {
-                            format = ResponseFormat.EmptyListRead;
+                            return new ResponseArgs()
+                            {
+                                ResponseType = ResponseFormat.EmptyListRead
+                            };
                         }
-
-                        break;
                     }
 
                 case ProcessingResultType.MailSent
                     when result.Data is string email:
                     {
-                        format = ResponseFormat.MailSent;
-                        formatArguments = new object[] { email };
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.MailSent,
+                            Data = new object[] { email }
+                        };
                     }
 
                 case ProcessingResultType.RequestedMail:
                     {
-                        format = ResponseFormat.MailRequest;
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.MailRequest,
+                        };
                     }
 
                 case ProcessingResultType.MailAdded
                     when result.Data is string email:
                     {
-                        format = ResponseFormat.MailAdded;
-                        formatArguments = new object[] { email };
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.MailAdded,
+                            Data = new object[] { email }
+                        };
                     }
 
                 case ProcessingResultType.MailDeleted
                     when result.Data is string email:
                     {
-                        format = ResponseFormat.MailDeleted;
-                        formatArguments = new object[] { email };
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.MailDeleted,
+                            Data = new object[] { email }
+                        };
                     }
 
                 case ProcessingResultType.HelpRequested:
                     {
-                        format = ResponseFormat.HelpRequested;
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.HelpRequested,
+                        };
                     }
 
                 case ProcessingResultType.ExitRequested:
                     {
-                        format = ResponseFormat.ExitRequested;
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.ExitRequested,
+                        };
                     }
 
                 case ProcessingResultType.Error
                     when result.Error is EntryNotFoundInDatabaseError error:
                     {
-                        format = ResponseFormat.EntryNotFound;
-                        formatArguments = new object[] { error.EntryName, error.EntryUnit.ToText() };
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.EntryNotFound,
+                            Data = new object[] { error.EntryName, error.EntryUnit.ToText() }
+                        };
                     }
 
                 case ProcessingResultType.Error
                     when result.Error is NotEnoughEntryToDeleteError error:
                     {
-                        format = ResponseFormat.NotEnoughEntryToDelete;
-                        formatArguments = new object[] { error.Expected, error.EntryName, error.Actual };
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.NotEnoughEntryToDelete,
+                            Data = new object[] { error.Expected, error.EntryName, error.Actual }
+                        };
+                    }
+                case ProcessingResultType.Error
+                    when result.Error is MailIsEmptyError:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.MailIsEmpty
+                        };
+                    }
+                case ProcessingResultType.Error
+                    when result.Error is EmptyEntryListError:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.EmptyListRead
+                        };
                     }
                 default:
                     {
-                        format = ResponseFormat.Error;
-                        break;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.Error
+                        };
                     }
             }
+        }
 
+        private static Response CreateResponse(ResponseArgs args, CultureInfo cultureInfo, Func<int, int> variantSelector)
+        {
             ResponseTemplate template;
-            if (responseTemplates.ContainsKey(format))
-                template = responseTemplates[format];
+            if (responseTemplates.ContainsKey(args.ResponseType))
+                template = responseTemplates[args.ResponseType];
             else
                 template = ErrorTemplate;
 
-            var textAndSpeechTemplate = template.TextAndSpeechTemplates[templateVariantSelector(template.TextAndSpeechTemplates.Length) - 1];
+            var answerId = variantSelector(template.TextAndSpeechTemplates.Length);
+            var textAndSpeechTemplate = template.TextAndSpeechTemplates[answerId];
 
             return new Response()
             {
-                Text = textAndSpeechTemplate.FormatText(cultureInfo, formatArguments),
-                Tts = textAndSpeechTemplate.FormatSpeech(cultureInfo, formatArguments),
+                Text = textAndSpeechTemplate.FormatText(cultureInfo, args.Data),
+                Tts = textAndSpeechTemplate.FormatSpeech(cultureInfo, args.Data),
                 Buttons = template.Buttons
             };
         }

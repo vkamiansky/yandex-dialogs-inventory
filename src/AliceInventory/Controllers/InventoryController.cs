@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AliceInventory.Controllers.AliceResponseRender;
-using AliceInventory.Logic.AliceResponseRender;
 using AliceInventory.Logic;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -60,7 +59,7 @@ namespace AliceInventory.Controllers
                 : request.Request.Command;
 
             var answer = InventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
-            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session, x => Random.Next(1, x));
+            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session, x => Random.Next(0, x));
         }
     }
 }

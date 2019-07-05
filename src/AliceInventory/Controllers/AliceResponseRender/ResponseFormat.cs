@@ -1,4 +1,4 @@
-namespace AliceInventory.Logic.AliceResponseRender
+namespace AliceInventory.Controllers.AliceResponseRender
 {
     public enum ResponseFormat
     {

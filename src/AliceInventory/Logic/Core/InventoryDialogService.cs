@@ -44,7 +44,7 @@ namespace AliceInventory.Logic
                 [ParsedPhraseType.Clear] = ProcessClear,
                 [ParsedPhraseType.ReadList] = ProcessReadList,
                 [ParsedPhraseType.SendMail] = ProcessSendMail,
-                [ParsedPhraseType.Mail] = ProcessAddEmail,
+                [ParsedPhraseType.Mail] = ProcessAddMail,
                 [ParsedPhraseType.DeleteMail] = ProcessDeleteMail,
                 [ParsedPhraseType.Help] = ProcessHelp,
                 [ParsedPhraseType.Exit] = ProcessExit,
@@ -79,6 +79,7 @@ namespace AliceInventory.Logic
             };
 
             var result = _commandProcessingMethods[command.Type](_services, args);
+            result.CultureInfo = cultureInfo;
 
             _services.ResultCache.Set(userId, result);
 
@@ -199,7 +200,7 @@ namespace AliceInventory.Logic
                 case ProcessingResultType.Deleted:
                     return SubtractMaterial(services.Storage, args.UserId, entry);
                 default:
-                    return new ProcessingResult(ProcessingResultType.Error);
+                    return ProcessingResultType.Error;
             }
         }
 
@@ -221,14 +222,14 @@ namespace AliceInventory.Logic
 
             if (string.IsNullOrEmpty(email))
             {
-                email = services.Storage.ReadUserEmail(args.UserId);
+                email = services.Storage.ReadUserMail(args.UserId);
 
                 if (string.IsNullOrEmpty(email))
                     return ProcessingResultType.RequestedMail;
             }
             else
             {
-                services.Storage.SetUserEmail(args.UserId, email);
+                services.Storage.SetUserMail(args.UserId, email);
             }
 
             var entries = services.Storage.ReadAllEntries(args.UserId).ToLogic();
@@ -238,18 +239,18 @@ namespace AliceInventory.Logic
             return new ProcessingResult(ProcessingResultType.MailSent, email);
         }
 
-        private static ProcessingResult ProcessAddEmail(Services services, ProcessingArgs args)
+        private static ProcessingResult ProcessAddMail(Services services, ProcessingArgs args)
         {
             if (!(args.CommandData is string email))
                 return new UnexpectedNullOrEmptyStringException(nameof(email));
 
-            services.Storage.SetUserEmail(args.UserId, email);
+            services.Storage.SetUserMail(args.UserId, email);
             return new ProcessingResult(ProcessingResultType.MailAdded, email);
         }
 
         private static ProcessingResult ProcessDeleteMail(Services services, ProcessingArgs args)
         {
-            var email = services.Storage.DeleteUserEmail(args.UserId);
+            var email = services.Storage.DeleteUserMail(args.UserId);
             if (string.IsNullOrEmpty(email))
                 return new MailIsEmptyError();
 

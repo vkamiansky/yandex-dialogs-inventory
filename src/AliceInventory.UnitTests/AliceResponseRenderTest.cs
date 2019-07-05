@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using AliceInventory.Controllers;
 using AliceInventory.Controllers.AliceResponseRender;
 using AliceInventory.Logic;
@@ -82,19 +83,26 @@ namespace AliceInventory.UnitTests
         //     Assert.NotEmpty(response.Text);
         // }
 
-        [Theory]
-        [InlineData(
-            typeof(NotEnoughEntryToDeleteError),
-            new object[] { "камни", 4, 2 },
-            new[]
+
+        [Fact]
+        public void NotEnoughEntryToDeleteErrorRendering()
+        {
+            var error = new NotEnoughEntryToDeleteError("камни", 4, 2);
+            var expectedRenderings = new[]
             {
                 "Не могу удалить 4 камни, в список добавлено только 2",
                 "У вас только 2 камни"
-            })]
-        [InlineData(
-            typeof(EntryNotFoundInDatabaseError),
-            new object[] { "яблоки", Logic.UnitOfMeasure.Kg },
-            new[]
+            };
+
+            CheckAllResponseRenderings(error, expectedRenderings);
+        }
+
+
+        [Fact]
+        public void EntryNotFoundInDatabaseErrorRendering()
+        {
+            var error = new EntryNotFoundInDatabaseError("яблоки", Logic.UnitOfMeasure.Kg);
+            var expectedRenderings = new[]
             {
                 "Вы не добавляли яблоки в кг",
                 "У вас яблоки не храниться в кг",
@@ -102,38 +110,30 @@ namespace AliceInventory.UnitTests
                 "Но в списке нет яблоки в кг",
                 "В списке нет яблоки в кг",
                 "Я не смогла найти ни одного кг яблоки в отчёте",
-            })]
-        public void ErrorRenderingTests(Type errorType, object[] typeArgs, string[] expectedRenderings)
-        {
-             CheckAllResponseRenderings((Error)Activator.CreateInstance(errorType, typeArgs), expectedRenderings);
+            };
+
+            CheckAllResponseRenderings(error, expectedRenderings);
         }
 
-        private void CheckAllResponseRenderings(ProcessingResult result, string[] expectedRenderings)
+        private void CheckAllResponseRenderings(ProcessingResult result, IReadOnlyList<string> expectedRenderings)
         {
-            bool testedAllTexts = false;
-            int textNumber = 1;
-            while (!testedAllTexts)
+            for (var i = 0; i < expectedRenderings.Count; i++)
             {
-                var jsonResponse = AliceResponseRendererHelper.CreateAliceResponse(
-                    result,
-                    sessionExample,
-                    x =>
-                    {
-                        if (textNumber == x)
-                            testedAllTexts = true;
-                        return textNumber;
-                    });
+                var textNumber = i;
+                var jsonResponse = AliceResponseRendererHelper.CreateAliceResponse(result, sessionExample, x => textNumber);
 
                 var response = jsonResponse.Response;
-                _output.WriteLine($"Text: {response.Text}\nTts: {response.Tts}\nButtons: {response.Buttons.Length}\nEndSession: {response.EndSession}\n");
+                _output.WriteLine($"Text: {response.Text}\n" +
+                                  $"Tts: {response.Tts}\n" +
+                                  $"Buttons: {response.Buttons.Length}\n" +
+                                  $"EndSession: {response.EndSession}\n");
 
                 var session = jsonResponse.Session;
                 Assert.Equal(sessionExample.UserId, session.UserId);
                 Assert.Equal(sessionExample.MessageId, session.MessageId);
                 Assert.Equal(sessionExample.SessionId, session.SessionId);
 
-                Assert.Equal(expectedRenderings[textNumber - 1], response.Text);
-                textNumber++;
+                Assert.Equal(expectedRenderings[textNumber], response.Text);
             }
         }
     }

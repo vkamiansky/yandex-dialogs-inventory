@@ -52,12 +52,12 @@ namespace AliceInventory.Data
             _entries.RemoveWhere(e => e.UserId == userId);
         }
 
-        public string ReadUserEmail(string userId)
+        public string ReadUserMail(string userId)
         {
             return _userEmails.ContainsKey(userId) ? _userEmails[userId] : null;
         }
 
-        public void SetUserEmail(string userId, string email)
+        public void SetUserMail(string userId, string email)
         {
             if (_userEmails.ContainsKey(userId))
                 _userEmails[userId] = email;
@@ -65,7 +65,7 @@ namespace AliceInventory.Data
                 _userEmails.Add(userId, email);
         }
 
-        public string DeleteUserEmail(string userId)
+        public string DeleteUserMail(string userId)
         {
             var email = _userEmails[userId];
             _userEmails.Remove(userId);

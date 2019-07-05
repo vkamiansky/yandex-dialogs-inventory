@@ -8,8 +8,8 @@ namespace AliceInventory.Data
         void DeleteEntry(int id);
         void DeleteAllEntries(string userId);
 
-        string ReadUserEmail(string userId);
-        void SetUserEmail(string userId, string email);
-        string DeleteUserEmail(string userId);
+        string ReadUserMail(string userId);
+        void SetUserMail(string userId, string email);
+        string DeleteUserMail(string userId);
     }
 }
