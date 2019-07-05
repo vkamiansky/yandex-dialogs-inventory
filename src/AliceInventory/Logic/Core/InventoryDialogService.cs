@@ -44,7 +44,7 @@ namespace AliceInventory.Logic
                 [ParsedPhraseType.Clear] = ProcessClear,
                 [ParsedPhraseType.ReadList] = ProcessReadList,
                 [ParsedPhraseType.SendMail] = ProcessSendMail,
-                [ParsedPhraseType.Email] = ProcessAddEmail,
+                [ParsedPhraseType.Mail] = ProcessAddEmail,
                 [ParsedPhraseType.DeleteMail] = ProcessDeleteMail,
                 [ParsedPhraseType.Help] = ProcessHelp,
                 [ParsedPhraseType.Exit] = ProcessExit,

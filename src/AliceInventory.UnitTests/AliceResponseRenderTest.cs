@@ -2,6 +2,7 @@ using System;
 using AliceInventory.Controllers;
 using AliceInventory.Controllers.AliceResponseRender;
 using AliceInventory.Logic;
+using AliceInventory.Logic.Core.Errors;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -24,9 +25,9 @@ namespace AliceInventory.UnitTests
         };
         private static readonly Entry[] entries = new []
         {
-            new Entry("яблоки", 10, UnitOfMeasure.Kg),
-            new Entry("арбузы", 10, UnitOfMeasure.L),
-            new Entry("молоко", 10, UnitOfMeasure.Unit),
+            new Entry(){ Name = "яблоки", Quantity = 10, UnitOfMeasure = UnitOfMeasure.Kg },
+            new Entry(){ Name = "арбузы", Quantity = 10, UnitOfMeasure = UnitOfMeasure.L },
+            new Entry(){ Name = "молоко", Quantity = 10, UnitOfMeasure = UnitOfMeasure.Unit },
         };
 
         private static readonly Session sessionExample = new Session()
@@ -50,20 +51,20 @@ namespace AliceInventory.UnitTests
         [InlineData(ProcessingResultType.ExitRequested)]
         public void Rendering(ProcessingResultType type)
         {
-            var result = new ProcessingResult() { Type = type };
+            ProcessingResult result = null;
 
             switch (type)
             {
                 case ProcessingResultType.Added:
                 case ProcessingResultType.AddCanceled:
                 case ProcessingResultType.Deleted:
-                    result.Data = entry;
+                    result = new ProcessingResult(type, entry);
                     break;
                 case ProcessingResultType.ListRead:
-                    result.Data = entries;
+                    result = new ProcessingResult(type, entries);
                     break;
                 case ProcessingResultType.MailSent:
-                    result.Data = "somemail@mail.ru";
+                    result = new ProcessingResult(type, "somemail@mail.ru");
                     break;
             }
 
@@ -82,33 +83,17 @@ namespace AliceInventory.UnitTests
         }
 
         [Fact]
-        public void ExceptionsOutput()
+        public void ErrorsOutput()
         {
-            var entryNotFoundExceptionResult = new ProcessingResult()
-            {
-                Type = ProcessingResultType.Error,
-                Error = new EntryNotFoundError("someId",
-                    "яблоки")
-            };
+            var entryNotFoundExceptionResult
+                = new ProcessingResult(new EntryNotFoundInDatabaseError("яблоки", UnitOfMeasure.Unit));
 
-            var entryUnitNotFoundExceptionResult = new ProcessingResult()
-            {
-                Type = ProcessingResultType.Error,
-                Error = new EntryUnitNotFoundError("someId",
-                    new Data.Entry("камни"), Data.UnitOfMeasure.L)
-            };
-
-            var notEnoughEntryToDeleteExceptionResult = new ProcessingResult()
-            {
-                Type = ProcessingResultType.Error,
-                Error = new NotEnoughEntryToDeleteError("someId",
-                    4, 2, new Data.Entry("камни"))
-            };
+            var notEnoughEntryToDeleteExceptionResult
+                = new ProcessingResult(new NotEnoughEntryToDeleteError(2, new Data.Entry(){ Quantity = 4, Name = "камни"}));
 
             foreach (var result in new[]
             {
                 entryNotFoundExceptionResult,
-                entryUnitNotFoundExceptionResult,
                 notEnoughEntryToDeleteExceptionResult
             })
             {

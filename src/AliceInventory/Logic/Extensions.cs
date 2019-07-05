@@ -8,53 +8,14 @@ namespace AliceInventory.Logic
 {
     public static class Extensions
     {
-        public static string ToText(this Logic.UnitOfMeasure unit)
+        public static string ToHtml(this Logic.Entry[] entries)
         {
-            switch (unit)
-            {
-                case Logic.UnitOfMeasure.Kg:
-                    return "кг";
-                case Logic.UnitOfMeasure.L:
-                    return "л";
-                case Logic.UnitOfMeasure.Unit:
-                    return "шт";
-                default:
-                    return "error";
-            }
+            return string.Join(
+                "<br/>",
+                entries
+                    .GroupBy(x => x.Name)
+                    .Select(x => $"{x.Key}: {string.Join(",", x.Select(y => $"{y.Quantity} {y.UnitOfMeasure}"))}"));
         }
-
-        public static string ToTextList(this Logic.Entry[] entries)
-        {
-            var stringBuilder = new StringBuilder();
-
-            foreach (var entry in entries)
-            {
-                stringBuilder.Append($"{entry.Name}: ");
-
-                Dictionary<UnitOfMeasure, double> units = entry.UnitValues;
-
-                if (entry.UnitValues.Count == 1)
-                {
-                    var (unit, value) = units.First();
-                    stringBuilder.AppendLine($"{value} {unit.ToText()}");
-                }
-                else
-                {
-                    foreach (var (unit, count) in units.Take(units.Count - 2))
-                    {
-                        stringBuilder.Append($"{count} {unit.ToText()}, ");
-                    }
-
-                    var lasts = units.Skip(units.Count - 2).ToArray();
-                    var (preLastUnit, preLastCount) = lasts.First();
-                    var (lastUnit, lastCount) = lasts.Last();
-                    stringBuilder.AppendLine($"{preLastCount} {preLastUnit.ToText()} и {lastCount} {lastUnit.ToText()}");
-                }
-            }
-
-            return stringBuilder.ToString();
-        }
-
         private static readonly Random Random = new Random();
         public static T GetRandomItem<T>(this IReadOnlyList<T> collection)
         {

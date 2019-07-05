@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AliceInventory.Logic
+namespace AliceInventory.Logic.Cache
 {
     public class ResultCache : IResultCache
     {

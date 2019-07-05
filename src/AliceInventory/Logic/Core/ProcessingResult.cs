@@ -17,15 +17,11 @@ namespace AliceInventory.Logic
         {
             return new ProcessingResult(type);
         }
-
         public ProcessingResultType Type { get; }
         public object Data { get; }
-
         public Error Error { get; }
         public Exception Exception { get; }
-
         public CultureInfo CultureInfo { get; set; }
-
         public ProcessingResult()
         { }
         public ProcessingResult(ProcessingResultType type)

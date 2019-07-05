@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
-using AliceInventory.Data.Errors;
 using AliceInventory.Logic;
 using AliceInventory.Logic.AliceResponseRender;
 using AliceInventory.Logic.Core.Errors;
@@ -427,7 +425,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
                     when result.Error is EntryNotFoundInDatabaseError error:
                     {
                         format = ResponseFormat.EntryNotFound;
-                        formatArguments = new object[] { error.EntryName, error.Unit.ToLogic().ToText() };
+                        formatArguments = new object[] { error.EntryName, error.EntryUnit.ToText() };
                         break;
                     }
 
@@ -435,7 +433,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
                     when result.Error is NotEnoughEntryToDeleteError error:
                     {
                         format = ResponseFormat.NotEnoughEntryToDelete;
-                        formatArguments = new object[] { error.Actual, error.Entry.Name, error.Count };
+                        formatArguments = new object[] { error.Actual, error.DataEntry.Name, error.DataEntry.Quantity };
                         break;
                     }
                 default:

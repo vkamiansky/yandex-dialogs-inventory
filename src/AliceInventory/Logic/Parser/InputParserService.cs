@@ -18,7 +18,7 @@ namespace AliceInventory.Logic.Parser
                 RegexHelper.SendWord, "на", RegexHelper.MailWord),
             new CommandTemplateWithEmail(ParsedPhraseType.SendMail,
                 RegexHelper.SendWord, "на", RegexHelper.Email),
-            new CommandTemplateWithEmail(ParsedPhraseType.Email,
+            new CommandTemplateWithEmail(ParsedPhraseType.Mail,
                 RegexHelper.Email),
             new CommandTemplate(ParsedPhraseType.DeleteMail,
                 RegexHelper.DeleteWord, RegexHelper.MailWord),

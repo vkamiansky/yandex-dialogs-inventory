@@ -44,7 +44,7 @@ namespace AliceInventory.Logic.Email
 
         private MimeEntity CreateHtmlBodyFromList(Logic.Entry[] entries)
         {
-            var bodyBuilder = new BodyBuilder {HtmlBody = entries.ToTextList().Replace("\n", "<br>")};
+            var bodyBuilder = new BodyBuilder {HtmlBody = entries.ToHtml()};
             return bodyBuilder.ToMessageBody();
         }
     }
