@@ -20,6 +20,7 @@ namespace AliceInventory.Controllers
     [ApiController]
     public class InventoryController : ControllerBase
     {
+        private static readonly Random Random = new Random();
         public Logic.IInventoryDialogService InventoryDialogService { set; get; }
         public Logic.IConfigurationService ConfigurationService { set; get; }
 
@@ -59,7 +60,7 @@ namespace AliceInventory.Controllers
                 : request.Request.Command;
 
             var answer = InventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
-            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session);
+            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session, x => Random.Next(1, x));
         }
     }
 }

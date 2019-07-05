@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using AliceInventory.Logic;
@@ -290,18 +291,18 @@ namespace AliceInventory.Controllers.AliceResponseRender
             };
         }
 
-        public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session)
+        public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session, Func<int, int> templateVariantSelector)
         {
             var aliceResponse = new AliceResponse()
             {
-                Response = CreateResponse(result, result.CultureInfo),
+                Response = CreateResponse(result, result.CultureInfo, templateVariantSelector),
                 Session = session,
                 Version = "1.0"
             };
             return aliceResponse;
         }
 
-        private static Response CreateResponse(ProcessingResult result, CultureInfo cultureInfo)
+        private static Response CreateResponse(ProcessingResult result, CultureInfo cultureInfo, Func<int, int> templateVariantSelector)
         {
             ResponseFormat format;
             object[] formatArguments = new object[0];
@@ -433,7 +434,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
                     when result.Error is NotEnoughEntryToDeleteError error:
                     {
                         format = ResponseFormat.NotEnoughEntryToDelete;
-                        formatArguments = new object[] { error.Actual, error.DataEntry.Name, error.DataEntry.Quantity };
+                        formatArguments = new object[] { error.Expected, error.EntryName, error.Actual };
                         break;
                     }
                 default:
@@ -449,7 +450,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
             else
                 template = ErrorTemplate;
 
-            var textAndSpeechTemplate = template.TextAndSpeechTemplates.GetRandomItem();
+            var textAndSpeechTemplate = template.TextAndSpeechTemplates[templateVariantSelector(template.TextAndSpeechTemplates.Length) - 1];
 
             return new Response()
             {
@@ -457,7 +458,6 @@ namespace AliceInventory.Controllers.AliceResponseRender
                 Tts = textAndSpeechTemplate.FormatSpeech(cultureInfo, formatArguments),
                 Buttons = template.Buttons
             };
-
         }
     }
 }

@@ -301,14 +301,15 @@ namespace AliceInventory.Logic
             try
             {
                 var entries = storage.ReadAllEntries(userId);
+                var dataUnitOfMeasure = entry.UnitOfMeasure.ToData();
                 var dbEntry = entries.FirstOrDefault(e =>
-                    e.Name == entry.Name && e.UnitOfMeasure == entry.UnitOfMeasure.ToData());
+                    e.Name == entry.Name && e.UnitOfMeasure == dataUnitOfMeasure);
 
                 if (dbEntry is null)
                     return new EntryNotFoundInDatabaseError(entry.Name, entry.UnitOfMeasure);
 
                 if (dbEntry.Quantity < entry.Quantity)
-                    return new NotEnoughEntryToDeleteError(entry.Quantity, dbEntry);
+                    return new NotEnoughEntryToDeleteError(entry.Name, entry.Quantity, dbEntry.Quantity);
 
                 storage.UpdateEntry(dbEntry.Id, entry.Quantity);
 

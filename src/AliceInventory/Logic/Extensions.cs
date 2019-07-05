@@ -16,11 +16,6 @@ namespace AliceInventory.Logic
                     .GroupBy(x => x.Name)
                     .Select(x => $"{x.Key}: {string.Join(",", x.Select(y => $"{y.Quantity} {y.UnitOfMeasure}"))}"));
         }
-        private static readonly Random Random = new Random();
-        public static T GetRandomItem<T>(this IReadOnlyList<T> collection)
-        {
-            return collection[Random.Next(0, collection.Count)];
-        }
 
         public static Logic.Entry ToLogic(this Data.Entry entry)
         {

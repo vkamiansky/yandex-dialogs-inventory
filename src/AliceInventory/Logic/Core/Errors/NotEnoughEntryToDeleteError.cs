@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace AliceInventory.Logic.Core.Errors
+﻿namespace AliceInventory.Logic.Core.Errors
 {
     public class NotEnoughEntryToDeleteError : Error
     {
+        public string EntryName { get; }
         public double Actual { get; }
-        public Data.Entry DataEntry { get; }
-
-        public NotEnoughEntryToDeleteError(double actual, Data.Entry dataEntry)
-            : base($"Can't delete {actual} from {dataEntry.Quantity} entry(ies)")
+        public double Expected { get; }
+        public NotEnoughEntryToDeleteError(string name, double expected, double actual)
+            : base($"Can't delete {expected} from {actual} entry(ies)")
         {
             Actual = actual;
-            DataEntry = dataEntry;
+            Expected = expected;
+            EntryName = name;
         }
     }
 }
