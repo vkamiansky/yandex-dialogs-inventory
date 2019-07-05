@@ -82,36 +82,33 @@ namespace AliceInventory.UnitTests
         //     Assert.NotEmpty(response.Text);
         // }
 
-        [Fact]
-        public void EntryNotFoundInDatabaseErrorRendering()
+        [Theory]
+        [InlineData(
+            typeof(NotEnoughEntryToDeleteError),
+            new object[] { "камни", 4, 2 },
+            new[]
+            {
+                "Не могу удалить 4 камни, в список добавлено только 2",
+                "У вас только 2 камни"
+            })]
+        [InlineData(
+            typeof(EntryNotFoundInDatabaseError),
+            new object[] { "яблоки", Logic.UnitOfMeasure.Kg },
+            new[]
+            {
+                "Вы не добавляли яблоки в кг",
+                "У вас яблоки не храниться в кг",
+                "Не нашла яблоки в кг в вашем списке",
+                "Но в списке нет яблоки в кг",
+                "В списке нет яблоки в кг",
+                "Я не смогла найти ни одного кг яблоки в отчёте",
+            })]
+        public void ErrorRenderingTests(Type errorType, object[] typeArgs, string[] expectedRenderings)
         {
-            CheckAllResponseRenderings(
-                new ProcessingResult(new EntryNotFoundInDatabaseError("яблоки", Logic.UnitOfMeasure.Kg)),
-                new[]
-                {
-                    "Вы не добавляли яблоки в кг",
-                    "У вас яблоки не храниться в кг",
-                    "Не нашла яблоки в кг в вашем списке",
-                    "Но в списке нет яблоки в кг",
-                    "В списке нет яблоки в кг",
-                    "Я не смогла найти ни одного кг яблоки в отчёте",
-                });
+             CheckAllResponseRenderings((Error)Activator.CreateInstance(errorType, typeArgs), expectedRenderings);
         }
 
-        
-        [Fact]
-        public void NotEnoughEntryToDeleteErrorRendering()
-        {
-            CheckAllResponseRenderings(
-                new ProcessingResult(new NotEnoughEntryToDeleteError("камни", 4, 2)),
-                new[]
-                {
-                    "Не могу удалить 4 камни, в список добавлено только 2",
-                    "У вас только 2 камни"
-                });
-        }
-
-        public void CheckAllResponseRenderings(ProcessingResult result, string[] expectedTexts)
+        private void CheckAllResponseRenderings(ProcessingResult result, string[] expectedRenderings)
         {
             bool testedAllTexts = false;
             int textNumber = 1;
@@ -135,7 +132,7 @@ namespace AliceInventory.UnitTests
                 Assert.Equal(sessionExample.MessageId, session.MessageId);
                 Assert.Equal(sessionExample.SessionId, session.SessionId);
 
-                Assert.Equal(expectedTexts[textNumber - 1], response.Text);
+                Assert.Equal(expectedRenderings[textNumber - 1], response.Text);
                 textNumber++;
             }
         }
