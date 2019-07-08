@@ -14,7 +14,8 @@ namespace AliceInventory.UnitTests
 {
     public class InventoryDialogServiceTests
     {
-        // private const float Tolerance = 0.0001f;
+        private const double _Tolerance = 0.0001d;
+        // private const int entryId = 123;
         // private const string userId = "userId1";
         // private const string addInputText = "объект1 123.123 кг";
         // private const string delteInputText = "удали объект1 123.123 кг";
@@ -60,79 +61,109 @@ namespace AliceInventory.UnitTests
         //     Data = entry
         // };
 
-        // private static readonly ProcessingResult addProcessingResult = new ProcessingResult()
-        // {
-        //     Type = ProcessingResultType.Added,
-        //     Data = entry
-        // };
-        // private static readonly ProcessingResult deleteProcessingResult = new ProcessingResult()
-        // {
-        //     Type = ProcessingResultType.Deleted,
-        //     Data = entry
-        // };
+        // private static readonly ProcessingResult addProcessingResult = new ProcessingResult(ProcessingResultType.Added, entry);
+        // private static readonly ProcessingResult deleteProcessingResult = new ProcessingResult(ProcessingResultType.Deleted, entry);
 
-        // [Fact]
-        // public void ProcessInputAddTest()
-        // {
-        //     var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
-        //     storageMock.Setup(x => x.CreateEntry(
-        //             It.Is<string>(y => y == userId),
-        //             It.Is<string>(y => y == entry.Name),
-        //             It.Is<double>(y => Math.Abs(y - entry.Quantity) < Tolerance),
-        //             It.Is<Data.UnitOfMeasure>(y => y == entry.UnitOfMeasure.ToData())))
-        //         .Returns(OperationResult.Ok);
+        [Fact]
+        public void ProcessAddNewNoSuchEntryTest()
+        {
+            var userId = "user1";
+            var entryName = "яблоки";
+            var entryQuantity = 12.123d;
+            var entryId = 123;
+            var dataUnitOfMeasure = Data.UnitOfMeasure.Kg;
+            var entries = new[]{
+                new Data.Entry(){
+                    Id = 255,
+                    UserId = userId,
+                    Name = "груши",
+                    UnitOfMeasure = Data.UnitOfMeasure.Kg,
+                    Quantity = 15.2f
+                },
+                new Data.Entry(){
+                    Id = 256,
+                    UserId = userId,
+                    Name = "стулья",
+                    UnitOfMeasure = Data.UnitOfMeasure.Unit,
+                    Quantity = 12
+                },
+            };
 
-        //     var parserMock = new Mock<IInputParserService>();
-        //     parserMock.Setup(x => x.ParseInput(
-        //             It.Is<string>(y => y == addInputText),
-        //             It.IsAny<CultureInfo>()))
-        //         .Returns(addParsedCommand);
+            var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
+            storageMock.Setup(x => x.ReadAllEntries(
+                It.Is<string>(y => y == userId)))
+                .Returns(entries);
+            storageMock.Setup(x => x.CreateEntry(
+                It.Is<string>(y => y == userId),
+                It.Is<string>(y => y == entryName),
+                It.Is<double>(y => Math.Abs(y - entryQuantity) < _Tolerance),
+                It.Is<Data.UnitOfMeasure>(y => y == dataUnitOfMeasure)))
+                .Returns(entryId);
 
-        //     var commandCacheMock = new Mock<IResultCache>(MockBehavior.Strict);
-        //     commandCacheMock.Setup(x => x.Get(
-        //             It.Is<string>(y => y == userId)))
-        //         .Returns(new ProcessingResult());
-        //     commandCacheMock.Setup(x => x.Set(
-        //         It.Is<string>(y => y == userId),
-        //         It.Is<ProcessingResult>(command =>
-        //             command.Type == ProcessingResultType.Added &&
-        //             command.Data is Entry &&
-        //             ((Entry) command.Data).Name == entry.Name &&
-        //             Math.Abs(((Entry) command.Data).Quantity - entry.Quantity) < Tolerance &&
-        //             ((Entry) command.Data).UnitOfMeasure == entry.UnitOfMeasure)));
+            var userInput = "добавь яблоки 12,123 кг";
+            var russianCulture = new CultureInfo("ru-RU");
+            var parsedCommand = new ParsedCommand{
+                Type = ParsedPhraseType.Add,
+                Data = new Logic.ParsedEntry{
+                    Name = entryName,
+                    Quantity = entryQuantity,
+                    Unit = Logic.UnitOfMeasure.Kg
+                }
+            };
 
-        //     var emailMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
+            var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
+            parserMock.Setup(x => x.ParseInput(
+                It.Is<string>(y => y == userInput),
+                It.Is<CultureInfo>(y => y == russianCulture)))
+                .Returns(parsedCommand);
 
-        //     var sut = new InventoryDialogService(
-        //         storageMock.Object,
-        //         parserMock.Object,
-        //         commandCacheMock.Object,
-        //         emailMock.Object);
+            var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
+            cacheMock.Setup(x=> x.Get(
+                It.Is<string>(y => y == userId)))
+                .Returns(new ProcessingResult());
+            cacheMock.Setup(x=> x.Set(
+                It.Is<string>(y => y == userId),
+                It.Is<ProcessingResult>(y =>
+                    y.Type == ProcessingResultType.Added
+                    && (y.Data as Logic.Entry).Name == entryName
+                    && (y.Data as Logic.Entry).Quantity == entryQuantity
+                    && (y.Data as Logic.Entry).UnitOfMeasure == Logic.UnitOfMeasure.Kg)));
 
-        //     var result = sut.ProcessInput(userId, addInputText, CultureInfo.CurrentCulture);
-        //     Assert.Equal(ProcessingResultType.Added, result.Type);
+            var emailerMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
 
-        //     var resultEntry = result.Data as Entry;
-        //     Assert.NotNull(resultEntry);
-        //     Assert.Equal(entry.Name, resultEntry.Name);
-        //     Assert.Equal(entry.Quantity, resultEntry.Quantity);
-        //     Assert.Equal(entry.UnitOfMeasure, resultEntry.UnitOfMeasure);
+            var sut = new InventoryDialogService(
+                storageMock.Object,
+                parserMock.Object,
+                cacheMock.Object,
+                emailerMock.Object);
 
-        //     storageMock.Verify(x =>
-        //         x.CreateEntry(
-        //             It.IsAny<string>(),
-        //             It.IsAny<string>(),
-        //             It.IsAny<double>(),
-        //             It.IsAny<Data.UnitOfMeasure>()), Times.Once);
+            var result = sut.ProcessInput(userId, userInput, russianCulture);
 
-        //     parserMock.Verify(x =>
-        //         x.ParseInput(It.IsAny<string>(), It.IsAny<CultureInfo>()), Times.Once);
+            var resultEntry = result.Data as Logic.Entry;
+            Assert.Equal(ProcessingResultType.Added, result.Type);
+            Assert.Equal(entryName, resultEntry.Name);
+            Assert.Equal(entryQuantity, resultEntry.Quantity);
+            Assert.Equal(Logic.UnitOfMeasure.Kg, resultEntry.UnitOfMeasure);
 
-        //     commandCacheMock.Verify(x =>
-        //         x.Set(
-        //             It.IsAny<string>(),
-        //             It.IsAny<Logic.ProcessingResult>()), Times.Once);
-        // }
+            parserMock.Verify(x => x.ParseInput(
+                It.IsAny<string>(),
+                It.IsAny<CultureInfo>()), Times.Once);
+
+            cacheMock.Verify(x => x.Get(
+                It.IsAny<string>()), Times.Once);
+            cacheMock.Verify(x => x.Set(
+                It.IsAny<string>(),
+                It.IsAny<ProcessingResult>()), Times.Once);
+
+            storageMock.Verify(x => x.ReadAllEntries(
+                It.IsAny<string>()),Times.Once);
+            storageMock.Verify(x => x.CreateEntry(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<double>(),
+                It.IsAny<Data.UnitOfMeasure>()),Times.Once);
+        }
+
 
         // [Fact]
         // public void ProcessInputDeleteTest()
