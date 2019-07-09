@@ -286,7 +286,7 @@ namespace AliceInventory.Logic
                 }
                 else
                 {
-                    storage.UpdateEntry(dbEntry.Id, entry.Quantity);
+                    storage.UpdateEntry(dbEntry.Id, dbEntry.Quantity + entry.Quantity);
                 }
 
                 return new ProcessingResult(ProcessingResultType.Added, entry);
@@ -312,7 +312,7 @@ namespace AliceInventory.Logic
                 if (dbEntry.Quantity < entry.Quantity)
                     return new NotEnoughEntryToDeleteError(entry.Name, entry.Quantity, dbEntry.Quantity);
 
-                storage.UpdateEntry(dbEntry.Id, entry.Quantity);
+                storage.UpdateEntry(dbEntry.Id, dbEntry.Quantity - entry.Quantity);
 
                 return new ProcessingResult(ProcessingResultType.Deleted, entry);
             }
