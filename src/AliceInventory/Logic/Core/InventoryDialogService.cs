@@ -133,7 +133,7 @@ namespace AliceInventory.Logic
 
         private static ProcessingResult ProcessCancel(Services services, ProcessingArgs args)
         {
-            var state = services.ResultCache.Get(args.UserId);
+            var state = args.State;
             switch (state.Type)
             {
                 case ProcessingResultType.Added:
