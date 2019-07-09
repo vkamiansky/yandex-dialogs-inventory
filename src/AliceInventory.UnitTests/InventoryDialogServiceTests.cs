@@ -74,13 +74,11 @@ namespace AliceInventory.UnitTests
                     && (y.Data as Logic.Entry).Quantity == entryQuantity
                     && (y.Data as Logic.Entry).UnitOfMeasure == Logic.UnitOfMeasure.Kg)));
 
-            var emailerMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
-
             var sut = new Logic.InventoryDialogService(
                 storageMock.Object,
                 parserMock.Object,
                 cacheMock.Object,
-                emailerMock.Object);
+                null);
 
             var result = sut.ProcessInput(userId, userInput, russianCulture);
 
@@ -236,13 +234,11 @@ namespace AliceInventory.UnitTests
                     && (y.Data as Logic.Entry).Quantity == resultQuantity
                     && (y.Data as Logic.Entry).UnitOfMeasure == resultUnit)));
 
-            var emailerMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
-
             var sut = new Logic.InventoryDialogService(
                 storageMock.Object,
                 parserMock.Object,
                 cacheMock.Object,
-                emailerMock.Object);
+                null);
 
             var result = sut.ProcessInput(userId, userInput, russianCulture);
 
@@ -269,6 +265,65 @@ namespace AliceInventory.UnitTests
             storageMock.Verify(x => x.UpdateEntry(
                 It.IsAny<int>(),
                 It.IsAny<double>()),Times.Once);
+        }
+
+        [Theory]
+        [InlineData("привет", Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Hello, Logic.ProcessingResultType.GreetingRequested)]
+        [InlineData("помощь", Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Help, Logic.ProcessingResultType.HelpRequested)]
+        [InlineData("выход", Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Exit, Logic.ProcessingResultType.ExitRequested)]
+        [InlineData("нет", Logic.ProcessingResultType.ClearRequested, Logic.Parser.ParsedPhraseType.Decline, Logic.ProcessingResultType.Declined)]
+        public void ProcessSimpleCommands(
+            string userInput,
+            Logic.ProcessingResultType stateType,
+            Logic.Parser.ParsedPhraseType entryType,
+            Logic.ProcessingResultType resultType)
+        {
+            var userId = "user1";
+            var russianCulture = new CultureInfo("ru-RU");
+            // The entry as recognized by the parser
+            var parsedCommand = new Logic.Parser.ParsedCommand{
+                Type = entryType
+            };
+
+            // Returning a parsed user command
+            var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
+            parserMock.Setup(x => x.ParseInput(
+                It.Is<string>(y => y == userInput),
+                It.Is<CultureInfo>(y => y == russianCulture)))
+                .Returns(parsedCommand);
+
+            var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
+            // Returning the result of last successful logical operation
+            cacheMock.Setup(x=> x.Get(
+                It.Is<string>(y => y == userId)))
+                .Returns(new Logic.ProcessingResult(stateType));
+            // Accepting the result of the current completed logical operation
+            cacheMock.Setup(x=> x.Set(
+                It.Is<string>(y => y == userId),
+                It.Is<Logic.ProcessingResult>(y => y.Type == resultType)));
+
+            var sut = new Logic.InventoryDialogService(
+                null,
+                parserMock.Object,
+                cacheMock.Object,
+                null);
+
+            var result = sut.ProcessInput(userId, userInput, russianCulture);
+
+            // Checking the result
+            Assert.Equal(resultType, result.Type);
+            Assert.Null(result.Data);
+
+            // Making sure no unnecessary calls have been made
+            parserMock.Verify(x => x.ParseInput(
+                It.IsAny<string>(),
+                It.IsAny<CultureInfo>()), Times.Once);
+
+            cacheMock.Verify(x => x.Get(
+                It.IsAny<string>()), Times.Once);
+            cacheMock.Verify(x => x.Set(
+                It.IsAny<string>(),
+                It.IsAny<Logic.ProcessingResult>()), Times.Once);
         }
     }
 }
