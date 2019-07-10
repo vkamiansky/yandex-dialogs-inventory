@@ -278,6 +278,7 @@ namespace AliceInventory.UnitTests
         [InlineData("помощь", Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Help, Logic.ProcessingResultType.HelpRequested)]
         [InlineData("выход", Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Exit, Logic.ProcessingResultType.ExitRequested)]
         [InlineData("нет", Logic.ProcessingResultType.ClearRequested, Logic.Parser.ParsedPhraseType.Decline, Logic.ProcessingResultType.Declined)]
+        [InlineData("очисти список", Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Clear, Logic.ProcessingResultType.ClearRequested)]
         public void ProcessSimpleCommands(
             string userInput,
             Logic.ProcessingResultType stateType,
@@ -450,6 +451,68 @@ namespace AliceInventory.UnitTests
                 It.IsAny<Logic.ProcessingResult>()), Times.Once);
 
             storageMock.Verify(x => x.ReadAllEntries(
+                It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessAcceptClearList()
+        {
+            var userInput = "да";
+            var userId = "user1";
+
+            var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
+
+            // Returning entries from storage
+            storageMock.Setup(x => x.DeleteAllEntries(
+                It.Is<string>(y => y == userId)));
+
+            var russianCulture = new CultureInfo("ru-RU");
+            // The entry as recognized by the parser
+            var parsedCommand = new Logic.Parser.ParsedCommand
+            {
+                Type = Logic.Parser.ParsedPhraseType.Accept
+            };
+
+            // Returning a parsed user command
+            var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
+            parserMock.Setup(x => x.ParseInput(
+                It.Is<string>(y => y == userInput),
+                It.Is<CultureInfo>(y => y == russianCulture)))
+                .Returns(parsedCommand);
+
+            var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
+            // Returning the result of last successful logical operation
+            cacheMock.Setup(x => x.Get(
+                It.Is<string>(y => y == userId)))
+                .Returns(new Logic.ProcessingResult(Logic.ProcessingResultType.ClearRequested));
+            // Accepting the result of the current completed logical operation
+            cacheMock.Setup(x => x.Set(
+                It.Is<string>(y => y == userId),
+                It.Is<Logic.ProcessingResult>(y => y.Type == Logic.ProcessingResultType.Cleared)));
+
+            var sut = new Logic.InventoryDialogService(
+                storageMock.Object,
+                parserMock.Object,
+                cacheMock.Object,
+                null);
+
+            var result = sut.ProcessInput(userId, userInput, russianCulture);
+
+            // Checking the result
+            Assert.Equal(Logic.ProcessingResultType.Cleared, result.Type);
+
+            // Making sure no unnecessary calls have been made
+            parserMock.Verify(x => x.ParseInput(
+                It.IsAny<string>(),
+                It.IsAny<CultureInfo>()), Times.Once);
+
+            cacheMock.Verify(x => x.Get(
+                It.IsAny<string>()), Times.Once);
+            cacheMock.Verify(x => x.Set(
+                It.IsAny<string>(),
+                It.IsAny<Logic.ProcessingResult>()), Times.Once);
+
+            storageMock.Verify(x => x.DeleteAllEntries(
                 It.IsAny<string>()), Times.Once);
         }
     }

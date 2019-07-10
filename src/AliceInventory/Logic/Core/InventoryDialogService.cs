@@ -93,8 +93,7 @@ namespace AliceInventory.Logic
 
         private static ProcessingResult ProcessAccept(Services services, ProcessingArgs args)
         {
-            var state = services.ResultCache.Get(args.UserId);
-            switch (state.Type)
+            switch (args.State.Type)
             {
                 case ProcessingResultType.ClearRequested:
                     services.Storage.DeleteAllEntries(args.UserId);
@@ -137,30 +136,30 @@ namespace AliceInventory.Logic
             switch (state.Type)
             {
                 case ProcessingResultType.Added:
-                {
-                    if (!(state.Data is Entry stateEntry))
-                        return new UnexpectedTypeException(state.Data, typeof(Entry));
+                    {
+                        if (!(state.Data is Entry stateEntry))
+                            return new UnexpectedTypeException(state.Data, typeof(Entry));
 
-                    var result = SubtractMaterial(services.Storage, args.UserId, stateEntry);
+                        var result = SubtractMaterial(services.Storage, args.UserId, stateEntry);
 
-                    if (result.Type != ProcessingResultType.Deleted)
-                        return result;
+                        if (result.Type != ProcessingResultType.Deleted)
+                            return result;
 
-                    return new ProcessingResult(ProcessingResultType.AddCanceled, stateEntry);
-                }
+                        return new ProcessingResult(ProcessingResultType.AddCanceled, stateEntry);
+                    }
 
                 case ProcessingResultType.Deleted:
-                {
-                    if (!(state.Data is Entry stateEntry))
-                        return new UnexpectedTypeException(state.Data, typeof(Entry));
+                    {
+                        if (!(state.Data is Entry stateEntry))
+                            return new UnexpectedTypeException(state.Data, typeof(Entry));
 
-                    var result = AddMaterial(services.Storage, args.UserId, stateEntry);
+                        var result = AddMaterial(services.Storage, args.UserId, stateEntry);
 
-                    if (result.Type != ProcessingResultType.Added)
-                        return result;
+                        if (result.Type != ProcessingResultType.Added)
+                            return result;
 
-                    return new ProcessingResult(ProcessingResultType.DeleteCanceled, stateEntry);
-                }
+                        return new ProcessingResult(ProcessingResultType.DeleteCanceled, stateEntry);
+                    }
 
                 default:
                     return ProcessingResultType.Error;
@@ -206,8 +205,7 @@ namespace AliceInventory.Logic
 
         private static ProcessingResult ProcessClear(Services services, ProcessingArgs args)
         {
-            services.Storage.DeleteAllEntries(args.UserId);
-            return ProcessingResultType.Cleared;
+            return ProcessingResultType.ClearRequested;
         }
 
         private static ProcessingResult ProcessReadList(Services services, ProcessingArgs args)
