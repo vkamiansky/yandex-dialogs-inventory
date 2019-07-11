@@ -2,22 +2,19 @@ using System;
 
 namespace AliceInventory.Logic
 {
-    public enum InputProcessingCommand
+    public enum ProcessingCommandType
     {
         SayHello,
-        Accept,
-        Decline,
-        Cancel,
         Add,
         Delete,
         Clear,
+        RequestClear,
         ReadList,
         SendMail,
-        SendMailTo,
         AddMail,
         DeleteMail,
         RequestHelp,
         RequestExit,
-        SayUnknownCommand,
+        None
     }
 }

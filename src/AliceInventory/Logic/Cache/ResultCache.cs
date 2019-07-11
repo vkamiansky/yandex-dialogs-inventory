@@ -1,23 +1,23 @@
 using System;
 using System.Collections.Generic;
 
-namespace AliceInventory.Logic
+namespace AliceInventory.Logic.Cache
 {
-    public class CommandCache : ICommandCache
+    public class ResultCache : IResultCache
     {
-        private Dictionary<string, ProcessingCommand> usersCommands;
+        private Dictionary<string, ProcessingResult> usersCommands;
 
-        public CommandCache()
+        public ResultCache()
         {
-            usersCommands = new Dictionary<string, ProcessingCommand>();
+            usersCommands = new Dictionary<string, ProcessingResult>();
         }
 
-        public ProcessingCommand Get(string userId)
+        public ProcessingResult Get(string userId)
         {
             return usersCommands.ContainsKey(userId) ? usersCommands[userId] : null;
         }
 
-        public void Set(string userId, ProcessingCommand command)
+        public void Set(string userId, ProcessingResult command)
         {
             if (usersCommands.ContainsKey(userId))
                 usersCommands[userId] = command;

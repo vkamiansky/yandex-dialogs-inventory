@@ -1,16 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using AliceInventory.Controllers;
-using AliceInventory;
+using AliceInventory.Logic;
+using AliceInventory.Logic.Core.Errors;
 
-namespace AliceInventory.Logic.AliceResponseRender
+namespace AliceInventory.Controllers.AliceResponseRender
 {
     public static class AliceResponseRendererHelper
     {
+        class ResponseArgs
+        {
+            public ResponseFormat ResponseType { get; set; }
+            public object[] Data { get; set; } = { };
+        }
+
+
         private static readonly Button HelpButton = new Button()
         {
             Title = "Что ты умеешь?",
@@ -53,9 +57,9 @@ namespace AliceInventory.Logic.AliceResponseRender
             Hide = false
         };
 
-        private static readonly Button[] YesNoButtons = {YesButton, NoButton};
-        private static readonly Button[] MainButtons = {HelpButton, ReadListButton, ExitButton};
-        private static readonly Button[] MainButtonsWithCancel = {CancelButton, HelpButton, ReadListButton, ExitButton};
+        private static readonly Button[] YesNoButtons = { YesButton, NoButton };
+        private static readonly Button[] MainButtons = { HelpButton, ReadListButton, ExitButton };
+        private static readonly Button[] MainButtonsWithCancel = { CancelButton, HelpButton, ReadListButton, ExitButton };
 
 
         private static readonly ResponseTemplate GreetingRequestTemplate = new ResponseTemplate()
@@ -141,7 +145,7 @@ namespace AliceInventory.Logic.AliceResponseRender
             },
             Buttons = MainButtons
         };
-        
+
         private static readonly ResponseTemplate ListReadTemplate = new ResponseTemplate()
         {
             TextAndSpeechTemplates = new[]
@@ -241,6 +245,30 @@ namespace AliceInventory.Logic.AliceResponseRender
             Buttons = MainButtons
         };
 
+        private static readonly ResponseTemplate EntryNotFoundTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Вы не добавляли {0} в {1}"),
+                new TextAndSpeechTemplate("У вас {0} не храниться в {1}"),
+                new TextAndSpeechTemplate("Не нашла {0} в {1} в вашем списке"),
+                new TextAndSpeechTemplate("Но в списке нет {0} в {1}"),
+                new TextAndSpeechTemplate("В списке нет {0} в {1}"),
+                new TextAndSpeechTemplate("Я не смогла найти ни одного {1} {0} в отчёте"),
+            },
+            Buttons = MainButtons
+        };
+
+        private static readonly ResponseTemplate NotEnoughEntryToDeleteErrorTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Не могу удалить {0} {1}, в список добавлено только {2}"),
+                new TextAndSpeechTemplate("У вас только {2} {1}")
+            },
+            Buttons = MainButtons
+        };
+
         private static readonly Dictionary<ResponseFormat, ResponseTemplate> responseTemplates;
 
         static AliceResponseRendererHelper()
@@ -264,166 +292,232 @@ namespace AliceInventory.Logic.AliceResponseRender
                 [ResponseFormat.MailIsEmpty] = MailIsEmptyTemplate,
                 [ResponseFormat.MailAdded] = MailAddedTemplate,
                 [ResponseFormat.MailDeleted] = MailDeletedTemplate,
+                [ResponseFormat.EntryNotFound] = EntryNotFoundTemplate,
+                [ResponseFormat.NotEnoughEntryToDelete] = NotEnoughEntryToDeleteErrorTemplate,
             };
         }
 
-        public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session)
+        public static AliceResponse CreateAliceResponse(ProcessingResult result, Session session, Func<int, int> variantSelector)
         {
+            var responseArgs = GetResponseArgs(result);
+            var response = CreateResponse(responseArgs, result.CultureInfo, variantSelector);
+
             var aliceResponse = new AliceResponse()
             {
-                Response = CreateResponse(result, result.CultureInfo),
+                Response = response,
                 Session = session,
                 Version = "1.0"
             };
             return aliceResponse;
         }
 
-        private static Response CreateResponse(ProcessingResult result, CultureInfo cultureInfo)
+        private static ResponseArgs GetResponseArgs(ProcessingResult result)
         {
-            object[] formatArguments = new object[0];
-
-
-            ResponseFormat format = ResponseFormat.Error;
-
-            switch (result.Result)
+            switch (result.Type)
             {
-                case InputProcessingResult.GreetingRequested:
-                {
-                    format = ResponseFormat.GreetingRequested;
-                    break;
-                }
-                case InputProcessingResult.Declined:
-                {
-                    format = ResponseFormat.Declined;
-                    break;
-                }
-                case InputProcessingResult.Added:
-                {
-                    if (result.Data is SingleEntry entry)
+                case ProcessingResultType.GreetingRequested:
                     {
-                        format = ResponseFormat.Added;
-                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.GreetingRequested
+                        };
+                    }
+                case ProcessingResultType.Declined:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.Declined
+                        };
+                    }
+                case ProcessingResultType.Added
+                    when result.Data is Entry entry:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.Added,
+                            Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                        };
+                    }
+                case ProcessingResultType.AddCanceled
+                    when result.Data is Entry entry:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.AddCanceled,
+                            Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                        };
+                    }
+                case ProcessingResultType.Deleted
+                    when result.Data is Entry entry:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.Deleted,
+                            Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                        };
+                    }
+                case ProcessingResultType.DeleteCanceled
+                    when result.Data is Entry entry:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.DeleteCanceled,
+                            Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                        };
                     }
 
-                    break;
-                }
-                case InputProcessingResult.AddCanceled:
-                {
-                    if (result.Data is SingleEntry entry)
+                case ProcessingResultType.ClearRequested:
                     {
-                        format = ResponseFormat.AddCanceled;
-                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.ClearRequested
+                        };
                     }
 
-                    break;
-                }
-                case InputProcessingResult.Deleted:
-                {
-                    if (result.Data is SingleEntry entry)
+                case ProcessingResultType.Cleared:
                     {
-                        format = ResponseFormat.Deleted;
-                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.Cleared
+                        };
                     }
 
-                    break;
-                }
-                case InputProcessingResult.DeleteCanceled:
-                {
-                    if (result.Data is SingleEntry entry)
-                    {
-                        format = ResponseFormat.DeleteCanceled;
-                        formatArguments = new object[] {entry.Name, entry.Count, entry.Unit.ToText()};
-                    }
-
-                    break;
-                }
-                case InputProcessingResult.ClearRequested:
-                    format = ResponseFormat.ClearRequested;
-                    break;
-                case InputProcessingResult.Cleared:
-                {
-                    format = ResponseFormat.Cleared;
-                    break;
-                }
-                case InputProcessingResult.ListRead:
-                {
-                    if (result.Data is Logic.Entry[] entries)
+                case ProcessingResultType.ListRead
+                    when result.Data is Logic.Entry[] entries:
                     {
                         if (entries.Length > 0)
                         {
-                            format = ResponseFormat.ListRead;
-                            formatArguments = new object[] {entries.ToTextList()};
+                            return new ResponseArgs()
+                            {
+                                ResponseType = ResponseFormat.ListRead,
+                                Data = new object[] { entries.ToTextList() }
+                            };
                         }
                         else
                         {
-                            format = ResponseFormat.EmptyListRead;
+                            return new ResponseArgs()
+                            {
+                                ResponseType = ResponseFormat.EmptyListRead
+                            };
                         }
-
                     }
 
-                    break;
-                }
-                case InputProcessingResult.MailSent:
-                {
-                    if (result.Data is string email)
+                case ProcessingResultType.MailSent
+                    when result.Data is string email:
                     {
-                        format = ResponseFormat.MailSent;
-                        formatArguments = new object[] {email};
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.MailSent,
+                            Data = new object[] { email }
+                        };
                     }
-                    break;
-                }
-                case InputProcessingResult.RequestedMail:
-                {
-                    format = ResponseFormat.MailRequest;
-                    break;
-                }
-                case InputProcessingResult.MailAdded:
-                {
-                    if (result.Data is string email)
+
+                case ProcessingResultType.RequestedMail:
                     {
-                        format = ResponseFormat.MailAdded;
-                        formatArguments = new object[] {email};
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.MailRequest,
+                        };
                     }
-                    break;
-                }
-                case InputProcessingResult.MailDeleted:
-                {
-                    if (result.Data is string email)
+
+                case ProcessingResultType.MailAdded
+                    when result.Data is string email:
                     {
-                        format = ResponseFormat.MailDeleted;
-                        formatArguments = new object[] {email};
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.MailAdded,
+                            Data = new object[] { email }
+                        };
                     }
-                    else
+
+                case ProcessingResultType.MailDeleted
+                    when result.Data is string email:
                     {
-                        format = ResponseFormat.MailIsEmpty;
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.MailDeleted,
+                            Data = new object[] { email }
+                        };
                     }
-                    break;
-                }
-                case InputProcessingResult.HelpRequested:
-                {
-                    format = ResponseFormat.HelpRequested;
-                    break;
-                }
-                case InputProcessingResult.ExitRequested:
-                {
-                    format = ResponseFormat.ExitRequested;
-                    break;
-                }
-                default: break;
+
+                case ProcessingResultType.HelpRequested:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.HelpRequested,
+                        };
+                    }
+
+                case ProcessingResultType.ExitRequested:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.ExitRequested,
+                        };
+                    }
+
+                case ProcessingResultType.Error
+                    when result.Error is EntryNotFoundInDatabaseError error:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.EntryNotFound,
+                            Data = new object[] { error.EntryName, error.EntryUnit.ToText() }
+                        };
+                    }
+
+                case ProcessingResultType.Error
+                    when result.Error is NotEnoughEntryToDeleteError error:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.NotEnoughEntryToDelete,
+                            Data = new object[] { error.Expected, error.EntryName, error.Actual }
+                        };
+                    }
+                case ProcessingResultType.Error
+                    when result.Error is MailIsEmptyError:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.MailIsEmpty
+                        };
+                    }
+                case ProcessingResultType.Error
+                    when result.Error is EmptyEntryListError:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.EmptyListRead
+                        };
+                    }
+                default:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.Error
+                        };
+                    }
             }
+        }
 
-            var template = !responseTemplates.ContainsKey(format) ?
-                ErrorTemplate : responseTemplates[format];
+        private static Response CreateResponse(ResponseArgs args, CultureInfo cultureInfo, Func<int, int> variantSelector)
+        {
+            ResponseTemplate template;
+            if (responseTemplates.ContainsKey(args.ResponseType))
+                template = responseTemplates[args.ResponseType];
+            else
+                template = ErrorTemplate;
 
-            var textAndSpeechTemplate = template.TextAndSpeechTemplates.GetRandomItem();
+            var answerId = variantSelector(template.TextAndSpeechTemplates.Length);
+            var textAndSpeechTemplate = template.TextAndSpeechTemplates[answerId];
 
             return new Response()
             {
-                Text = textAndSpeechTemplate.FormatText(cultureInfo, formatArguments),
-                Tts = textAndSpeechTemplate.FormatSpeech(cultureInfo, formatArguments),
+                Text = textAndSpeechTemplate.FormatText(cultureInfo, args.Data),
+                Tts = textAndSpeechTemplate.FormatSpeech(cultureInfo, args.Data),
                 Buttons = template.Buttons
             };
-
         }
     }
 }

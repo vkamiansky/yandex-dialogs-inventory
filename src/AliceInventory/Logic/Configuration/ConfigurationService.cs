@@ -19,7 +19,7 @@ namespace AliceInventory.Logic
                 Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_login");
                 return secret.Data.Data["CURRENT"] as string;
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }
@@ -32,7 +32,7 @@ namespace AliceInventory.Logic
                 Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_password");
                 return secret.Data.Data["CURRENT"] as string;
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }
@@ -45,7 +45,7 @@ namespace AliceInventory.Logic
                 Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_address");
                 return secret.Data.Data["CURRENT"] as string;
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }
@@ -59,7 +59,7 @@ namespace AliceInventory.Logic
                 var stringPort = secret.Data.Data["CURRENT"] as string;
                 return int.Parse(stringPort);
             }
-            catch (Exception e)
+            catch
             {
                 return 0;
             }

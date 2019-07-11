@@ -2,7 +2,7 @@ using System;
 
 namespace AliceInventory.Logic
 {
-    public enum InputProcessingResult
+    public enum ProcessingResultType
     {
         GreetingRequested,
         Declined,
@@ -19,6 +19,7 @@ namespace AliceInventory.Logic
         MailDeleted,
         HelpRequested,
         Error,
+        Exception,
         ExitRequested,
     }
 }

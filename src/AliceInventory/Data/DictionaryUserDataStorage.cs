@@ -1,108 +1,75 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
+using AliceInventory.Logic;
 
 namespace AliceInventory.Data
 {
     public class DictionaryUserDataStorage : IUserDataStorage
     {
-        private Dictionary<string, UserData> storage;
+        private static int _lastEntryId = 0;
+        private readonly HashSet<Data.Entry> _entries;
+        private readonly Dictionary<string, string> _userEmails;
 
         public DictionaryUserDataStorage()
         {
-            storage = new Dictionary<string, UserData>();
+            _entries = new HashSet<Entry>();
+            _userEmails = new Dictionary<string, string>();
         }
 
-        public bool AddEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
+
+        public int CreateEntry(string userId, string entryName, double quantity, UnitOfMeasure unit)
         {
-            bool isSuccessful = true;
-
-            UserData data = GetUserData(userId);
-            var entries = data.Entries;
-
-            if (entries.All(x => x.Name != entryName))
-                entries.Add(new Entry(entryName));
-
-            var userItem = entries.First(x => x.Name == entryName);
-
-            if (!userItem.UnitValues.ContainsKey(unit))
-                userItem.UnitValues.Add(unit, count);
-            else
-                userItem.UnitValues[unit] += count;
-
-            return isSuccessful;
+            var entry = new Data.Entry()
+            {
+                Id = _lastEntryId++,
+                Name = entryName,
+                Quantity = quantity,
+                UnitOfMeasure = unit,
+                UserId = userId
+            };
+            _entries.Add(entry);
+            return entry.Id;
         }
 
-        public bool DeleteEntry(string userId, string entryName, double count, Data.UnitOfMeasure unit)
+        public void DeleteEntry(int id)
         {
-            UserData data = GetUserData(userId);
-            var entries = data.Entries;
-            var userItem = entries.FirstOrDefault(x => x.Name == entryName);
+            _entries.RemoveWhere(e => e.Id == id);
+        }
 
-            if (userItem == null) return false;
-            if (!userItem.UnitValues.ContainsKey(unit)) return false;
-
-            // Removing
-            userItem.UnitValues[unit] -= count;
-            
-            // Data cleaning
-            if (userItem.UnitValues[unit] > 0) return true;
-            userItem.UnitValues.Remove(unit);
-            
-            if (userItem.UnitValues.Count > 0) return true;
-            entries.Remove(userItem);
-            return true;
+        public void UpdateEntry(int id, double quantity)
+        {
+            _entries.First(e => e.Id == id).Quantity = quantity;
         }
 
         public Data.Entry[] ReadAllEntries(string userId)
         {
-            UserData data = GetUserData(userId);
-            return data.Entries.ToArray();
+            return _entries.Where(e => e.UserId == userId).ToArray();
         }
 
-        public bool ClearInventory(string userId)
+        public void DeleteAllEntries(string userId)
         {
-            bool isSuccessful = true;
-
-            UserData data = GetUserData(userId);
-            data.Entries.Clear();
-
-            return isSuccessful;
+            _entries.RemoveWhere(e => e.UserId == userId);
         }
 
-        public string GetUserEmail(string userId)
+        public string ReadUserMail(string userId)
         {
-            UserData data = GetUserData(userId);
-            return data.LastEmail;
+            return _userEmails.ContainsKey(userId) ? _userEmails[userId] : null;
         }
 
-        public bool SetUserEmail(string userId, string email)
+        public void SetUserMail(string userId, string email)
         {
-            bool isSuccessful = true;
-
-            UserData data = GetUserData(userId);
-            data.LastEmail = email;
-
-            return isSuccessful;
+            if (_userEmails.ContainsKey(userId))
+                _userEmails[userId] = email;
+            else
+                _userEmails.Add(userId, email);
         }
 
-        public string DeleteUserEmail(string userId)
+        public string DeleteUserMail(string userId)
         {
-            UserData data = GetUserData(userId);
-            var email = data.LastEmail;
-            data.LastEmail = null;
-
+            var email = _userEmails[userId];
+            _userEmails.Remove(userId);
             return email;
-        }
-
-
-        private UserData GetUserData(string userId)
-        {
-            if (!storage.ContainsKey(userId))
-                storage.Add(userId, new UserData());
-                
-            return storage[userId];
         }
     }
 }

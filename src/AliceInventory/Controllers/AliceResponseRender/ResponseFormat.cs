@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace AliceInventory.Logic.AliceResponseRender
+namespace AliceInventory.Controllers.AliceResponseRender
 {
     public enum ResponseFormat
     {
@@ -19,11 +14,13 @@ namespace AliceInventory.Logic.AliceResponseRender
         EmptyListRead,
         MailSent,
         MailRequest,
-        MailIsEmpty,
         MailAdded,
         MailDeleted,
+        MailIsEmpty,
         HelpRequested,
         Error,
         ExitRequested,
+        EntryNotFound,
+        NotEnoughEntryToDelete
     }
 }

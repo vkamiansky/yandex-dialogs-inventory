@@ -8,57 +8,13 @@ namespace AliceInventory.Logic
 {
     public static class Extensions
     {
-        public static string ToText(this UnitOfMeasure unit)
+        public static string ToHtml(this Logic.Entry[] entries)
         {
-            switch (unit)
-            {
-                case UnitOfMeasure.Kg:
-                    return "кг";
-                case UnitOfMeasure.L:
-                    return "л";
-                case UnitOfMeasure.Unit:
-                    return "шт";
-                default:
-                    return "error";
-            }
-        }
-
-        public static string ToTextList(this Logic.Entry[] entries)
-        {
-            var stringBuilder = new StringBuilder();
-
-            foreach (var entry in entries)
-            {
-                stringBuilder.Append($"{entry.Name}: ");
-
-                Dictionary<UnitOfMeasure, double> units = entry.UnitValues;
-
-                if (entry.UnitValues.Count == 1)
-                {
-                    var (unit, value) = units.First();
-                    stringBuilder.AppendLine($"{value} {unit.ToText()}");
-                }
-                else
-                {
-                    foreach (var (unit, count) in units.Take(units.Count - 2))
-                    {
-                        stringBuilder.Append($"{count} {unit.ToText()}, ");
-                    }
-
-                    var lasts = units.Skip(units.Count - 2).ToArray();
-                    var (preLastUnit, preLastCount) = lasts.First();
-                    var (lastUnit, lastCount) = lasts.Last();
-                    stringBuilder.AppendLine($"{preLastCount} {preLastUnit.ToText()} и {lastCount} {lastUnit.ToText()}");
-                }
-            }
-
-            return stringBuilder.ToString();
-        }
-
-        private static readonly Random Random = new Random();
-        public static T GetRandomItem<T>(this IReadOnlyList<T> collection)
-        {
-            return collection[Random.Next(0, collection.Count)];
+            return string.Join(
+                "<br/>",
+                entries
+                    .GroupBy(x => x.Name)
+                    .Select(x => $"{x.Key}: {string.Join(",", x.Select(y => $"{y.Quantity} {y.UnitOfMeasure}"))}"));
         }
 
         public static Logic.Entry ToLogic(this Data.Entry entry)
@@ -66,33 +22,17 @@ namespace AliceInventory.Logic
             if (entry == null)
                 return null;
 
-            var unitValues = new Dictionary<Logic.UnitOfMeasure, double>();
-            foreach (var (unit, count) in entry.UnitValues)
+            return new Logic.Entry()
             {
-                unitValues.Add(unit.ToLogic(), count);
-            }
-            
-            return new Logic.Entry(entry.Name)
-            {
-                UnitValues = unitValues
+                Name = entry.Name,
+                Quantity = entry.Quantity,
+                UnitOfMeasure = entry.UnitOfMeasure.ToLogic()
             };
         }
 
-        public static Data.Entry ToData(this Logic.Entry entry)
+        public static Logic.Entry[] ToLogic(this Data.Entry[] entries)
         {
-            if (entry == null)
-                return null;
-            
-            var unitValues = new Dictionary<Data.UnitOfMeasure, double>();
-            foreach (var (unit, count) in entry.UnitValues)
-            {
-                unitValues.Add(unit.ToData(), count);
-            }
-            
-            return new Data.Entry(entry.Name)
-            {
-                UnitValues = unitValues
-            };
+            return entries == null ? null : Array.ConvertAll(entries, x => x.ToLogic());
         }
 
         public static Logic.UnitOfMeasure ToLogic(this Data.UnitOfMeasure unit)

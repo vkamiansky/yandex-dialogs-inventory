@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AliceInventory.Logic.AliceResponseRender;
+using AliceInventory.Controllers.AliceResponseRender;
 using AliceInventory.Logic;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +19,7 @@ namespace AliceInventory.Controllers
     [ApiController]
     public class InventoryController : ControllerBase
     {
+        private static readonly Random Random = new Random();
         public Logic.IInventoryDialogService InventoryDialogService { set; get; }
         public Logic.IConfigurationService ConfigurationService { set; get; }
 
@@ -58,7 +59,7 @@ namespace AliceInventory.Controllers
                 : request.Request.Command;
 
             var answer = InventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
-            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session);
+            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session, x => Random.Next(0, x));
         }
     }
 }

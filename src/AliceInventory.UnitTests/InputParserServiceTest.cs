@@ -26,151 +26,181 @@ namespace AliceInventory.UnitTests
         [InlineData("хеллоу")]
         public void CommandParsingSayHelloTest(string input)
         {
-            ProcessingCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
             
-            Assert.Equal(InputProcessingCommand.SayHello, parsedCommand.Command);
+            Assert.Equal(ParsedPhraseType.Hello, parsedCommand.Type);
             Assert.Null(parsedCommand.Data);
         }
 
         [Theory]
         [InlineData("добавь яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
+        [InlineData("добавь ещё яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
+        [InlineData("добавь яблок ещё 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("яблоки 2 килограмма", "яблоки", 2, UnitOfMeasure.Kg)]
         [InlineData("Прибавь 3 единицы яблок", "яблок", 3, UnitOfMeasure.Unit)]
         [InlineData("Прибавь 3 шт яблок", "яблок", 3, UnitOfMeasure.Unit)]
         [InlineData("4 литра яблок", "яблок", 4, UnitOfMeasure.L)]
-        [InlineData("Плюс 5 яблок", "яблок", 5, UnitOfMeasure.Unit)]
-        [InlineData("6 яблок", "яблок", 6, UnitOfMeasure.Unit)]
-        [InlineData("Килограмм яблок", "яблок", 1, UnitOfMeasure.Kg)]
-        [InlineData("закинь яблоко", "яблоко", 1, UnitOfMeasure.Unit)]
-        public void AddCommandParsing(string input, string entryName, double entryCount, UnitOfMeasure entryUnitOfMeasure)
+        [InlineData("Плюс 5 яблок", "яблок", 5, null)]
+        [InlineData("6 яблок", "яблок", 6, null)]
+        [InlineData("Килограмм яблок", "яблок", null, UnitOfMeasure.Kg)]
+        [InlineData("закинь яблоко", "яблоко", null, null)]
+        public void AddCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
         {
-            ProcessingCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
-            Assert.Equal(InputProcessingCommand.Add, parsedCommand.Command);
+            Assert.Equal(ParsedPhraseType.Add, parsedCommand.Type);
 
-            var data = parsedCommand.Data as SingleEntry;
+            var data = parsedCommand.Data as ParsedEntry;
 
             Assert.Equal(entryName, data?.Name);
-            Assert.Equal(entryCount, data?.Count);
+            Assert.Equal(entryQuantity, data?.Quantity);
             Assert.Equal(entryUnitOfMeasure, data?.Unit);
         }
 
         [Theory]
-        [InlineData("добавь 5 ак47", "ак47", 5, UnitOfMeasure.Unit)]
+        [InlineData("добавь 5 ак47", "ак47", 5, null)]
         [InlineData("добавь ак-47 3 штуки", "ак-47", 3, UnitOfMeasure.Unit)]
         [InlineData("ак 47 3,5 килограмма", "ак 47", 3.5, UnitOfMeasure.Kg)]
         [InlineData("добавь молоко 1 литр 5 штук", "молоко 1 литр", 5, UnitOfMeasure.Unit)]
         [InlineData("ну давай добавим 5 кг яблок", "яблок", 5, UnitOfMeasure.Kg)]
-        [InlineData("ещё 4 яблока", "яблока", 4, UnitOfMeasure.Unit)]
-        [InlineData("добавь яблок 4", "яблок", 4, UnitOfMeasure.Unit)]
-        public void SpecificAddCommandParsing(string input, string entryName, double entryCount, UnitOfMeasure entryUnitOfMeasure)
+        [InlineData("добавь яблок 4", "яблок", 4, null)]
+        public void SpecificAddCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
         {
-            ProcessingCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
-            Assert.Equal(InputProcessingCommand.Add, parsedCommand.Command);
+            Assert.Equal(ParsedPhraseType.Add, parsedCommand.Type);
 
-            var data = parsedCommand.Data as SingleEntry;
+            var data = parsedCommand.Data as ParsedEntry;
 
             Assert.Equal(entryName, data?.Name);
-            Assert.Equal(entryCount, data?.Count);
+            Assert.Equal(entryQuantity, data?.Quantity);
+            Assert.Equal(entryUnitOfMeasure, data?.Unit);
+        }
+
+        [Theory]
+        [InlineData("ещё 5 ак47", "ак47", 5, null)]
+        [InlineData("еще ак-47 3 штуки", "ак-47", 3, UnitOfMeasure.Unit)]
+        [InlineData("ещё ак 47 3,5 килограмма", "ак 47", 3.5, UnitOfMeasure.Kg)]
+        [InlineData("ещё молоко 1 литр 5 штук", "молоко 1 литр", 5, UnitOfMeasure.Unit)]
+        [InlineData("ну ещё 5 кг яблок", "яблок", 5, UnitOfMeasure.Kg)]
+        [InlineData("ещё яблок 4", "яблок", 4, null)]
+        public void MoreCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
+        {
+            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+
+            Assert.Equal(ParsedPhraseType.More, parsedCommand.Type);
+
+            var data = parsedCommand.Data as ParsedEntry;
+
+            Assert.Equal(entryName, data?.Name);
+            Assert.Equal(entryQuantity, data?.Quantity);
             Assert.Equal(entryUnitOfMeasure, data?.Unit);
         }
 
         [Theory]
         [InlineData("удали яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
+        [InlineData("ещё удали яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("убери 2 килограмм яблок", "яблок", 2, UnitOfMeasure.Kg)]
-        [InlineData("убери 3 яблока", "яблока", 3, UnitOfMeasure.Unit)]
-        [InlineData("убери яблок 3", "яблок", 3, UnitOfMeasure.Unit)]
-        [InlineData("убери яблок 3 штуки", "яблок", 3, UnitOfMeasure.Unit)]
-        [InlineData("сотри килограмм яблок", "яблок", 1, UnitOfMeasure.Kg)]
-        public void DeleteCommandParsing(string input, string entryName, double entryCount, UnitOfMeasure entryUnitOfMeasure)
+        [InlineData("убери 3 яблока", "яблока", 3, null)]
+        [InlineData("убери ещё 3 яблока", "яблока", 3, null)]
+        [InlineData("убери яблок 5", "яблок", 5, null)]
+        [InlineData("убери молоко", "молоко", null, null)]
+        [InlineData("давай убери яблок 3 штуки", "яблок", 3, UnitOfMeasure.Unit)]
+        [InlineData("сотри килограмм яблок", "яблок", null, UnitOfMeasure.Kg)]
+        public void DeleteCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
         {
-            ProcessingCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
-            Assert.Equal(InputProcessingCommand.Delete, parsedCommand.Command);
+            Assert.Equal(ParsedPhraseType.Delete, parsedCommand.Type);
 
-            var data = parsedCommand.Data as SingleEntry;
+            var data = parsedCommand.Data as ParsedEntry;
 
             Assert.Equal(entryName, data?.Name);
-            Assert.Equal(entryCount, data?.Count);
+            Assert.Equal(entryQuantity, data?.Quantity);
             Assert.Equal(entryUnitOfMeasure, data?.Unit);
         }
 
         [Theory]
-        [InlineData("покажи", InputProcessingCommand.ReadList)]
-        [InlineData("покажи всё", InputProcessingCommand.ReadList)]
-        [InlineData("покажи инвентарь", InputProcessingCommand.ReadList)]
-        [InlineData("покажи список", InputProcessingCommand.ReadList)]
-        [InlineData("список", InputProcessingCommand.ReadList)]
-        [InlineData("выведи список", InputProcessingCommand.ReadList)]
-        [InlineData("итого", InputProcessingCommand.ReadList)]
-        [InlineData("прочитай список", InputProcessingCommand.ReadList)]
-        [InlineData("зачитай список", InputProcessingCommand.ReadList)]
-        [InlineData("читай список", InputProcessingCommand.ReadList)]
-        [InlineData("что в списке?", InputProcessingCommand.ReadList)]
-        [InlineData("что в списке", InputProcessingCommand.ReadList)]
-        [InlineData("да", InputProcessingCommand.Accept)]
-        [InlineData("конечно", InputProcessingCommand.Accept)]
-        [InlineData("несомненно", InputProcessingCommand.Accept)]
-        [InlineData("точно", InputProcessingCommand.Accept)]
-        [InlineData("именно", InputProcessingCommand.Accept)]
-        [InlineData("верно", InputProcessingCommand.Accept)]
-        [InlineData("хочу", InputProcessingCommand.Accept)]
-        [InlineData("давай", InputProcessingCommand.Accept)]
-        [InlineData("ну давай", InputProcessingCommand.Accept)]
-        [InlineData("нет", InputProcessingCommand.Decline)]
-        [InlineData("не надо", InputProcessingCommand.Decline)]
-        [InlineData("отмена", InputProcessingCommand.Cancel)]
-        [InlineData("отмени", InputProcessingCommand.Cancel)]
-        [InlineData("отменяй", InputProcessingCommand.Cancel)]
-        [InlineData("отменяю", InputProcessingCommand.Cancel)]
-        [InlineData("отменить", InputProcessingCommand.Cancel)]
-        [InlineData("очисти", InputProcessingCommand.Clear)]
-        [InlineData("очисти список", InputProcessingCommand.Clear)]
-        [InlineData("очисти инвентарь", InputProcessingCommand.Clear)]
-        [InlineData("очисть список", InputProcessingCommand.Clear)]
-        [InlineData("очистить всё", InputProcessingCommand.Clear)]
-        [InlineData("вычисти", InputProcessingCommand.Clear)]
-        [InlineData("помоги", InputProcessingCommand.RequestHelp)]
-        [InlineData("помогите", InputProcessingCommand.RequestHelp)]
-        [InlineData("помощь", InputProcessingCommand.RequestHelp)]
-        [InlineData("хелп", InputProcessingCommand.RequestHelp)]
-        [InlineData("спасай", InputProcessingCommand.RequestHelp)]
-        [InlineData("спасайте", InputProcessingCommand.RequestHelp)]
-        [InlineData("выручай", InputProcessingCommand.RequestHelp)]
-        [InlineData("выручайте", InputProcessingCommand.RequestHelp)]
-        [InlineData("что ты умеешь?", InputProcessingCommand.RequestHelp)]
-        [InlineData("что ты можешь", InputProcessingCommand.RequestHelp)]
-        [InlineData("выход", InputProcessingCommand.RequestExit)]
-        [InlineData("пока", InputProcessingCommand.RequestExit)]
-        [InlineData("хватит", InputProcessingCommand.RequestExit)]
-        [InlineData("прощай", InputProcessingCommand.RequestExit)]
-        [InlineData("погода спб", InputProcessingCommand.SayUnknownCommand)]
-        [InlineData("что делаешь", InputProcessingCommand.SayUnknownCommand)]
-        [InlineData("люблю тесты", InputProcessingCommand.SayUnknownCommand)]
-        [InlineData("добавь", InputProcessingCommand.SayUnknownCommand)]
-        [InlineData("удали", InputProcessingCommand.SayUnknownCommand)]
-        [InlineData("отправляй somemail@yaru", InputProcessingCommand.SayUnknownCommand)]
-        public void AnotherCommandParsing(string input, InputProcessingCommand command)
+        [InlineData("покажи", ParsedPhraseType.ReadList)]
+        [InlineData("список", ParsedPhraseType.ReadList)]
+        [InlineData("учёт", ParsedPhraseType.ReadList)]
+        [InlineData("итого", ParsedPhraseType.ReadList)]
+        [InlineData("ещё покажи", ParsedPhraseType.ReadList)]
+        [InlineData("покажи всё", ParsedPhraseType.ReadList)]
+        [InlineData("покажи список", ParsedPhraseType.ReadList)]
+        [InlineData("покажи отчёт", ParsedPhraseType.ReadList)]
+        [InlineData("покажи опись", ParsedPhraseType.ReadList)]
+        [InlineData("выведи список", ParsedPhraseType.ReadList)]
+        [InlineData("прочитай список", ParsedPhraseType.ReadList)]
+        [InlineData("зачитай список", ParsedPhraseType.ReadList)]
+        [InlineData("читай список", ParsedPhraseType.ReadList)]
+        [InlineData("что в списке", ParsedPhraseType.ReadList)]
+        [InlineData("да", ParsedPhraseType.Accept)]
+        [InlineData("конечно", ParsedPhraseType.Accept)]
+        [InlineData("конечно давай", ParsedPhraseType.Accept)]
+        [InlineData("несомненно", ParsedPhraseType.Accept)]
+        [InlineData("точно", ParsedPhraseType.Accept)]
+        [InlineData("именно", ParsedPhraseType.Accept)]
+        [InlineData("верно", ParsedPhraseType.Accept)]
+        [InlineData("хочу", ParsedPhraseType.Accept)]
+        [InlineData("давай", ParsedPhraseType.Accept)]
+        [InlineData("ну давай", ParsedPhraseType.Accept)]
+        [InlineData("нет", ParsedPhraseType.Decline)]
+        [InlineData("не надо", ParsedPhraseType.Decline)]
+        [InlineData("отмена", ParsedPhraseType.Cancel)]
+        [InlineData("отмени", ParsedPhraseType.Cancel)]
+        [InlineData("отменяй", ParsedPhraseType.Cancel)]
+        [InlineData("отменяю", ParsedPhraseType.Cancel)]
+        [InlineData("отменить", ParsedPhraseType.Cancel)]
+        [InlineData("очисти", ParsedPhraseType.Clear)]
+        [InlineData("очисти список", ParsedPhraseType.Clear)]
+        [InlineData("очисть список", ParsedPhraseType.Clear)]
+        [InlineData("очисть отчёт", ParsedPhraseType.Clear)]
+        [InlineData("очисть опись", ParsedPhraseType.Clear)]
+        [InlineData("очисть учёт", ParsedPhraseType.Clear)]
+        [InlineData("очистить всё", ParsedPhraseType.Clear)]
+        [InlineData("вычисти", ParsedPhraseType.Clear)]
+        [InlineData("помоги", ParsedPhraseType.Help)]
+        [InlineData("помогите", ParsedPhraseType.Help)]
+        [InlineData("помощь", ParsedPhraseType.Help)]
+        [InlineData("хелп", ParsedPhraseType.Help)]
+        [InlineData("спасай", ParsedPhraseType.Help)]
+        [InlineData("спасайте", ParsedPhraseType.Help)]
+        [InlineData("выручай", ParsedPhraseType.Help)]
+        [InlineData("выручайте", ParsedPhraseType.Help)]
+        [InlineData("что ты умеешь", ParsedPhraseType.Help)]
+        [InlineData("что ты можешь", ParsedPhraseType.Help)]
+        [InlineData("выход", ParsedPhraseType.Exit)]
+        [InlineData("пока", ParsedPhraseType.Exit)]
+        [InlineData("хватит", ParsedPhraseType.Exit)]
+        [InlineData("прощай", ParsedPhraseType.Exit)]
+        [InlineData("давай прощай", ParsedPhraseType.Exit)]
+        [InlineData("погода спб", ParsedPhraseType.UnknownCommand)]
+        [InlineData("что делаешь", ParsedPhraseType.UnknownCommand)]
+        [InlineData("люблю тесты", ParsedPhraseType.UnknownCommand)]
+        [InlineData("добавь", ParsedPhraseType.UnknownCommand)]
+        [InlineData("удали", ParsedPhraseType.UnknownCommand)]
+        [InlineData("отправляй somemail@yaru", ParsedPhraseType.UnknownCommand)]
+        public void AnotherCommandParsing(string input, ParsedPhraseType phraseType)
         {
-            ProcessingCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
-            Assert.Equal(command, parsedCommand.Command);
+            Assert.Equal(phraseType, parsedCommand.Type);
             Assert.Null(parsedCommand.Data);
         }
 
         [Theory]
-        [InlineData("Отправь на somemail@ya.ru", InputProcessingCommand.SendMailTo, "somemail@ya.ru")]
-        [InlineData("вышли на some.mai-l@ya.ru", InputProcessingCommand.SendMailTo, "some.mai-l@ya.ru")]
-        [InlineData("somem333ail@ya.ru", InputProcessingCommand.AddMail, "somem333ail@ya.ru")]
-        [InlineData("Удали мыло", InputProcessingCommand.DeleteMail, null)]
-        [InlineData("Отправь на почту", InputProcessingCommand.SendMail, null)]
-        [InlineData("Вышли на почту", InputProcessingCommand.SendMail, null)]
-        public void MailSentParsingTest(string input, InputProcessingCommand command, string expectedEmail)
+        [InlineData("Отправь на somemail@ya.ru", ParsedPhraseType.SendMail, "somemail@ya.ru")]
+        [InlineData("вышли на some.mai-l@ya.ru", ParsedPhraseType.SendMail, "some.mai-l@ya.ru")]
+        [InlineData("somem333ail@ya.ru", ParsedPhraseType.Mail, "somem333ail@ya.ru")]
+        [InlineData("Удали мыло", ParsedPhraseType.DeleteMail, null)]
+        [InlineData("Отправь на почту", ParsedPhraseType.SendMail, null)]
+        [InlineData("Вышли на почту", ParsedPhraseType.SendMail, null)]
+        public void MailSentParsingTest(string input, ParsedPhraseType phraseType, string expectedEmail)
         {
             var parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
-            Assert.Equal(command, parsedCommand.Command);
+            Assert.Equal(phraseType, parsedCommand.Type);
 
             var email = parsedCommand.Data as string;
 
@@ -182,12 +212,12 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь предмет -1,1 кг", "ru-RU", -1.1)]
         [InlineData("добавь предмет 0.1 кг", "en-US", 0.1)]
         [InlineData("добавь предмет -1.1 кг", "en-US", -1.1)]
-        public void CommandParsingCultureTest(string input, string culture, double entryCount)
+        public void CommandParsingCultureTest(string input, string culture, double entryQuantity)
         {
             var parsedCommand = _parser.ParseInput(input, new CultureInfo(culture));
-            var data = parsedCommand.Data as SingleEntry;
+            var data = parsedCommand.Data as ParsedEntry;
 
-            Assert.Equal(entryCount, data?.Count);
+            Assert.Equal(entryQuantity, data?.Quantity);
         }
     }
 }
