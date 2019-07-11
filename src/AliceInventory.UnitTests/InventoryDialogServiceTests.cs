@@ -11,7 +11,7 @@ namespace AliceInventory.UnitTests
         private const double _Tolerance = 0.0001d;
 
         [Fact]
-        public void ProcessAddNewEntryTest()
+        public void ProcessAddNewEntry()
         {
             var userId = "user1";
             var entryName = "яблоки";
