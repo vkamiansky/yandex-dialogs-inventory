@@ -307,10 +307,15 @@ namespace AliceInventory.Logic
                 if (dbEntry is null)
                     return new EntryNotFoundInDatabaseError(entry.Name, entry.UnitOfMeasure);
 
-                if (dbEntry.Quantity < entry.Quantity)
+                var updateValue = dbEntry.Quantity - entry.Quantity;
+
+                if (updateValue < 0)
                     return new NotEnoughEntryToDeleteError(entry.Name, entry.Quantity, dbEntry.Quantity);
 
-                storage.UpdateEntry(dbEntry.Id, dbEntry.Quantity - entry.Quantity);
+                if (updateValue == 0)
+                    storage.DeleteEntry(dbEntry.Id);
+                else
+                    storage.UpdateEntry(dbEntry.Id, dbEntry.Quantity - entry.Quantity);
 
                 return new ProcessingResult(ProcessingResultType.Deleted, entry);
             }

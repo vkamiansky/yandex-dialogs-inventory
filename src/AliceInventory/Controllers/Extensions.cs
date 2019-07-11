@@ -26,7 +26,7 @@ namespace AliceInventory.Controllers
                 Environment.NewLine,
                 entries
                     .GroupBy(x => x.Name)
-                    .Select(x => $"{x.Key}: {string.Join(",", x.Select(y => $"{y.Quantity} {y.UnitOfMeasure}"))}"));
+                    .Select(x => $"{x.Key}: {string.Join(",", x.Select(y => $"{y.Quantity} {y.UnitOfMeasure.ToText()}"))}"));
         }
     }
 }
