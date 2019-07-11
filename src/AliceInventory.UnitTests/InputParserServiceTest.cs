@@ -196,6 +196,12 @@ namespace AliceInventory.UnitTests
         [InlineData("Удали мыло", ParsedPhraseType.DeleteMail, null)]
         [InlineData("Отправь на почту", ParsedPhraseType.SendMail, null)]
         [InlineData("Вышли на почту", ParsedPhraseType.SendMail, null)]
+        [InlineData("отправь список на somemail@yahoo.com", ParsedPhraseType.SendMail, "somemail@yahoo.com")]
+        [InlineData("отправь отчет на мою почту", ParsedPhraseType.SendMail, null)]
+        [InlineData("перешли на мою почту", ParsedPhraseType.SendMail, null)]
+        [InlineData("отправь список somemail@yahoo.com", ParsedPhraseType.SendMail, "somemail@yahoo.com")]
+        [InlineData("отправька somemail@yahoo.com", ParsedPhraseType.SendMail, "somemail@yahoo.com")]
+        [InlineData("перешли somemail@yahoo.com", ParsedPhraseType.SendMail, "somemail@yahoo.com")]
         public void MailSentParsingTest(string input, ParsedPhraseType phraseType, string expectedEmail)
         {
             var parsedCommand = _parser.ParseInput(input, _defaultCulture);

@@ -8,7 +8,7 @@ namespace AliceInventory.UnitTests
 {
     public class InventoryDialogServiceTests
     {
-        private const double _Tolerance = 0.0001d;
+        private const double TOLERANCE = 0.01d;
 
         [Fact]
         public void ProcessAddNewEntry()
@@ -44,7 +44,7 @@ namespace AliceInventory.UnitTests
             storageMock.Setup(x => x.CreateEntry(
                 It.Is<string>(y => y == userId),
                 It.Is<string>(y => y == entryName),
-                It.Is<double>(y => Math.Abs(y - entryQuantity) < _Tolerance),
+                It.Is<double>(y => Math.Abs(y - entryQuantity) < TOLERANCE),
                 It.Is<Data.UnitOfMeasure>(y => y == dataUnitOfMeasure)))
                 .Returns(entryId);
 
@@ -302,7 +302,7 @@ namespace AliceInventory.UnitTests
             // Accepting request for entry update
             storageMock.Setup(x => x.UpdateEntry(
                 It.Is<int>(y => y == storageEntryId),
-                It.Is<double>(y => Math.Abs(y - updateQuantity) < _Tolerance)));
+                It.Is<double>(y => Math.Abs(y - updateQuantity) < TOLERANCE)));
 
             var russianCulture = new CultureInfo("ru-RU");
             // The entry as recognized by the parser
