@@ -36,9 +36,11 @@ namespace AliceInventory.UnitTests
             };
 
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
+            // Returning all the user's entries
             storageMock.Setup(x => x.ReadAllEntries(
                 It.Is<string>(y => y == userId)))
                 .Returns(entries);
+            // Creating a new entry and returning its ID
             storageMock.Setup(x => x.CreateEntry(
                 It.Is<string>(y => y == userId),
                 It.Is<string>(y => y == entryName),
@@ -48,6 +50,7 @@ namespace AliceInventory.UnitTests
 
             var userInput = "добавь яблоки 12,123 кг";
             var russianCulture = new CultureInfo("ru-RU");
+            // The command as returned from the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
                 Type = Logic.Parser.ParsedPhraseType.Add,
@@ -66,9 +69,11 @@ namespace AliceInventory.UnitTests
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
+            // Returning the last successful operation result from the cache
             cacheMock.Setup(x => x.Get(
                 It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult());
+            // Saving the newly produced successful result to the cache
             cacheMock.Setup(x => x.Set(
                 It.Is<string>(y => y == userId),
                 It.Is<Logic.ProcessingResult>(y =>
@@ -85,12 +90,14 @@ namespace AliceInventory.UnitTests
 
             var result = sut.ProcessInput(userId, userInput, russianCulture);
 
+            // Checking the result
             var resultEntry = result.Data as Logic.Entry;
             Assert.Equal(Logic.ProcessingResultType.Added, result.Type);
             Assert.Equal(entryName, resultEntry.Name);
             Assert.Equal(entryQuantity, resultEntry.Quantity);
             Assert.Equal(Logic.UnitOfMeasure.Kg, resultEntry.UnitOfMeasure);
 
+            // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
                 It.IsAny<string>(),
                 It.IsAny<CultureInfo>()), Times.Once);
@@ -462,7 +469,7 @@ namespace AliceInventory.UnitTests
 
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
 
-            // Returning entries from storage
+            // Deleting all the user's entries from storage
             storageMock.Setup(x => x.DeleteAllEntries(
                 It.Is<string>(y => y == userId)));
 
@@ -629,10 +636,11 @@ namespace AliceInventory.UnitTests
 
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
 
-            // Returning entries from storage
+            // Saving the user's email
             storageMock.Setup(x => x.SetUserMail(
                 It.Is<string>(y => y == userId),
                 It.Is<string>(y => y == emailAddress)));
+            // Returning entries from storage
             storageMock.Setup(x => x.ReadAllEntries(
                 It.Is<string>(y => y == userId)))
                 .Returns(entries);
@@ -665,7 +673,7 @@ namespace AliceInventory.UnitTests
                 && y.Data.ToString() == emailAddress)));
 
             var emailerMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
-            // Send email with read entries
+            // Send an email with all the user's entries
             emailerMock.Setup(x => x.SendListAsync(
                 It.Is<string>(y => y == emailAddress),
                 It.Is<Logic.Entry[]>(y => y.Zip(resultEntries, (z1, z2) =>
@@ -761,7 +769,7 @@ namespace AliceInventory.UnitTests
             storageMock.Setup(x => x.ReadUserMail(
                 It.Is<string>(y => y == userId)))
                 .Returns(emailAddress);
-            // Returning entries from storage
+            // Returning entries from the storage
             storageMock.Setup(x => x.ReadAllEntries(
                 It.Is<string>(y => y == userId)))
                 .Returns(entries);
@@ -792,7 +800,7 @@ namespace AliceInventory.UnitTests
                 y.Type == resultType)));
 
             var emailerMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
-            // Send email with read entries
+            // Send an email with all the user's entries
             emailerMock.Setup(x => x.SendListAsync(
                 It.Is<string>(y => y == emailAddress),
                 It.Is<Logic.Entry[]>(y => y.Zip(resultEntries, (z1, z2) =>
@@ -842,7 +850,7 @@ namespace AliceInventory.UnitTests
 
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
 
-            // No email stored for user
+            // A new email address is stored
             storageMock.Setup(x => x.SetUserMail(
                 It.Is<string>(y => y == userId),
                 It.Is<string>(y => y == emailAddress)));
@@ -911,7 +919,7 @@ namespace AliceInventory.UnitTests
 
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
 
-            // No email stored for user
+            // The deleted email address is returned as a result
             storageMock.Setup(x => x.DeleteUserMail(
                 It.Is<string>(y => y == userId)))
                 .Returns(emailAddress);
