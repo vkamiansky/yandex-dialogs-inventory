@@ -101,7 +101,7 @@ namespace AliceInventory.UnitTests
         [InlineData("удали яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("ещё удали яблок 1 килограмм", "яблок", 1, UnitOfMeasure.Kg)]
         [InlineData("убери 2 килограмм яблок", "яблок", 2, UnitOfMeasure.Kg)]
-        [InlineData("убери 3 яблока", "яблока", 3, null)]
+        [InlineData("убери-ка 3 яблока", "яблока", 3, null)]
         [InlineData("убери ещё 3 яблока", "яблока", 3, null)]
         [InlineData("убери яблок 5", "яблок", 5, null)]
         [InlineData("убери молоко", "молоко", null, null)]
@@ -200,7 +200,7 @@ namespace AliceInventory.UnitTests
         [InlineData("отправь отчет на мою почту", ParsedPhraseType.SendMail, null)]
         [InlineData("перешли на мою почту", ParsedPhraseType.SendMail, null)]
         [InlineData("отправь список somemail@yahoo.com", ParsedPhraseType.SendMail, "somemail@yahoo.com")]
-        [InlineData("отправька somemail@yahoo.com", ParsedPhraseType.SendMail, "somemail@yahoo.com")]
+        [InlineData("отправь-ка somemail@yahoo.com", ParsedPhraseType.SendMail, "somemail@yahoo.com")]
         [InlineData("перешли somemail@yahoo.com", ParsedPhraseType.SendMail, "somemail@yahoo.com")]
         public void MailSentParsingTest(string input, ParsedPhraseType phraseType, string expectedEmail)
         {

@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AliceInventory.Logic.Parser
 {
@@ -14,9 +11,9 @@ namespace AliceInventory.Logic.Parser
         public const string EmailGroupName = "g4";
 
         public const string AddWord =
-            @"(?:(?:за|в|над?|п(?:о|ри)|до)?(?:плюс|с(?:оедин)|ки|лож|мест|бав)(?:н)?(?:л|им?|ь)?(?:ай|яй|ть|те|ка)?)";
+            @"(?:(?:за|в|над?|п(?:о|ри)|до)?(?:плюс|с(?:оедин)|ки|лож|мест|бав)(?:н)?(?:л|им?|ь)?(?:ай|яй|ть|те|\-ка)?)";
         public const string DeleteWord =
-            @"(?:(?:вы|у)?(?:дал|бер|брос|бра|тащ|сотр|изъя|ничтож|стер|стир|таск)(?:ива|ова|ева|ыва)?(?:ай|у|е|и|й|ь)?(?:ть)?(?:те|ка)?)";
+            @"(?:(?:вы|у)?(?:дал|бер|брос|бра|тащ|сотр|изъя|ничтож|стер|стир|таск)(?:ива|ова|ева|ыва)?(?:ай|у|е|и|й|ь)?(?:ть)?(?:те|\-ка)?)";
         public const string ClearWord =
             @"(?:(?:о|вы)чист(?:и|(?:ит)?ь))";
         public const string HelloPattern =
@@ -34,7 +31,7 @@ namespace AliceInventory.Logic.Parser
         public const string ReadWord =
             @"(?:пока(?:жи|зать)|выведи|(?:за|про)?читай)";
         public const string SendWord =
-            @"(?:(?:отправ(?:ь(?:те)?|ить|ляй)|вы(?:шли|слать)|(?:пере|по)(?:шли|слать)|ски(?:дывай|нь))(?:ка)?)";
+            @"(?:(?:отправ(?:ь(?:те)?|ить|ляй)|вы(?:шли|слать)|(?:пере|по)(?:шли|слать)|ски(?:дывай|нь))(?:\-ка)?)";
         public const string ExitWord =
             @"(?:п(?:ока|рощай)|выход|хватит)";
 
