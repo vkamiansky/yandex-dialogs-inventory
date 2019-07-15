@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace AliceInventory.Logic.Parser
+﻿namespace AliceInventory.Logic.Parser
 {
     public enum ParsedPhraseType
     {

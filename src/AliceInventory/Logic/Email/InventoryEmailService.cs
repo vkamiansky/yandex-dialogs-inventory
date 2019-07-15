@@ -1,26 +1,23 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MimeKit;
 
 namespace AliceInventory.Logic.Email
 {
     public class InventoryEmailService : IInventoryEmailService
     {
-        private IConfigurationService Configuration { get; set; }
-        
         public InventoryEmailService(IConfigurationService config)
         {
             Configuration = config;
         }
 
-        public async void SendListAsync(string email, Logic.Entry[] entries)
+        private IConfigurationService Configuration { get; }
+
+        public async void SendListAsync(string email, Entry[] entries)
         {
             try
             {
-                var host = new EmailHost(await Configuration.GetMailingSmtpHost(), await Configuration.GetMailingSmtpPort());
+                var host = new EmailHost(await Configuration.GetMailingSmtpHost(),
+                    await Configuration.GetMailingSmtpPort());
                 var login = await Configuration.GetMailingAccountLogin();
                 var password = await Configuration.GetMailingAccountPassword();
                 var message = CreateListMessage(email, login, entries);
@@ -32,7 +29,7 @@ namespace AliceInventory.Logic.Email
             }
         }
 
-        private MimeMessage CreateListMessage(string receiverEmail, string senderEmail, Logic.Entry[] entries)
+        private MimeMessage CreateListMessage(string receiverEmail, string senderEmail, Entry[] entries)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress("Навык Алисы - Учёт", senderEmail));
@@ -42,7 +39,7 @@ namespace AliceInventory.Logic.Email
             return emailMessage;
         }
 
-        private MimeEntity CreateHtmlBodyFromList(Logic.Entry[] entries)
+        private MimeEntity CreateHtmlBodyFromList(Entry[] entries)
         {
             var bodyBuilder = new BodyBuilder {HtmlBody = entries.ToHtml()};
             return bodyBuilder.ToMessageBody();

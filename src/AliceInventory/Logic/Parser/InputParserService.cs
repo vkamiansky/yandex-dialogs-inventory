@@ -1,21 +1,17 @@
-using System;
 using System.Globalization;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace AliceInventory.Logic.Parser
 {
     public class InputParserService : IInputParserService
     {
         // Order by priority
-        private static readonly CommandTemplate[] CommandsTemplates = 
+        private static readonly CommandTemplate[] CommandsTemplates =
         {
             //Email
             new CommandTemplate(ParsedPhraseType.SendMail,
                 RegexHelper.SendWord, RegexHelper.MailWord),
             new CommandTemplateWithEmail(ParsedPhraseType.SendMail,
-                RegexHelper.SendWord, RegexHelper.Email), 
+                RegexHelper.SendWord, RegexHelper.Email),
             new CommandTemplate(ParsedPhraseType.SendMail,
                 RegexHelper.SendWord, "на", RegexHelper.MailWord),
             new CommandTemplate(ParsedPhraseType.SendMail,
@@ -66,7 +62,7 @@ namespace AliceInventory.Logic.Parser
                 RegexHelper.DeleteWord, RegexHelper.EntryUnit, RegexHelper.EntryName),
             new CommandTemplateWithEntry(ParsedPhraseType.Delete,
                 RegexHelper.DeleteWord, RegexHelper.EntryName),
-            
+
             //More
             new CommandTemplateWithEntry(ParsedPhraseType.More,
                 RegexHelper.MoreWord, RegexHelper.EntryQuantity),
@@ -115,29 +111,25 @@ namespace AliceInventory.Logic.Parser
             new CommandTemplateWithEntry(ParsedPhraseType.Add,
                 RegexHelper.EntryName, RegexHelper.EntryQuantity, RegexHelper.EntryUnit),
             new CommandTemplateWithEntry(ParsedPhraseType.Add,
-                RegexHelper.EntryQuantity, RegexHelper.EntryName),
+                RegexHelper.EntryQuantity, RegexHelper.EntryName)
         };
 
         public ParsedCommand ParseInput(string input, CultureInfo cultureInfo)
         {
             if (string.IsNullOrEmpty(input))
-                return new ParsedCommand() { Type = ParsedPhraseType.Hello};
+                return new ParsedCommand {Type = ParsedPhraseType.Hello};
 
             input = NormalizeString(input, cultureInfo);
 
             foreach (var template in CommandsTemplates)
-            {
                 if (template.TryParse(input, out var data, cultureInfo))
-                {
-                    return new ParsedCommand()
+                    return new ParsedCommand
                     {
                         Type = template.PhraseType,
                         Data = data
                     };
-                }
-            }
 
-            return new ParsedCommand()
+            return new ParsedCommand
             {
                 Type = ParsedPhraseType.UnknownCommand
             };

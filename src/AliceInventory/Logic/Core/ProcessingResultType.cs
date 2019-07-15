@@ -1,5 +1,3 @@
-using System;
-
 namespace AliceInventory.Logic
 {
     public enum ProcessingResultType
@@ -20,6 +18,6 @@ namespace AliceInventory.Logic
         HelpRequested,
         Error,
         Exception,
-        ExitRequested,
+        ExitRequested
     }
 }

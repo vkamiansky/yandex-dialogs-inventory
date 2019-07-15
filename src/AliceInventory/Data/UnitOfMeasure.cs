@@ -4,6 +4,6 @@ namespace AliceInventory.Data
     {
         Unit = 1,
         Kg = 2,
-        L = 3,
+        L = 3
     }
 }

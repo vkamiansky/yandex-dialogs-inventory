@@ -1,6 +1,6 @@
 using System;
-using System.Globalization;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AliceInventory.Data;
 using AliceInventory.Logic.Cache;
@@ -13,26 +13,9 @@ namespace AliceInventory.Logic
 {
     public class InventoryDialogService : IInventoryDialogService
     {
-        private delegate ProcessingResult CommandProcessingMethod(Services services, ProcessingArgs args);
-
-        private class Services
-        {
-            public IUserDataStorage Storage { get; set; }
-            public IInputParserService Parser { get; set; }
-            public IResultCache ResultCache { get; set; }
-            public IInventoryEmailService EmailService { get; set; }
-        }
-
-        private class ProcessingArgs
-        {
-            public ProcessingResult State { get; set; }
-            public object CommandData { get; set; }
-            public string UserId { get; set; }
-        }
-
         // A storage link is passed separately
         private readonly Dictionary<ParsedPhraseType, CommandProcessingMethod> _commandProcessingMethods
-            = new Dictionary<ParsedPhraseType, CommandProcessingMethod>()
+            = new Dictionary<ParsedPhraseType, CommandProcessingMethod>
             {
                 [ParsedPhraseType.Hello] = ProcessGreeting,
                 [ParsedPhraseType.Add] = ProcessAdd,
@@ -48,12 +31,13 @@ namespace AliceInventory.Logic
                 [ParsedPhraseType.DeleteMail] = ProcessDeleteMail,
                 [ParsedPhraseType.Help] = ProcessHelp,
                 [ParsedPhraseType.Exit] = ProcessExit,
-                [ParsedPhraseType.UnknownCommand] = ProcessUnknownCommand,
+                [ParsedPhraseType.UnknownCommand] = ProcessUnknownCommand
             };
 
         private readonly Services _services;
 
-        public InventoryDialogService(IUserDataStorage storage, IInputParserService parser, IResultCache resultCache, IInventoryEmailService emailService)
+        public InventoryDialogService(IUserDataStorage storage, IInputParserService parser, IResultCache resultCache,
+            IInventoryEmailService emailService)
         {
             _services = new Services
             {
@@ -66,7 +50,7 @@ namespace AliceInventory.Logic
 
         public ProcessingResult ProcessInput(string userId, string input, CultureInfo cultureInfo)
         {
-            ParsedCommand command = _services.Parser.ParseInput(input, cultureInfo);
+            var command = _services.Parser.ParseInput(input, cultureInfo);
 
             if (!_commandProcessingMethods.ContainsKey(command.Type))
                 return new ProcessingResult(new KeyNotFoundException());
@@ -136,30 +120,30 @@ namespace AliceInventory.Logic
             switch (state.Type)
             {
                 case ProcessingResultType.Added:
-                    {
-                        if (!(state.Data is Entry stateEntry))
-                            return new UnexpectedTypeException(state.Data, typeof(Entry));
+                {
+                    if (!(state.Data is Entry stateEntry))
+                        return new UnexpectedTypeException(state.Data, typeof(Entry));
 
-                        var result = SubtractMaterial(services.Storage, args.UserId, stateEntry);
+                    var result = SubtractMaterial(services.Storage, args.UserId, stateEntry);
 
-                        if (result.Type != ProcessingResultType.Deleted)
-                            return result;
+                    if (result.Type != ProcessingResultType.Deleted)
+                        return result;
 
-                        return new ProcessingResult(ProcessingResultType.AddCanceled, stateEntry);
-                    }
+                    return new ProcessingResult(ProcessingResultType.AddCanceled, stateEntry);
+                }
 
                 case ProcessingResultType.Deleted:
-                    {
-                        if (!(state.Data is Entry stateEntry))
-                            return new UnexpectedTypeException(state.Data, typeof(Entry));
+                {
+                    if (!(state.Data is Entry stateEntry))
+                        return new UnexpectedTypeException(state.Data, typeof(Entry));
 
-                        var result = AddMaterial(services.Storage, args.UserId, stateEntry);
+                    var result = AddMaterial(services.Storage, args.UserId, stateEntry);
 
-                        if (result.Type != ProcessingResultType.Added)
-                            return result;
+                    if (result.Type != ProcessingResultType.Added)
+                        return result;
 
-                        return new ProcessingResult(ProcessingResultType.DeleteCanceled, stateEntry);
-                    }
+                    return new ProcessingResult(ProcessingResultType.DeleteCanceled, stateEntry);
+                }
 
                 default:
                     return ProcessingResultType.Error;
@@ -186,7 +170,9 @@ namespace AliceInventory.Logic
                     commandEntry.Unit = stateEntry.UnitOfMeasure;
             }
             else
+            {
                 effectiveStateType = ProcessingResultType.Added;
+            }
 
             var entry = ConvertToEntry(commandEntry);
             if (entry.Name == null)
@@ -279,13 +265,9 @@ namespace AliceInventory.Logic
                     e.Name == entry.Name && e.UnitOfMeasure == entry.UnitOfMeasure.ToData());
 
                 if (dbEntry is null)
-                {
                     storage.CreateEntry(userId, entry.Name, entry.Quantity, entry.UnitOfMeasure.ToData());
-                }
                 else
-                {
                     storage.UpdateEntry(dbEntry.Id, dbEntry.Quantity + entry.Quantity);
-                }
 
                 return new ProcessingResult(ProcessingResultType.Added, entry);
             }
@@ -327,12 +309,29 @@ namespace AliceInventory.Logic
 
         private static Entry ConvertToEntry(ParsedEntry parsedEntry)
         {
-            return new Entry()
+            return new Entry
             {
                 Name = parsedEntry.Name,
                 Quantity = parsedEntry.Quantity ?? 1,
                 UnitOfMeasure = parsedEntry.Unit ?? UnitOfMeasure.Unit
             };
+        }
+
+        private delegate ProcessingResult CommandProcessingMethod(Services services, ProcessingArgs args);
+
+        private class Services
+        {
+            public IUserDataStorage Storage { get; set; }
+            public IInputParserService Parser { get; set; }
+            public IResultCache ResultCache { get; set; }
+            public IInventoryEmailService EmailService { get; set; }
+        }
+
+        private class ProcessingArgs
+        {
+            public ProcessingResult State { get; set; }
+            public object CommandData { get; set; }
+            public string UserId { get; set; }
         }
     }
 }

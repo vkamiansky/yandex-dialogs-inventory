@@ -1,22 +1,40 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VaultSharp;
 using VaultSharp.V1.AuthMethods;
 using VaultSharp.V1.AuthMethods.Token;
-using VaultSharp.V1.SecretsEngines;
-using VaultSharp.V1.Commons;
 
 namespace AliceInventory.Logic
 {
     public class ConfigurationService : IConfigurationService
     {
+        private readonly IVaultClient _VaultClient;
+        private readonly Exception _VaultClientError;
+
+        public ConfigurationService()
+        {
+            try
+            {
+                var secretToken = Environment.GetEnvironmentVariable("SECRET_TOKEN");
+                var secretIp = Environment.GetEnvironmentVariable("SECRET_IP");
+                var secretPort = Environment.GetEnvironmentVariable("SECRET_PORT");
+
+                IAuthMethodInfo authMethod = new TokenAuthMethodInfo(secretToken);
+                var vaultClientSettings = new VaultClientSettings($"http://{secretIp}:{secretPort}", authMethod);
+                _VaultClient = new VaultClient(vaultClientSettings);
+            }
+            catch (Exception e)
+            {
+                _VaultClientError = e;
+            }
+        }
+
         public async Task<string> GetMailingAccountLogin()
         {
             try
             {
-                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_login");
+                var secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_login");
                 return secret.Data.Data["CURRENT"] as string;
             }
             catch
@@ -29,7 +47,7 @@ namespace AliceInventory.Logic
         {
             try
             {
-                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_password");
+                var secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_password");
                 return secret.Data.Data["CURRENT"] as string;
             }
             catch
@@ -42,7 +60,7 @@ namespace AliceInventory.Logic
         {
             try
             {
-                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_address");
+                var secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_address");
                 return secret.Data.Data["CURRENT"] as string;
             }
             catch
@@ -55,7 +73,7 @@ namespace AliceInventory.Logic
         {
             try
             {
-                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_port");
+                var secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_port");
                 var stringPort = secret.Data.Data["CURRENT"] as string;
                 return int.Parse(stringPort);
             }
@@ -65,26 +83,6 @@ namespace AliceInventory.Logic
             }
         }
 
-        public ConfigurationService()
-        {
-            try
-            {
-                string secretToken = Environment.GetEnvironmentVariable("SECRET_TOKEN");
-                string secretIp = Environment.GetEnvironmentVariable("SECRET_IP");
-                string secretPort = Environment.GetEnvironmentVariable("SECRET_PORT");
-
-                IAuthMethodInfo authMethod = new TokenAuthMethodInfo(secretToken);
-                var vaultClientSettings = new VaultClientSettings($"http://{secretIp}:{secretPort}", authMethod);
-                _VaultClient = new VaultClient(vaultClientSettings);
-            }
-            catch (Exception e)
-            {
-                _VaultClientError = e;
-            }
-        }
-        private IVaultClient _VaultClient;
-        private Exception _VaultClientError;
-
         public async Task<string> GetIsConfigured()
         {
             try
@@ -92,17 +90,17 @@ namespace AliceInventory.Logic
                 if (_VaultClient == null)
                     return _VaultClientError.StackTrace;
 
-                Secret<SecretData> smtpAddress = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_address");
-                Secret<SecretData> smtpPort = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_port");
-                Secret<SecretData> emailLogin = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_login");
-                Secret<SecretData> emailPassword = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_password");
-                var configValues = new[] { smtpAddress, smtpPort, emailLogin, emailPassword };
+                var smtpAddress = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_address");
+                var smtpPort = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_port");
+                var emailLogin = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_login");
+                var emailPassword = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_password");
+                var configValues = new[] {smtpAddress, smtpPort, emailLogin, emailPassword};
                 var result = configValues.Any(x => !x.Data.Data.ContainsKey("CURRENT"));
                 return result ? "Vault value empty" : string.Empty;
             }
             catch (Exception e)
             {
-                return new String(e.StackTrace + "\n" + _VaultClientError?.StackTrace ?? string.Empty);
+                return new string(e.StackTrace + "\n" + _VaultClientError?.StackTrace ?? string.Empty);
             }
         }
     }

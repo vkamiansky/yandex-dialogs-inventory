@@ -1,8 +1,7 @@
-using System;
 using System.Globalization;
-using Xunit;
 using AliceInventory.Logic;
 using AliceInventory.Logic.Parser;
+using Xunit;
 
 namespace AliceInventory.UnitTests
 {
@@ -10,6 +9,7 @@ namespace AliceInventory.UnitTests
     {
         private readonly CultureInfo _defaultCulture = new CultureInfo("ru-RU");
         private readonly InputParserService _parser;
+
         public InventoryParserServiceTests()
         {
             _parser = new InputParserService();
@@ -26,8 +26,8 @@ namespace AliceInventory.UnitTests
         [InlineData("хеллоу")]
         public void CommandParsingSayHelloTest(string input)
         {
-            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
-            
+            var parsedCommand = _parser.ParseInput(input, _defaultCulture);
+
             Assert.Equal(ParsedPhraseType.Hello, parsedCommand.Type);
             Assert.Null(parsedCommand.Data);
         }
@@ -44,9 +44,10 @@ namespace AliceInventory.UnitTests
         [InlineData("6 яблок", "яблок", 6, null)]
         [InlineData("Килограмм яблок", "яблок", null, UnitOfMeasure.Kg)]
         [InlineData("закинь яблоко", "яблоко", null, null)]
-        public void AddCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
+        public void AddCommandParsing(string input, string entryName, double? entryQuantity,
+            UnitOfMeasure? entryUnitOfMeasure)
         {
-            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+            var parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
             Assert.Equal(ParsedPhraseType.Add, parsedCommand.Type);
 
@@ -64,9 +65,10 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь молоко 1 литр 5 штук", "молоко 1 литр", 5, UnitOfMeasure.Unit)]
         [InlineData("ну давай добавим 5 кг яблок", "яблок", 5, UnitOfMeasure.Kg)]
         [InlineData("добавь яблок 4", "яблок", 4, null)]
-        public void SpecificAddCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
+        public void SpecificAddCommandParsing(string input, string entryName, double? entryQuantity,
+            UnitOfMeasure? entryUnitOfMeasure)
         {
-            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+            var parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
             Assert.Equal(ParsedPhraseType.Add, parsedCommand.Type);
 
@@ -84,9 +86,10 @@ namespace AliceInventory.UnitTests
         [InlineData("ещё молоко 1 литр 5 штук", "молоко 1 литр", 5, UnitOfMeasure.Unit)]
         [InlineData("ну ещё 5 кг яблок", "яблок", 5, UnitOfMeasure.Kg)]
         [InlineData("ещё яблок 4", "яблок", 4, null)]
-        public void MoreCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
+        public void MoreCommandParsing(string input, string entryName, double? entryQuantity,
+            UnitOfMeasure? entryUnitOfMeasure)
         {
-            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+            var parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
             Assert.Equal(ParsedPhraseType.More, parsedCommand.Type);
 
@@ -107,9 +110,10 @@ namespace AliceInventory.UnitTests
         [InlineData("убери молоко", "молоко", null, null)]
         [InlineData("давай убери яблок 3 штуки", "яблок", 3, UnitOfMeasure.Unit)]
         [InlineData("сотри килограмм яблок", "яблок", null, UnitOfMeasure.Kg)]
-        public void DeleteCommandParsing(string input, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
+        public void DeleteCommandParsing(string input, string entryName, double? entryQuantity,
+            UnitOfMeasure? entryUnitOfMeasure)
         {
-            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+            var parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
             Assert.Equal(ParsedPhraseType.Delete, parsedCommand.Type);
 
@@ -183,7 +187,7 @@ namespace AliceInventory.UnitTests
         [InlineData("отправляй somemail@yaru", ParsedPhraseType.UnknownCommand)]
         public void AnotherCommandParsing(string input, ParsedPhraseType phraseType)
         {
-            ParsedCommand parsedCommand = _parser.ParseInput(input, _defaultCulture);
+            var parsedCommand = _parser.ParseInput(input, _defaultCulture);
 
             Assert.Equal(phraseType, parsedCommand.Type);
             Assert.Null(parsedCommand.Data);

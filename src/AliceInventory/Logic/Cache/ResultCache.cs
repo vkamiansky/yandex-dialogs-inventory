@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 
 namespace AliceInventory.Logic.Cache
 {
     public class ResultCache : IResultCache
     {
-        private Dictionary<string, ProcessingResult> usersCommands;
+        private readonly Dictionary<string, ProcessingResult> usersCommands;
 
         public ResultCache()
         {

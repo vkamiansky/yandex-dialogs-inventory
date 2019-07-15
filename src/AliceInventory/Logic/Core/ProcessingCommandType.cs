@@ -1,5 +1,3 @@
-using System;
-
 namespace AliceInventory.Logic
 {
     public enum ProcessingCommandType

@@ -10,13 +10,14 @@ namespace AliceInventory.Logic.Parser
         private readonly int _quantityGroupId;
         private readonly int _unitGroupId;
 
-        public CommandTemplateWithEntry(ParsedPhraseType phraseType, params string[] regexParts) : base(phraseType, regexParts)
+        public CommandTemplateWithEntry(ParsedPhraseType phraseType, params string[] regexParts) : base(phraseType,
+            regexParts)
         {
-            var groups = this.Regex.GetGroupNames();
+            var groups = Regex.GetGroupNames();
 
             _nameGroupId = Array.IndexOf(groups, RegexHelper.EntryNameGroupName);
             _quantityGroupId = Array.IndexOf(groups, RegexHelper.EntryQuantityGroupName);
-            _unitGroupId= Array.IndexOf(groups, RegexHelper.EntryUnitGroupName);
+            _unitGroupId = Array.IndexOf(groups, RegexHelper.EntryUnitGroupName);
         }
 
         protected override object GetObject(Match match, CultureInfo cultureInfo)

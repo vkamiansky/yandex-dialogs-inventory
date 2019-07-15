@@ -4,9 +4,6 @@ namespace AliceInventory.Controllers.AliceResponseRender
 {
     public class TextAndSpeechTemplate
     {
-        public string TextTemplate { get; }
-        public string SpeechTemplate { get; }
-
         public TextAndSpeechTemplate(string text)
         {
             TextTemplate = text;
@@ -19,11 +16,14 @@ namespace AliceInventory.Controllers.AliceResponseRender
             SpeechTemplate = tts;
         }
 
+        public string TextTemplate { get; }
+        public string SpeechTemplate { get; }
+
         public string FormatText(IFormatProvider provider, params object[] parts)
         {
             return string.Format(provider, TextTemplate, parts);
         }
-        
+
         public string FormatSpeech(IFormatProvider provider, params object[] parts)
         {
             return string.Format(provider, SpeechTemplate, parts);

@@ -6,7 +6,6 @@ namespace AliceInventory.Logic.Email
 {
     public static class EmailHelper
     {
-
         public static async Task SendEmailAsync(EmailHost host, string login, string password, MimeMessage message)
         {
             using (var client = new SmtpClient())

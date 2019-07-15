@@ -1,14 +1,12 @@
-using System;
-using System.Linq;
 using System.Collections.Generic;
-using AliceInventory.Logic;
+using System.Linq;
 
 namespace AliceInventory.Data
 {
     public class DictionaryUserDataStorage : IUserDataStorage
     {
-        private static int _lastEntryId = 0;
-        private readonly HashSet<Data.Entry> _entries;
+        private static int _lastEntryId;
+        private readonly HashSet<Entry> _entries;
         private readonly Dictionary<string, string> _userEmails;
 
         public DictionaryUserDataStorage()
@@ -20,7 +18,7 @@ namespace AliceInventory.Data
 
         public int CreateEntry(string userId, string entryName, double quantity, UnitOfMeasure unit)
         {
-            var entry = new Data.Entry()
+            var entry = new Entry
             {
                 Id = _lastEntryId++,
                 Name = entryName,
@@ -42,7 +40,7 @@ namespace AliceInventory.Data
             _entries.First(e => e.Id == id).Quantity = quantity;
         }
 
-        public Data.Entry[] ReadAllEntries(string userId)
+        public Entry[] ReadAllEntries(string userId)
         {
             return _entries.Where(e => e.UserId == userId).ToArray();
         }

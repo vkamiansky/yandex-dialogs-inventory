@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using AliceInventory.Controllers;
 using AliceInventory.Controllers.AliceResponseRender;
@@ -11,32 +10,74 @@ namespace AliceInventory.UnitTests
 {
     public class AliceResponseRenderTest
     {
-        private readonly ITestOutputHelper _output;
-
         public AliceResponseRenderTest(ITestOutputHelper output)
         {
             _output = output;
         }
 
-        private static readonly Entry entry = new Entry()
+        private readonly ITestOutputHelper _output;
+
+        private static readonly Entry entry = new Entry
         {
             Name = "камни",
             Quantity = 4,
             UnitOfMeasure = UnitOfMeasure.Unit
         };
-        private static readonly Entry[] entries = new[]
+
+        private static readonly Entry[] entries =
         {
-            new Entry(){ Name = "яблоки", Quantity = 10, UnitOfMeasure = UnitOfMeasure.Kg },
-            new Entry(){ Name = "арбузы", Quantity = 10, UnitOfMeasure = UnitOfMeasure.L },
-            new Entry(){ Name = "молоко", Quantity = 10, UnitOfMeasure = UnitOfMeasure.Unit },
+            new Entry {Name = "яблоки", Quantity = 10, UnitOfMeasure = UnitOfMeasure.Kg},
+            new Entry {Name = "арбузы", Quantity = 10, UnitOfMeasure = UnitOfMeasure.L},
+            new Entry {Name = "молоко", Quantity = 10, UnitOfMeasure = UnitOfMeasure.Unit}
         };
 
-        private static readonly Session sessionExample = new Session()
+        private static readonly Session sessionExample = new Session
         {
             UserId = "123",
             SessionId = "321",
             MessageId = 1
         };
+
+        private void CheckAllResponseRenderings(ProcessingResult result, IReadOnlyList<string> expectedRenderings)
+        {
+            for (var i = 0; i < expectedRenderings.Count; i++)
+            {
+                var textNumber = i;
+                var jsonResponse =
+                    AliceResponseRendererHelper.CreateAliceResponse(result, sessionExample, x => textNumber);
+
+                var response = jsonResponse.Response;
+                _output.WriteLine($"Text: {response.Text}\n" +
+                                  $"Tts: {response.Tts}\n" +
+                                  $"Buttons: {response.Buttons.Length}\n" +
+                                  $"EndSession: {response.EndSession}\n");
+
+                var session = jsonResponse.Session;
+                Assert.Equal(sessionExample.UserId, session.UserId);
+                Assert.Equal(sessionExample.MessageId, session.MessageId);
+                Assert.Equal(sessionExample.SessionId, session.SessionId);
+
+                Assert.Equal(expectedRenderings[textNumber], response.Text);
+            }
+        }
+
+
+        [Fact]
+        public void EntryNotFoundInDatabaseErrorRendering()
+        {
+            var error = new EntryNotFoundInDatabaseError("яблоки", UnitOfMeasure.Kg);
+            var expectedRenderings = new[]
+            {
+                "Вы не добавляли яблоки в кг",
+                "У вас яблоки не храниться в кг",
+                "Не нашла яблоки в кг в вашем списке",
+                "Но в списке нет яблоки в кг",
+                "В списке нет яблоки в кг",
+                "Я не смогла найти ни одного кг яблоки в отчёте"
+            };
+
+            CheckAllResponseRenderings(error, expectedRenderings);
+        }
 
         // [Theory]
         // [InlineData(ProcessingResultType.Added)]
@@ -95,46 +136,6 @@ namespace AliceInventory.UnitTests
             };
 
             CheckAllResponseRenderings(error, expectedRenderings);
-        }
-
-
-        [Fact]
-        public void EntryNotFoundInDatabaseErrorRendering()
-        {
-            var error = new EntryNotFoundInDatabaseError("яблоки", Logic.UnitOfMeasure.Kg);
-            var expectedRenderings = new[]
-            {
-                "Вы не добавляли яблоки в кг",
-                "У вас яблоки не храниться в кг",
-                "Не нашла яблоки в кг в вашем списке",
-                "Но в списке нет яблоки в кг",
-                "В списке нет яблоки в кг",
-                "Я не смогла найти ни одного кг яблоки в отчёте",
-            };
-
-            CheckAllResponseRenderings(error, expectedRenderings);
-        }
-
-        private void CheckAllResponseRenderings(ProcessingResult result, IReadOnlyList<string> expectedRenderings)
-        {
-            for (var i = 0; i < expectedRenderings.Count; i++)
-            {
-                var textNumber = i;
-                var jsonResponse = AliceResponseRendererHelper.CreateAliceResponse(result, sessionExample, x => textNumber);
-
-                var response = jsonResponse.Response;
-                _output.WriteLine($"Text: {response.Text}\n" +
-                                  $"Tts: {response.Tts}\n" +
-                                  $"Buttons: {response.Buttons.Length}\n" +
-                                  $"EndSession: {response.EndSession}\n");
-
-                var session = jsonResponse.Session;
-                Assert.Equal(sessionExample.UserId, session.UserId);
-                Assert.Equal(sessionExample.MessageId, session.MessageId);
-                Assert.Equal(sessionExample.SessionId, session.SessionId);
-
-                Assert.Equal(expectedRenderings[textNumber], response.Text);
-            }
         }
     }
 }

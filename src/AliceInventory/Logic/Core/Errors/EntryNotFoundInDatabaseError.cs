@@ -2,14 +2,14 @@
 {
     public class EntryNotFoundInDatabaseError : Error
     {
-        public string EntryName { get; }
-        public Logic.UnitOfMeasure EntryUnit { get; }
-
-        public EntryNotFoundInDatabaseError(string name, Logic.UnitOfMeasure unit)
+        public EntryNotFoundInDatabaseError(string name, UnitOfMeasure unit)
             : base($"{name} not found in database")
         {
             EntryName = name;
             EntryUnit = unit;
         }
+
+        public string EntryName { get; }
+        public UnitOfMeasure EntryUnit { get; }
     }
 }
