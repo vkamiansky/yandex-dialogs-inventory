@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MimeKit;
 
 namespace AliceInventory.Logic.Email
@@ -10,7 +6,7 @@ namespace AliceInventory.Logic.Email
     public class InventoryEmailService : IInventoryEmailService
     {
         private IConfigurationService Configuration { get; set; }
-        
+
         public InventoryEmailService(IConfigurationService config)
         {
             Configuration = config;

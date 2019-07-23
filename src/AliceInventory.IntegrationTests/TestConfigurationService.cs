@@ -23,6 +23,16 @@ namespace AliceInventory.IntegrationTests
             return null;
         }
 
+        public Task<string> GetDbConnectionString()
+        {
+            return null;
+        }
+
+        public Task<string> GetDbName()
+        {
+            return null;
+        }
+
         public Task<int> GetMailingSmtpPort()
         {
             return Task.FromResult(0);

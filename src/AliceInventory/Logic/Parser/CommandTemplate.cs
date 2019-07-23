@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -32,6 +31,7 @@ namespace AliceInventory.Logic.Parser
         }
 
         public ParsedPhraseType PhraseType { get; }
+
         protected readonly Regex Regex;
 
         public CommandTemplate(ParsedPhraseType phraseType, params string[] regexParts)
@@ -50,7 +50,6 @@ namespace AliceInventory.Logic.Parser
                 data = null;
                 return false;
             }
-            
             data = GetObject(result, cultureInfo);
             return true;
         }

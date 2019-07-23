@@ -1,20 +1,13 @@
-using System;
 using Xunit;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using System.Net.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using System.Net.Http.Headers;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using AliceInventory.Controllers;
 using Newtonsoft.Json;
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AliceInventory.IntegrationTests
@@ -38,6 +31,8 @@ namespace AliceInventory.IntegrationTests
                 .ConfigureTestServices(services =>
                 {
                     services.AddSingleton<Logic.IConfigurationService, TestConfigurationService>();
+                    services.AddSingleton<Data.IUserDataStorage, Data.DictionaryUserDataStorage>();
+
                 }));
             _client = _server.CreateClient();
         }
