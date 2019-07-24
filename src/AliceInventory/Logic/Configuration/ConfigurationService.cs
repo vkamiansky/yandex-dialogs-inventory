@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VaultSharp;
 using VaultSharp.V1.AuthMethods;
 using VaultSharp.V1.AuthMethods.Token;
-using VaultSharp.V1.SecretsEngines;
 using VaultSharp.V1.Commons;
 
 namespace AliceInventory.Logic
@@ -65,6 +63,32 @@ namespace AliceInventory.Logic
             }
         }
 
+        public async Task<string> GetDbConnectionString()
+        {
+            try
+            {
+                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("mongo_connection_string");
+                return secret.Data.Data["CURRENT"] as string;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<string> GetDbName()
+        {
+            try
+            {
+                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("mongo_db_name");
+                return secret.Data.Data["CURRENT"] as string;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public ConfigurationService()
         {
             try
@@ -82,7 +106,9 @@ namespace AliceInventory.Logic
                 _VaultClientError = e;
             }
         }
+
         private IVaultClient _VaultClient;
+
         private Exception _VaultClientError;
 
         public async Task<string> GetIsConfigured()
@@ -96,7 +122,10 @@ namespace AliceInventory.Logic
                 Secret<SecretData> smtpPort = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("smtp_port");
                 Secret<SecretData> emailLogin = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_login");
                 Secret<SecretData> emailPassword = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_password");
-                var configValues = new[] { smtpAddress, smtpPort, emailLogin, emailPassword };
+                Secret<SecretData> dbConnectionString = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("mongo_connection_string");
+                Secret<SecretData> dbName = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("mongo_db_name");
+
+                var configValues = new[] { smtpAddress, smtpPort, emailLogin, emailPassword, dbConnectionString, dbName };
                 var result = configValues.Any(x => !x.Data.Data.ContainsKey("CURRENT"));
                 return result ? "Vault value empty" : string.Empty;
             }

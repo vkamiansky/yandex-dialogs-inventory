@@ -9,7 +9,6 @@ namespace AliceInventory.Logic.Parser
         public const string EntryQuantityGroupName = "g2";
         public const string EntryUnitGroupName = "g3";
         public const string EmailGroupName = "g4";
-
         public const string AddWord =
             @"(?:(?:за|в|над?|п(?:о|ри)|до)?(?:плюс|с(?:оедин)|ки|лож|мест|бав)(?:н)?(?:л|им?|ь)?(?:ай|яй|ть|те|\-ка)?)";
         public const string DeleteWord =
@@ -34,7 +33,6 @@ namespace AliceInventory.Logic.Parser
             @"(?:(?:отправ(?:ь(?:те)?|ить|ляй)|вы(?:шли|слать)|(?:пере|по)(?:шли|слать)|ски(?:дывай|нь))(?:\-ка)?)";
         public const string ExitWord =
             @"(?:п(?:ока|рощай)|выход|хватит)";
-
         public const string ListWord =
             @"(?:вс(?:е|ё)|спис(?:ок|ке)|опись|(?:от|у)ч(?:е|ё)т|итог(?:е|о)?|результате?)";
         public const string MailWord =
@@ -70,8 +68,8 @@ namespace AliceInventory.Logic.Parser
         public static readonly string EntryQuantity = AddGroupName(EntryQuantityGroupName, Number);
         public const string EmailPattern = @"[a-z0-9!#$%&'*+\=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
         public static readonly string Email = AddGroupName(EmailGroupName, EmailPattern);
-        
         private static readonly Dictionary<UnitOfMeasure, string> UnitOfMeasureDictionary;
+
         static RegexHelper()
         {
             UnitOfMeasureDictionary = new Dictionary<UnitOfMeasure, string>
@@ -81,7 +79,7 @@ namespace AliceInventory.Logic.Parser
                 [UnitOfMeasure.L] = LiterPattern
             };
         }
-       
+
         private static string AddGroupName(string name, string pattern)
         {
             return $"(?<{name}>{pattern})";

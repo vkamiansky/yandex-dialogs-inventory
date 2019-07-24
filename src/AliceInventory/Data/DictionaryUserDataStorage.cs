@@ -1,13 +1,11 @@
-using System;
 using System.Linq;
 using System.Collections.Generic;
-using AliceInventory.Logic;
+using System;
 
 namespace AliceInventory.Data
 {
     public class DictionaryUserDataStorage : IUserDataStorage
     {
-        private static int _lastEntryId = 0;
         private readonly HashSet<Data.Entry> _entries;
         private readonly Dictionary<string, string> _userEmails;
 
@@ -17,12 +15,11 @@ namespace AliceInventory.Data
             _userEmails = new Dictionary<string, string>();
         }
 
-
-        public int CreateEntry(string userId, string entryName, double quantity, UnitOfMeasure unit)
+        public Guid CreateEntry(string userId, string entryName, double quantity, UnitOfMeasure unit)
         {
             var entry = new Data.Entry()
             {
-                Id = _lastEntryId++,
+                Id = Guid.NewGuid(),
                 Name = entryName,
                 Quantity = quantity,
                 UnitOfMeasure = unit,
@@ -32,12 +29,12 @@ namespace AliceInventory.Data
             return entry.Id;
         }
 
-        public void DeleteEntry(int id)
+        public void DeleteEntry(Guid id)
         {
             _entries.RemoveWhere(e => e.Id == id);
         }
 
-        public void UpdateEntry(int id, double quantity)
+        public void UpdateEntry(Guid id, double quantity)
         {
             _entries.First(e => e.Id == id).Quantity = quantity;
         }
@@ -65,11 +62,9 @@ namespace AliceInventory.Data
                 _userEmails.Add(userId, email);
         }
 
-        public string DeleteUserMail(string userId)
+        public void DeleteUserMail(string userId)
         {
-            var email = _userEmails[userId];
             _userEmails.Remove(userId);
-            return email;
         }
     }
 }

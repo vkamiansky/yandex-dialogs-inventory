@@ -1,6 +1,6 @@
 using System;
-using System.Globalization;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AliceInventory.Data;
 using AliceInventory.Logic.Cache;
@@ -248,10 +248,11 @@ namespace AliceInventory.Logic
 
         private static ProcessingResult ProcessDeleteMail(Services services, ProcessingArgs args)
         {
-            var email = services.Storage.DeleteUserMail(args.UserId);
+            var email = services.Storage.ReadUserMail(args.UserId);
             if (string.IsNullOrEmpty(email))
                 return new MailIsEmptyError();
 
+            services.Storage.DeleteUserMail(args.UserId);
             return new ProcessingResult(ProcessingResultType.MailDeleted, email);
         }
 

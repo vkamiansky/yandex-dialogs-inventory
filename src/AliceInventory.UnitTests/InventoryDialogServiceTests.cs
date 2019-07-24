@@ -16,18 +16,18 @@ namespace AliceInventory.UnitTests
             var userId = "user1";
             var entryName = "яблоки";
             var entryQuantity = 12.123d;
-            var entryId = 123;
+            var entryId = Guid.NewGuid();
             var dataUnitOfMeasure = Data.UnitOfMeasure.Kg;
             var entries = new[]{
                 new Data.Entry(){
-                    Id = 255,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "груши",
                     UnitOfMeasure = Data.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 },
                 new Data.Entry(){
-                    Id = 256,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = entryName,
                     UnitOfMeasure = Data.UnitOfMeasure.Unit,
@@ -125,9 +125,9 @@ namespace AliceInventory.UnitTests
 
             var entryName = "груши";
             var stateQuantity = 15.2f;
-            var entryQuantity =  15.2f;
-            var resultQuantity =  15.2f;
-            var stateId = 123;
+            var entryQuantity = 15.2f;
+            var resultQuantity = 15.2f;
+            var stateId = Guid.NewGuid();
             var stateUnitOfMeasure = Data.UnitOfMeasure.Kg;
             var entryUnitOfMeasure = Logic.UnitOfMeasure.Kg;
             var resultUnitOfMeasure = Logic.UnitOfMeasure.Kg;
@@ -148,7 +148,7 @@ namespace AliceInventory.UnitTests
                 .Returns(entries);
             // Deleting the entry by its ID
             storageMock.Setup(x => x.DeleteEntry(
-                It.Is<int>(y => y == stateId)));
+                It.Is<Guid>(y => y == stateId)));
 
             var russianCulture = new CultureInfo("ru-RU");
             // The command as returned from the parser
@@ -212,49 +212,49 @@ namespace AliceInventory.UnitTests
             storageMock.Verify(x => x.ReadAllEntries(
                 It.IsAny<string>()), Times.Once);
             storageMock.Verify(x => x.DeleteEntry(
-                It.IsAny<int>()), Times.Once);
+                It.IsAny<Guid>()), Times.Once);
         }
 
         [Theory]
         [InlineData(
-            "яблоки", 123, 15.5f, Data.UnitOfMeasure.Kg,
+            "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Unit,
             "добавь яблоки 12,511 кг", Logic.Parser.ParsedPhraseType.Add, "яблоки", 12.511d, Logic.UnitOfMeasure.Kg,
             28.011d,
             Logic.ProcessingResultType.Added, "яблоки", 12.511d, Logic.UnitOfMeasure.Kg)]
         [InlineData(
-            "яблоки", 123, 15.5f, Data.UnitOfMeasure.Kg,
+            "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Unit,
             "убери яблоки 12,2 кг", Logic.Parser.ParsedPhraseType.Delete, "яблоки", 12.2d, Logic.UnitOfMeasure.Kg,
             3.3d,
             Logic.ProcessingResultType.Deleted, "яблоки", 12.2d, Logic.UnitOfMeasure.Kg)]
         [InlineData(
-            "груши", 123, 15.5f, Data.UnitOfMeasure.Kg,
+            "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Kg,
             "ещё 12,2", Logic.Parser.ParsedPhraseType.More, null, 12.2d, null,
             27.7d,
             Logic.ProcessingResultType.Added, "груши", 12.2d, Logic.UnitOfMeasure.Kg)]
         [InlineData(
-            "груши", 123, 15.5f, Data.UnitOfMeasure.Kg,
+            "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Deleted, "груши", 3, Logic.UnitOfMeasure.Kg,
             "ещё 12,2", Logic.Parser.ParsedPhraseType.More, null, 12.2d, null,
             3.3d,
             Logic.ProcessingResultType.Deleted, "груши", 12.2d, Logic.UnitOfMeasure.Kg)]
         [InlineData(
-            "груши", 123, 15.5f, Data.UnitOfMeasure.Kg,
+            "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Deleted, "груши", 3, Logic.UnitOfMeasure.Kg,
             "отмена", Logic.Parser.ParsedPhraseType.Cancel, null, null, null,
             18.5f,
             Logic.ProcessingResultType.DeleteCanceled, "груши", 3, Logic.UnitOfMeasure.Kg)]
         [InlineData(
-            "груши", 123, 15.5f, Data.UnitOfMeasure.Kg,
+            "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Kg,
             "отмена", Logic.Parser.ParsedPhraseType.Cancel, null, null, null,
             12.5f,
             Logic.ProcessingResultType.AddCanceled, "груши", 3, Logic.UnitOfMeasure.Kg)]
         public void ProcessEntryUpdateCommands(
             string storageEntryName,
-            int storageEntryId,
+            string storageEntryIdString,
             double storageEntryQuantity,
             Data.UnitOfMeasure storageEntryUnit,
             Logic.ProcessingResultType stateType,
@@ -274,6 +274,7 @@ namespace AliceInventory.UnitTests
             )
         {
             var userId = "user1";
+            var storageEntryId = new Guid(storageEntryIdString);
 
             // These are the entries already in storage
             var entries = new[]{
@@ -285,7 +286,7 @@ namespace AliceInventory.UnitTests
                     Quantity = storageEntryQuantity
                 },
                 new Data.Entry(){
-                    Id = storageEntryId + 1,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = storageEntryName + "text",
                     UnitOfMeasure = storageEntryUnit,
@@ -301,7 +302,7 @@ namespace AliceInventory.UnitTests
                 .Returns(entries);
             // Accepting request for entry update
             storageMock.Setup(x => x.UpdateEntry(
-                It.Is<int>(y => y == storageEntryId),
+                It.Is<Guid>(y => y == storageEntryId),
                 It.Is<double>(y => Math.Abs(y - updateQuantity) < TOLERANCE)));
 
             var russianCulture = new CultureInfo("ru-RU");
@@ -374,7 +375,7 @@ namespace AliceInventory.UnitTests
             storageMock.Verify(x => x.ReadAllEntries(
                 It.IsAny<string>()), Times.Once);
             storageMock.Verify(x => x.UpdateEntry(
-                It.IsAny<int>(),
+                It.IsAny<Guid>(),
                 It.IsAny<double>()), Times.Once);
         }
 
@@ -447,21 +448,21 @@ namespace AliceInventory.UnitTests
 
             var entries = new[]{
                 new Data.Entry(){
-                    Id = 255,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "груши",
                     UnitOfMeasure = Data.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 },
                 new Data.Entry(){
-                    Id = 256,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
                     UnitOfMeasure = Data.UnitOfMeasure.Unit,
                     Quantity = 12
                 },
                 new Data.Entry(){
-                    Id = 257,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
                     UnitOfMeasure = Data.UnitOfMeasure.Kg,
@@ -692,21 +693,21 @@ namespace AliceInventory.UnitTests
             var userId = "user1";
             var entries = new[]{
                 new Data.Entry(){
-                    Id = 255,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "груши",
                     UnitOfMeasure = Data.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 },
                 new Data.Entry(){
-                    Id = 256,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
                     UnitOfMeasure = Data.UnitOfMeasure.Unit,
                     Quantity = 12
                 },
                 new Data.Entry(){
-                    Id = 257,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
                     UnitOfMeasure = Data.UnitOfMeasure.Kg,
@@ -822,21 +823,21 @@ namespace AliceInventory.UnitTests
             var userId = "user1";
             var entries = new[]{
                 new Data.Entry(){
-                    Id = 255,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "груши",
                     UnitOfMeasure = Data.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 },
                 new Data.Entry(){
-                    Id = 256,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
                     UnitOfMeasure = Data.UnitOfMeasure.Unit,
                     Quantity = 12
                 },
                 new Data.Entry(){
-                    Id = 257,
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
                     UnitOfMeasure = Data.UnitOfMeasure.Kg,
@@ -1018,9 +1019,11 @@ namespace AliceInventory.UnitTests
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
 
             // The deleted email address is returned as a result
-            storageMock.Setup(x => x.DeleteUserMail(
+            storageMock.Setup(x => x.ReadUserMail(
                 It.Is<string>(y => y == userId)))
                 .Returns(emailAddress);
+            storageMock.Setup(x => x.DeleteUserMail(
+                It.Is<string>(y => y == userId)));
 
             var russianCulture = new CultureInfo("ru-RU");
             // The entry as recognized by the parser
@@ -1071,6 +1074,8 @@ namespace AliceInventory.UnitTests
                 It.IsAny<string>(),
                 It.IsAny<Logic.ProcessingResult>()), Times.Once);
 
+            storageMock.Verify(x => x.ReadUserMail(
+                It.IsAny<string>()), Times.Once);
             storageMock.Verify(x => x.DeleteUserMail(
                 It.IsAny<string>()), Times.Once);
         }
