@@ -66,8 +66,9 @@ namespace AliceInventory.Controllers
                 scope =>
                 {
                     var answer = _inventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
-                    if (answer.Error != null) scope?.Log($"Error:{answer.Error.Message}");
-                    if (answer.Exception != null) scope?.Log($"Exception:{answer.Exception.Message}");
+                    if (answer.Error != null) scope?.Log($"Error:\"{answer.Error.Message}\", input: \"{input}\"");
+                    else if (answer.Exception != null) scope?.Log($"Error:\"{answer.Exception.Message}\", input: \"{input}\"");
+                    else scope?.Log($"Result:\"{answer.Type.ToString()}\", input: \"{input}\"");
 
                     var response = AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session, x => Random.Next(0, x));
                     return response;
