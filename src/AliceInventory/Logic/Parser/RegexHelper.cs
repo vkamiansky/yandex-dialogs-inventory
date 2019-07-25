@@ -96,5 +96,4 @@ namespace AliceInventory.Logic.Parser
             return UnitOfMeasure.Unit;
         }
     }
-
 }

@@ -42,5 +42,15 @@ namespace AliceInventory.IntegrationTests
         {
             return Task.FromResult("Vault value empty");
         }
+
+        public Task<string> GetTracingHost()
+        {
+            return null;
+        }
+
+        public Task<int> GetTracingPort()
+        {
+            return Task.FromResult(0);
+        }
     }
 }

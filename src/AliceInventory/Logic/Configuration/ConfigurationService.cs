@@ -89,6 +89,33 @@ namespace AliceInventory.Logic
             }
         }
 
+        public async Task<string> GetTracingHost()
+        {
+            try
+            {
+                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("jaeger_address");
+                return secret.Data.Data["CURRENT"] as string;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<int> GetTracingPort()
+        {
+            try
+            {
+                Secret<SecretData> secret = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("jaeger_port");
+                var stringPort = secret.Data.Data["CURRENT"] as string;
+                return int.Parse(stringPort);
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
         public ConfigurationService()
         {
             try
@@ -124,8 +151,10 @@ namespace AliceInventory.Logic
                 Secret<SecretData> emailPassword = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("email_password");
                 Secret<SecretData> dbConnectionString = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("mongo_connection_string");
                 Secret<SecretData> dbName = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("mongo_db_name");
+                Secret<SecretData> tracingHost = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("jaeger_address");
+                Secret<SecretData> tracingPort = await _VaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync("jaeger_port");
 
-                var configValues = new[] { smtpAddress, smtpPort, emailLogin, emailPassword, dbConnectionString, dbName };
+                var configValues = new[] { smtpAddress, smtpPort, emailLogin, emailPassword, dbConnectionString, dbName, tracingHost, tracingPort };
                 var result = configValues.Any(x => !x.Data.Data.ContainsKey("CURRENT"));
                 return result ? "Vault value empty" : string.Empty;
             }

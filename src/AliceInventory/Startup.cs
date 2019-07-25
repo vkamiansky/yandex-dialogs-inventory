@@ -25,6 +25,7 @@ namespace AliceInventory
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<Logic.IConfigurationService, Logic.ConfigurationService>();
+            services.AddSingleton<Logic.Tracing.ITracingProvider, Logic.Tracing.JaegerTracingProvider>();
             services.AddSingleton<Logic.Email.IInventoryEmailService, Logic.Email.InventoryEmailService>();
             services.AddSingleton<Logic.Cache.IResultCache, Logic.Cache.ResultCache>();
             services.AddSingleton<Logic.IInputParserService, Logic.Parser.InputParserService>();

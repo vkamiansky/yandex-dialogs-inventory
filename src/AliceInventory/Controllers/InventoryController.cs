@@ -1,16 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using AliceInventory.Controllers.AliceResponseRender;
-using AliceInventory.Logic;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 
 
 namespace AliceInventory.Controllers
@@ -20,33 +12,44 @@ namespace AliceInventory.Controllers
     public class InventoryController : ControllerBase
     {
         private static readonly Random Random = new Random();
-        public Logic.IInventoryDialogService InventoryDialogService { set; get; }
-        public Logic.IConfigurationService ConfigurationService { set; get; }
+        private readonly Logic.IInventoryDialogService _inventoryDialogService;
+        private readonly Logic.IConfigurationService _configurationService;
+        private readonly Logic.Tracing.ITracingProvider _tracingProvider;
 
         public InventoryController(
             Logic.IInventoryDialogService inventoryDialogService,
-            Logic.IConfigurationService configurationService)
+            Logic.IConfigurationService configurationService,
+            Logic.Tracing.ITracingProvider tracingProvider)
         {
-            this.InventoryDialogService = inventoryDialogService;
-            this.ConfigurationService = configurationService;
+            _inventoryDialogService = inventoryDialogService;
+            _configurationService = configurationService;
+            _tracingProvider = tracingProvider;
         }
 
         // GET api/inventory
         [HttpGet]
         public async Task<string> Get()
         {
-            string configSuccessAnswer = await this.ConfigurationService.GetIsConfigured();  
-            return "Server is working...\n"
-                + (string.IsNullOrWhiteSpace(configSuccessAnswer)
-                    ? "Configuration OK!"
-                    : "Not configured.");
+            return await _tracingProvider.TryTraceAsync(
+                "Alice::Get",
+                async scope =>
+                {
+                    string configSuccessAnswer = await this._configurationService.GetIsConfigured();
+
+                    var result = "Server is working...\n"
+                                    + (string.IsNullOrWhiteSpace(configSuccessAnswer)
+                                        ? "Configuration OK!"
+                                        : "Not configured.");
+                    scope.Log($"Server config tested. The result is: {result}");
+                    return result;
+                });
         }
 
         // HEAD api/inventory
         [HttpHead]
         public ActionResult Head()
-        { 
-            return Ok(); 
+        {
+            return Ok();
         }
 
         // POST api/inventory/alice
@@ -58,8 +61,17 @@ namespace AliceInventory.Controllers
                 ? request.Request.Payload
                 : request.Request.Command;
 
-            var answer = InventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
-            return AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session, x => Random.Next(0, x));
+            return _tracingProvider.TryTrace(
+                "Alice::Post",
+                scope =>
+                {
+                    var answer = _inventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
+                    if (answer.Error != null) scope?.Log($"Error:{answer.Error.Message}");
+                    if (answer.Exception != null) scope?.Log($"Exception:{answer.Exception.Message}");
+
+                    var response = AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session, x => Random.Next(0, x));
+                    return response;
+                });
         }
     }
 }
