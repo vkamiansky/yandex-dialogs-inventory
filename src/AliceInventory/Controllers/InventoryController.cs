@@ -40,7 +40,7 @@ namespace AliceInventory.Controllers
                                     + (string.IsNullOrWhiteSpace(configSuccessAnswer)
                                         ? "Configuration OK!"
                                         : "Not configured.");
-                    scope.Log($"Server config tested. The result is: {result}");
+                    scope?.Log($"Server config tested. The result is: {result}");
                     return result;
                 });
         }
