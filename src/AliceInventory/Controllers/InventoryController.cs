@@ -57,18 +57,23 @@ namespace AliceInventory.Controllers
         [Route("alice")]
         public ActionResult<AliceResponse> Post([FromBody] AliceRequest request)
         {
-            string input = string.IsNullOrEmpty(request.Request.Command)
+            string input = string.IsNullOrEmpty(request.Request.OriginalUtterance)
                 ? request.Request.Payload
-                : request.Request.Command;
+                : request.Request.OriginalUtterance;
 
             return _tracingProvider.TryTrace(
                 "Alice::Post",
                 scope =>
                 {
                     var answer = _inventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
-                    if (answer.Error != null) scope?.Log($"Error:\"{answer.Error.Message}\", input: \"{input}\"");
+
+                    if (answer.Type == Logic.ProcessingResultType.Error)
+                        scope?.Log($"Error message:\"{answer.Error?.Message}\", "
+                            + $"type: \"{request.Request.Type}\", "
+                            + $"payload: \"{request.Request.Payload}\", "
+                            + $"command: \"{request.Request.Command}\", "
+                            + $"original: \"{request.Request.OriginalUtterance}\"");
                     else if (answer.Exception != null) scope?.Log($"Error:\"{answer.Exception.Message}\", input: \"{input}\"");
-                    else scope?.Log($"Result:\"{answer.Type.ToString()}\", input: \"{input}\"");
 
                     var response = AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session, x => Random.Next(0, x));
                     return response;
