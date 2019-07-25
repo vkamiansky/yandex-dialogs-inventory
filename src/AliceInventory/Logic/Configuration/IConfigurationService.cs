@@ -11,6 +11,7 @@ namespace AliceInventory.Logic
         Task<string> GetDbConnectionString();
         Task<string> GetDbName();
         Task<string> GetIsConfigured();
+        Task<string> GetTracingHost();
+        Task<int> GetTracingPort();
     }
-
 }

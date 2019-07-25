@@ -32,7 +32,7 @@ namespace AliceInventory.IntegrationTests
                 {
                     services.AddSingleton<Logic.IConfigurationService, TestConfigurationService>();
                     services.AddSingleton<Data.IUserDataStorage, Data.DictionaryUserDataStorage>();
-
+                    services.AddSingleton<Logic.Tracing.ITracingProvider, TestTracingProvider>();
                 }));
             _client = _server.CreateClient();
         }
