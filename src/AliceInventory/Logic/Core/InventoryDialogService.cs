@@ -64,9 +64,9 @@ namespace AliceInventory.Logic
             };
         }
 
-        public ProcessingResult ProcessInput(string userId, string input, CultureInfo cultureInfo)
+        public ProcessingResult ProcessInput(string userId, UserInput input)
         {
-            ParsedCommand command = _services.Parser.ParseInput(input, cultureInfo);
+            ParsedCommand command = _services.Parser.ParseInput(input);
 
             if (!_commandProcessingMethods.ContainsKey(command.Type))
                 return new ProcessingResult(new KeyNotFoundException());
@@ -79,7 +79,7 @@ namespace AliceInventory.Logic
             };
 
             var result = _commandProcessingMethods[command.Type](_services, args);
-            result.CultureInfo = cultureInfo;
+            result.CultureInfo = input.CultureInfo;
 
             _services.ResultCache.Set(userId, result);
 

@@ -48,8 +48,8 @@ namespace AliceInventory.UnitTests
                 It.Is<Data.UnitOfMeasure>(y => y == dataUnitOfMeasure)))
                 .Returns(entryId);
 
-            var userInput = "добавь яблоки 12,123 кг";
             var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
             // The command as returned from the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -64,8 +64,11 @@ namespace AliceInventory.UnitTests
 
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == userInput),
-                It.Is<CultureInfo>(y => y == russianCulture)))
+                It.Is<Logic.UserInput>(y =>
+                    y.Raw == userInput.Raw
+                    && y.Prepared == userInput.Prepared
+                    && y.Button == userInput.Button
+                    && y.CultureInfo == userInput.CultureInfo)))
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
@@ -88,7 +91,7 @@ namespace AliceInventory.UnitTests
                 cacheMock.Object,
                 null);
 
-            var result = sut.ProcessInput(userId, userInput, russianCulture);
+            var result = sut.ProcessInput(userId, userInput);
 
             // Checking the result
             var resultEntry = result.Data as Logic.Entry;
@@ -99,8 +102,7 @@ namespace AliceInventory.UnitTests
 
             // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
-                It.IsAny<string>(),
-                It.IsAny<CultureInfo>()), Times.Once);
+                It.IsAny<Logic.UserInput>()), Times.Once);
 
             cacheMock.Verify(x => x.Get(
                 It.IsAny<string>()), Times.Once);
@@ -121,8 +123,6 @@ namespace AliceInventory.UnitTests
         public void ProcessDeleteEntry()
         {
             var userId = "user1";
-            var userInput = "удали груши 15,2 кг";
-
             var entryName = "груши";
             var stateQuantity = 15.2f;
             var entryQuantity = 15.2f;
@@ -151,6 +151,8 @@ namespace AliceInventory.UnitTests
                 It.Is<Guid>(y => y == stateId)));
 
             var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+
             // The command as returned from the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -165,8 +167,11 @@ namespace AliceInventory.UnitTests
 
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == userInput),
-                It.Is<CultureInfo>(y => y == russianCulture)))
+                It.Is<Logic.UserInput>(y =>
+                    y.Raw == userInput.Raw
+                    && y.Prepared == userInput.Prepared
+                    && y.Button == userInput.Button
+                    && y.CultureInfo == userInput.CultureInfo)))
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
@@ -189,7 +194,7 @@ namespace AliceInventory.UnitTests
                 cacheMock.Object,
                 null);
 
-            var result = sut.ProcessInput(userId, userInput, russianCulture);
+            var result = sut.ProcessInput(userId, userInput);
 
             // Checking the result
             var resultEntry = result.Data as Logic.Entry;
@@ -200,8 +205,7 @@ namespace AliceInventory.UnitTests
 
             // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
-                It.IsAny<string>(),
-                It.IsAny<CultureInfo>()), Times.Once);
+                It.IsAny<Logic.UserInput>()), Times.Once);
 
             cacheMock.Verify(x => x.Get(
                 It.IsAny<string>()), Times.Once);
@@ -219,37 +223,37 @@ namespace AliceInventory.UnitTests
         [InlineData(
             "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Unit,
-            "добавь яблоки 12,511 кг", Logic.Parser.ParsedPhraseType.Add, "яблоки", 12.511d, Logic.UnitOfMeasure.Kg,
+            Logic.Parser.ParsedPhraseType.Add, "яблоки", 12.511d, Logic.UnitOfMeasure.Kg,
             28.011d,
             Logic.ProcessingResultType.Added, "яблоки", 12.511d, Logic.UnitOfMeasure.Kg)]
         [InlineData(
             "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Unit,
-            "убери яблоки 12,2 кг", Logic.Parser.ParsedPhraseType.Delete, "яблоки", 12.2d, Logic.UnitOfMeasure.Kg,
+            Logic.Parser.ParsedPhraseType.Delete, "яблоки", 12.2d, Logic.UnitOfMeasure.Kg,
             3.3d,
             Logic.ProcessingResultType.Deleted, "яблоки", 12.2d, Logic.UnitOfMeasure.Kg)]
         [InlineData(
             "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Kg,
-            "ещё 12,2", Logic.Parser.ParsedPhraseType.More, null, 12.2d, null,
+            Logic.Parser.ParsedPhraseType.More, null, 12.2d, null,
             27.7d,
             Logic.ProcessingResultType.Added, "груши", 12.2d, Logic.UnitOfMeasure.Kg)]
         [InlineData(
             "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Deleted, "груши", 3, Logic.UnitOfMeasure.Kg,
-            "ещё 12,2", Logic.Parser.ParsedPhraseType.More, null, 12.2d, null,
+            Logic.Parser.ParsedPhraseType.More, null, 12.2d, null,
             3.3d,
             Logic.ProcessingResultType.Deleted, "груши", 12.2d, Logic.UnitOfMeasure.Kg)]
         [InlineData(
             "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Deleted, "груши", 3, Logic.UnitOfMeasure.Kg,
-            "отмена", Logic.Parser.ParsedPhraseType.Cancel, null, null, null,
+            Logic.Parser.ParsedPhraseType.Cancel, null, null, null,
             18.5f,
             Logic.ProcessingResultType.DeleteCanceled, "груши", 3, Logic.UnitOfMeasure.Kg)]
         [InlineData(
             "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
             Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Kg,
-            "отмена", Logic.Parser.ParsedPhraseType.Cancel, null, null, null,
+            Logic.Parser.ParsedPhraseType.Cancel, null, null, null,
             12.5f,
             Logic.ProcessingResultType.AddCanceled, "груши", 3, Logic.UnitOfMeasure.Kg)]
         public void ProcessEntryUpdateCommands(
@@ -261,7 +265,6 @@ namespace AliceInventory.UnitTests
             string stateName,
             double stateQuantity,
             Logic.UnitOfMeasure stateUnit,
-            string userInput,
             Logic.Parser.ParsedPhraseType entryType,
             string entryName,
             double? entryQuantity,
@@ -306,6 +309,8 @@ namespace AliceInventory.UnitTests
                 It.Is<double>(y => Math.Abs(y - updateQuantity) < TOLERANCE)));
 
             var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -321,8 +326,11 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == userInput),
-                It.Is<CultureInfo>(y => y == russianCulture)))
+                It.Is<Logic.UserInput>(y =>
+                    y.Raw == userInput.Raw
+                    && y.Prepared == userInput.Prepared
+                    && y.Button == userInput.Button
+                    && y.CultureInfo == userInput.CultureInfo)))
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
@@ -352,7 +360,7 @@ namespace AliceInventory.UnitTests
                 cacheMock.Object,
                 null);
 
-            var result = sut.ProcessInput(userId, userInput, russianCulture);
+            var result = sut.ProcessInput(userId, userInput);
 
             // Checking the result
             var resultEntry = result.Data as Logic.Entry;
@@ -363,8 +371,7 @@ namespace AliceInventory.UnitTests
 
             // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
-                It.IsAny<string>(),
-                It.IsAny<CultureInfo>()), Times.Once);
+                It.IsAny<Logic.UserInput>()), Times.Once);
 
             cacheMock.Verify(x => x.Get(
                 It.IsAny<string>()), Times.Once);
@@ -380,19 +387,20 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("привет", Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Hello, Logic.ProcessingResultType.GreetingRequested)]
-        [InlineData("помощь", Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Help, Logic.ProcessingResultType.HelpRequested)]
-        [InlineData("выход", Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Exit, Logic.ProcessingResultType.ExitRequested)]
-        [InlineData("нет", Logic.ProcessingResultType.ClearRequested, Logic.Parser.ParsedPhraseType.Decline, Logic.ProcessingResultType.Declined)]
-        [InlineData("очисти список", Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Clear, Logic.ProcessingResultType.ClearRequested)]
+        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Hello, Logic.ProcessingResultType.GreetingRequested)]
+        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Help, Logic.ProcessingResultType.HelpRequested)]
+        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Exit, Logic.ProcessingResultType.ExitRequested)]
+        [InlineData(Logic.ProcessingResultType.ClearRequested, Logic.Parser.ParsedPhraseType.Decline, Logic.ProcessingResultType.Declined)]
+        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Clear, Logic.ProcessingResultType.ClearRequested)]
         public void ProcessSimpleCommands(
-            string userInput,
             Logic.ProcessingResultType stateType,
             Logic.Parser.ParsedPhraseType entryType,
             Logic.ProcessingResultType resultType)
         {
             var userId = "user1";
             var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -402,8 +410,11 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == userInput),
-                It.Is<CultureInfo>(y => y == russianCulture)))
+                It.Is<Logic.UserInput>(y =>
+                    y.Raw == userInput.Raw
+                    && y.Prepared == userInput.Prepared
+                    && y.Button == userInput.Button
+                    && y.CultureInfo == userInput.CultureInfo)))
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
@@ -422,7 +433,7 @@ namespace AliceInventory.UnitTests
                 cacheMock.Object,
                 null);
 
-            var result = sut.ProcessInput(userId, userInput, russianCulture);
+            var result = sut.ProcessInput(userId, userInput);
 
             // Checking the result
             Assert.Equal(resultType, result.Type);
@@ -430,8 +441,7 @@ namespace AliceInventory.UnitTests
 
             // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
-                It.IsAny<string>(),
-                It.IsAny<CultureInfo>()), Times.Once);
+                It.IsAny<Logic.UserInput>()), Times.Once);
 
             cacheMock.Verify(x => x.Get(
                 It.IsAny<string>()), Times.Once);
@@ -443,7 +453,6 @@ namespace AliceInventory.UnitTests
         [Fact]
         public void ProcessReadList()
         {
-            var userInput = "прочти список";
             var userId = "user1";
 
             var entries = new[]{
@@ -496,6 +505,8 @@ namespace AliceInventory.UnitTests
                 .Returns(entries);
 
             var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -505,8 +516,11 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == userInput),
-                It.Is<CultureInfo>(y => y == russianCulture)))
+                It.Is<Logic.UserInput>(y =>
+                    y.Raw == userInput.Raw
+                    && y.Prepared == userInput.Prepared
+                    && y.Button == userInput.Button
+                    && y.CultureInfo == userInput.CultureInfo)))
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
@@ -532,7 +546,7 @@ namespace AliceInventory.UnitTests
                 cacheMock.Object,
                 null);
 
-            var result = sut.ProcessInput(userId, userInput, russianCulture);
+            var result = sut.ProcessInput(userId, userInput);
 
             // Checking the result
             Assert.Equal(Logic.ProcessingResultType.ListRead, result.Type);
@@ -547,8 +561,7 @@ namespace AliceInventory.UnitTests
 
             // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
-                It.IsAny<string>(),
-                It.IsAny<CultureInfo>()), Times.Once);
+                It.IsAny<Logic.UserInput>()), Times.Once);
 
             cacheMock.Verify(x => x.Get(
                 It.IsAny<string>()), Times.Once);
@@ -563,7 +576,6 @@ namespace AliceInventory.UnitTests
         [Fact]
         public void ProcessAcceptClearList()
         {
-            var userInput = "да";
             var userId = "user1";
 
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
@@ -573,6 +585,8 @@ namespace AliceInventory.UnitTests
                 It.Is<string>(y => y == userId)));
 
             var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -582,9 +596,12 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == userInput),
-                It.Is<CultureInfo>(y => y == russianCulture)))
-                .Returns(parsedCommand);
+                            It.Is<Logic.UserInput>(y =>
+                                y.Raw == userInput.Raw
+                                && y.Prepared == userInput.Prepared
+                                && y.Button == userInput.Button
+                                && y.CultureInfo == userInput.CultureInfo)))
+                            .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
@@ -602,15 +619,14 @@ namespace AliceInventory.UnitTests
                 cacheMock.Object,
                 null);
 
-            var result = sut.ProcessInput(userId, userInput, russianCulture);
+            var result = sut.ProcessInput(userId, userInput);
 
             // Checking the result
             Assert.Equal(Logic.ProcessingResultType.Cleared, result.Type);
 
             // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
-                It.IsAny<string>(),
-                It.IsAny<CultureInfo>()), Times.Once);
+                It.IsAny<Logic.UserInput>()), Times.Once);
 
             cacheMock.Verify(x => x.Get(
                 It.IsAny<string>()), Times.Once);
@@ -625,7 +641,6 @@ namespace AliceInventory.UnitTests
         [Fact]
         public void ProcessRequestSendListWithoutEmailSpecified()
         {
-            var userInput = "отправь на почту";
             var userId = "user1";
 
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
@@ -636,6 +651,7 @@ namespace AliceInventory.UnitTests
                 .Returns(string.Empty);
 
             var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -645,9 +661,12 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == userInput),
-                It.Is<CultureInfo>(y => y == russianCulture)))
-                .Returns(parsedCommand);
+                            It.Is<Logic.UserInput>(y =>
+                                y.Raw == userInput.Raw
+                                && y.Prepared == userInput.Prepared
+                                && y.Button == userInput.Button
+                                && y.CultureInfo == userInput.CultureInfo)))
+                            .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
@@ -665,15 +684,14 @@ namespace AliceInventory.UnitTests
                 cacheMock.Object,
                 null);
 
-            var result = sut.ProcessInput(userId, userInput, russianCulture);
+            var result = sut.ProcessInput(userId, userInput);
 
             // Checking the result
             Assert.Equal(Logic.ProcessingResultType.RequestedMail, result.Type);
 
             // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
-                It.IsAny<string>(),
-                It.IsAny<CultureInfo>()), Times.Once);
+                It.IsAny<Logic.UserInput>()), Times.Once);
 
             cacheMock.Verify(x => x.Get(
                 It.IsAny<string>()), Times.Once);
@@ -688,7 +706,6 @@ namespace AliceInventory.UnitTests
         [Fact]
         public void ProcessRequestSendListWithEmailSpecified()
         {
-            var userInput = "отправь на почту some.mail@test.org";
             var emailAddress = "some.mail@test.org";
             var userId = "user1";
             var entries = new[]{
@@ -745,6 +762,8 @@ namespace AliceInventory.UnitTests
                 .Returns(entries);
 
             var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -755,9 +774,12 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == userInput),
-                It.Is<CultureInfo>(y => y == russianCulture)))
-                .Returns(parsedCommand);
+                            It.Is<Logic.UserInput>(y =>
+                                y.Raw == userInput.Raw
+                                && y.Prepared == userInput.Prepared
+                                && y.Button == userInput.Button
+                                && y.CultureInfo == userInput.CultureInfo)))
+                            .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
@@ -786,7 +808,7 @@ namespace AliceInventory.UnitTests
                 cacheMock.Object,
                 emailerMock.Object);
 
-            var result = sut.ProcessInput(userId, userInput, russianCulture);
+            var result = sut.ProcessInput(userId, userInput);
 
             // Checking the result
             Assert.Equal(Logic.ProcessingResultType.MailSent, result.Type);
@@ -794,8 +816,7 @@ namespace AliceInventory.UnitTests
 
             // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
-                It.IsAny<string>(),
-                It.IsAny<CultureInfo>()), Times.Once);
+                It.IsAny<Logic.UserInput>()), Times.Once);
 
             cacheMock.Verify(x => x.Get(
                 It.IsAny<string>()), Times.Once);
@@ -815,9 +836,9 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("отправь на почту", Logic.ProcessingResultType.HelpRequested, Logic.Parser.ParsedPhraseType.SendMail, Logic.ProcessingResultType.MailSent)]
-        [InlineData("да", Logic.ProcessingResultType.MailAdded, Logic.Parser.ParsedPhraseType.SendMail, Logic.ProcessingResultType.MailSent)]
-        public void ProcessSendListWithEmailStored(string userInput, Logic.ProcessingResultType stateType, Logic.Parser.ParsedPhraseType entryType, Logic.ProcessingResultType resultType)
+        [InlineData(Logic.ProcessingResultType.HelpRequested, Logic.Parser.ParsedPhraseType.SendMail, Logic.ProcessingResultType.MailSent)]
+        [InlineData(Logic.ProcessingResultType.MailAdded, Logic.Parser.ParsedPhraseType.SendMail, Logic.ProcessingResultType.MailSent)]
+        public void ProcessSendListWithEmailStored(Logic.ProcessingResultType stateType, Logic.Parser.ParsedPhraseType entryType, Logic.ProcessingResultType resultType)
         {
             var emailAddress = "some.mail@test.org";
             var userId = "user1";
@@ -874,6 +895,7 @@ namespace AliceInventory.UnitTests
                 .Returns(entries);
 
             var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -883,9 +905,12 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == userInput),
-                It.Is<CultureInfo>(y => y == russianCulture)))
-                .Returns(parsedCommand);
+                                        It.Is<Logic.UserInput>(y =>
+                                            y.Raw == userInput.Raw
+                                            && y.Prepared == userInput.Prepared
+                                            && y.Button == userInput.Button
+                                            && y.CultureInfo == userInput.CultureInfo)))
+                                        .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
@@ -913,7 +938,7 @@ namespace AliceInventory.UnitTests
                 cacheMock.Object,
                 emailerMock.Object);
 
-            var result = sut.ProcessInput(userId, userInput, russianCulture);
+            var result = sut.ProcessInput(userId, userInput);
 
             // Checking the result
             Assert.Equal(resultType, result.Type);
@@ -921,8 +946,7 @@ namespace AliceInventory.UnitTests
 
             // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
-                It.IsAny<string>(),
-                It.IsAny<CultureInfo>()), Times.Once);
+                It.IsAny<Logic.UserInput>()), Times.Once);
 
             cacheMock.Verify(x => x.Get(
                 It.IsAny<string>()), Times.Once);
@@ -943,7 +967,6 @@ namespace AliceInventory.UnitTests
         [Fact]
         public void ProcessAddMail()
         {
-            var userInput = "some.mail@test.org";
             var emailAddress = "some.mail@test.org";
             var userId = "user1";
 
@@ -955,6 +978,7 @@ namespace AliceInventory.UnitTests
                 It.Is<string>(y => y == emailAddress)));
 
             var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -965,9 +989,12 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == userInput),
-                It.Is<CultureInfo>(y => y == russianCulture)))
-                .Returns(parsedCommand);
+                            It.Is<Logic.UserInput>(y =>
+                                y.Raw == userInput.Raw
+                                && y.Prepared == userInput.Prepared
+                                && y.Button == userInput.Button
+                                && y.CultureInfo == userInput.CultureInfo)))
+                            .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
@@ -987,7 +1014,7 @@ namespace AliceInventory.UnitTests
                 cacheMock.Object,
                 null);
 
-            var result = sut.ProcessInput(userId, userInput, russianCulture);
+            var result = sut.ProcessInput(userId, userInput);
 
             // Checking the result
             Assert.Equal(Logic.ProcessingResultType.MailAdded, result.Type);
@@ -995,8 +1022,7 @@ namespace AliceInventory.UnitTests
 
             // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
-                It.IsAny<string>(),
-                It.IsAny<CultureInfo>()), Times.Once);
+                It.IsAny<Logic.UserInput>()), Times.Once);
 
             cacheMock.Verify(x => x.Get(
                 It.IsAny<string>()), Times.Once);
@@ -1012,7 +1038,6 @@ namespace AliceInventory.UnitTests
         [Fact]
         public void ProcessDeleteMail()
         {
-            var userInput = "удалить почту";
             var emailAddress = "some.mail@test.org";
             var userId = "user1";
 
@@ -1026,6 +1051,8 @@ namespace AliceInventory.UnitTests
                 It.Is<string>(y => y == userId)));
 
             var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -1035,9 +1062,12 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<string>(y => y == userInput),
-                It.Is<CultureInfo>(y => y == russianCulture)))
-                .Returns(parsedCommand);
+                            It.Is<Logic.UserInput>(y =>
+                                y.Raw == userInput.Raw
+                                && y.Prepared == userInput.Prepared
+                                && y.Button == userInput.Button
+                                && y.CultureInfo == userInput.CultureInfo)))
+                            .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
@@ -1057,7 +1087,7 @@ namespace AliceInventory.UnitTests
                 cacheMock.Object,
                 null);
 
-            var result = sut.ProcessInput(userId, userInput, russianCulture);
+            var result = sut.ProcessInput(userId, userInput);
 
             // Checking the result
             Assert.Equal(Logic.ProcessingResultType.MailDeleted, result.Type);
@@ -1065,8 +1095,7 @@ namespace AliceInventory.UnitTests
 
             // Making sure no unnecessary calls have been made
             parserMock.Verify(x => x.ParseInput(
-                It.IsAny<string>(),
-                It.IsAny<CultureInfo>()), Times.Once);
+                It.IsAny<Logic.UserInput>()), Times.Once);
 
             cacheMock.Verify(x => x.Get(
                 It.IsAny<string>()), Times.Once);
