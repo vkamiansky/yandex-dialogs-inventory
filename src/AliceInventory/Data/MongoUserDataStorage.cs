@@ -66,7 +66,7 @@ namespace AliceInventory.Data
 
         public void SetUserMail(string userId, string email)
         {
-            if(!_users.AsQueryable().Any(u => u.Id == userId))
+            if (!_users.AsQueryable().Any(u => u.Id == userId))
                 _users.InsertOne(new User(userId));
 
             var builder = new UpdateDefinitionBuilder<User>();
@@ -78,6 +78,7 @@ namespace AliceInventory.Data
         {
             var builder = new UpdateDefinitionBuilder<User>();
             var update = builder.Set(x => x.Email, null);
+            _users.UpdateOne(e => e.Id == userId, update);
         }
     }
 }
