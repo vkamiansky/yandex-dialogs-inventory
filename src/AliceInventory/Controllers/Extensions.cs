@@ -1,10 +1,22 @@
 using System;
+using System.Globalization;
 using System.Linq;
 
 namespace AliceInventory.Controllers
 {
     public static class Extensions
     {
+        public static Logic.UserInput ToUserInput(this AliceRequest request)
+        {
+            return new Logic.UserInput
+            {
+                Raw = request.Request.OriginalUtterance,
+                Prepared = request.Request.Command,
+                Button = request.Request.Payload,
+                CultureInfo = new CultureInfo(request.Meta.Locale)
+            };
+        }
+
         public static string ToText(this Logic.UnitOfMeasure unit)
         {
             switch (unit)

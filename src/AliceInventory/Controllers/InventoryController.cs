@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using AliceInventory.Controllers.AliceResponseRender;
 using Microsoft.AspNetCore.Mvc;
@@ -57,23 +56,19 @@ namespace AliceInventory.Controllers
         [Route("alice")]
         public ActionResult<AliceResponse> Post([FromBody] AliceRequest request)
         {
-            string input = string.IsNullOrEmpty(request.Request.OriginalUtterance)
-                ? request.Request.Payload
-                : request.Request.OriginalUtterance;
-
             return _tracingProvider.TryTrace(
                 "Alice::Post",
                 scope =>
                 {
-                    var answer = _inventoryDialogService.ProcessInput(request.Session.UserId, input, new CultureInfo(request.Meta.Locale));
+                    var answer = _inventoryDialogService.ProcessInput(request.Session.UserId, request.ToUserInput());
 
-                    if (answer.Type == Logic.ProcessingResultType.Error)
-                        scope?.Log($"Error message:\"{answer.Error?.Message}\", "
+                    if (answer.Type == Logic.ProcessingResultType.Error || answer.Type == Logic.ProcessingResultType.Exception)
+                        scope?.Log($"error message:\"{answer.Error?.Message}\", "
+                            + $"exception message:\"{answer.Exception?.Message}\", "
                             + $"type: \"{request.Request.Type}\", "
                             + $"payload: \"{request.Request.Payload}\", "
                             + $"command: \"{request.Request.Command}\", "
                             + $"original: \"{request.Request.OriginalUtterance}\"");
-                    else if (answer.Exception != null) scope?.Log($"Error:\"{answer.Exception.Message}\", input: \"{input}\"");
 
                     var response = AliceResponseRendererHelper.CreateAliceResponse(answer, request.Session, x => Random.Next(0, x));
                     return response;
