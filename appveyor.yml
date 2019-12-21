@@ -10,7 +10,7 @@ environment:
   SECRET_TOKEN:
     secure: qgoI0YFEZCz4eO9+7MJxvQ==
 
-image: Ubuntu
+image: Visual Studio 2019
 
 before_build:
 - dotnet restore ./src/AliceInventory.sln
