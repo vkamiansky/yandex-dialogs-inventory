@@ -47,5 +47,3 @@ deploy_script:
         Write-Host "No deployment scenario. Branch:" $env:APPVEYOR_REPO_BRANCH
     }
 
-    exit 0
-
