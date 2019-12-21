@@ -9,54 +9,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="BouncyCastle.Crypto">
-      <HintPath>bin\Debug\netcoreapp3.1\BouncyCastle.Crypto.dll</HintPath>
-    </Reference>
-    <Reference Include="DnsClient">
-      <HintPath>bin\Debug\netcoreapp3.1\DnsClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Jaeger">
-      <HintPath>bin\Debug\netcoreapp3.1\Jaeger.dll</HintPath>
-    </Reference>
-    <Reference Include="Jaeger.Thrift">
-      <HintPath>bin\Debug\netcoreapp3.1\Jaeger.Thrift.dll</HintPath>
-    </Reference>
-    <Reference Include="Jaeger.Thrift.VendoredThrift">
-      <HintPath>bin\Debug\netcoreapp3.1\Jaeger.Thrift.VendoredThrift.dll</HintPath>
-    </Reference>
-    <Reference Include="MailKit">
-      <HintPath>bin\Debug\netcoreapp3.1\MailKit.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.Mvc.Testing">
-      <HintPath>bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Mvc.Testing.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.TestHost">
-      <HintPath>bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.TestHost.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyModel">
-      <HintPath>bin\Debug\netcoreapp3.1\Microsoft.Extensions.DependencyModel.dll</HintPath>
-    </Reference>
-    <Reference Include="MimeKit">
-      <HintPath>bin\Debug\netcoreapp3.1\MimeKit.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Bson">
-      <HintPath>bin\Debug\netcoreapp3.1\MongoDB.Bson.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Driver">
-      <HintPath>bin\Debug\netcoreapp3.1\MongoDB.Driver.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Driver.Core">
-      <HintPath>bin\Debug\netcoreapp3.1\MongoDB.Driver.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTracing">
-      <HintPath>bin\Debug\netcoreapp3.1\OpenTracing.dll</HintPath>
-    </Reference>
-    <Reference Include="VaultSharp">
-      <HintPath>bin\Debug\netcoreapp3.1\VaultSharp.dll</HintPath>
-    </Reference>
+    <PackageReference Include="BouncyCastle.Crypto" Version="1.8.0-beta4" />
+    <PackageReference Include="DnsClient" Version="1.2.0" />
+    <PackageReference Include="Jaeger" Version="0.3.6" />
+    <PackageReference Include="Jaeger.Thrift" Version="0.3.6" />
+    <PackageReference Include="Jaeger.Thrift.VendoredThrift" Version="0.3.6" />
+    <PackageReference Include="MailKit" Version="2.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="3.1.0" />
+    <PackageReference Include="MimeKit" Version="2.4.1" />
+    <PackageReference Include="MongoDB.Bson" Version="2.10.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.10.0" />
+    <PackageReference Include="MongoDB.Driver.Core" Version="2.10.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="OpenTracing" Version="0.12.1" />
+    <PackageReference Include="VaultSharp" Version="0.11.1002" />
   </ItemGroup>
 
 
