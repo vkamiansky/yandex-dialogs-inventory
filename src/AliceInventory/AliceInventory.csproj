@@ -27,5 +27,14 @@
     <PackageReference Include="VaultSharp" Version="0.11.1002" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="EP.Core.Core">
+      <HintPath>..\..\EP_lib\EP.Core.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Morphology.Core">
+      <HintPath>..\..\EP_lib\EP.Morphology.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 
 </Project>
