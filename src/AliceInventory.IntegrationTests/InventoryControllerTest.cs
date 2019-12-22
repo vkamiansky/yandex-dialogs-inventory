@@ -14,6 +14,7 @@ namespace AliceInventory.IntegrationTests
 {
     public class InventoryControllerTest
     {
+
         private static readonly Meta MetaExample = new Meta()
         {
             Locale = "ru-RU",

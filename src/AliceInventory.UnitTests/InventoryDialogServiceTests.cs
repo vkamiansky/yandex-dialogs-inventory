@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using AliceInventory.Logic.Parser;
 using Xunit;
 using Moq;
 
@@ -14,19 +15,22 @@ namespace AliceInventory.UnitTests
         public void ProcessAddNewEntry()
         {
             var userId = "user1";
-            var entryName = "яблоки";
+            var entryName = WordNormalizer.Normalize("яблоки");
             var entryQuantity = 12.123d;
             var entryId = Guid.NewGuid();
             var dataUnitOfMeasure = Data.UnitOfMeasure.Kg;
-            var entries = new[]{
-                new Data.Entry(){
+            var entries = new[]
+            {
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
-                    Name = "груши",
+                    Name = "груша",
                     UnitOfMeasure = Data.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 },
-                new Data.Entry(){
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = entryName,
@@ -38,18 +42,19 @@ namespace AliceInventory.UnitTests
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
             // Returning all the user's entries
             storageMock.Setup(x => x.ReadAllEntries(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(entries);
             // Creating a new entry and returning its ID
             storageMock.Setup(x => x.CreateEntry(
-                It.Is<string>(y => y == userId),
-                It.Is<string>(y => y == entryName),
-                It.Is<double>(y => Math.Abs(y - entryQuantity) < TOLERANCE),
-                It.Is<Data.UnitOfMeasure>(y => y == dataUnitOfMeasure)))
+                    It.Is<string>(y => y == userId),
+                    It.Is<string>(y => y == entryName),
+                    It.Is<double>(y => Math.Abs(y - entryQuantity) < TOLERANCE),
+                    It.Is<Data.UnitOfMeasure>(y => y == dataUnitOfMeasure)))
                 .Returns(entryId);
 
             var russianCulture = new CultureInfo("ru-RU");
-            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+            var userInput = new Logic.UserInput
+                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
             // The command as returned from the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -64,17 +69,17 @@ namespace AliceInventory.UnitTests
 
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<Logic.UserInput>(y =>
-                    y.Raw == userInput.Raw
-                    && y.Prepared == userInput.Prepared
-                    && y.Button == userInput.Button
-                    && y.CultureInfo == userInput.CultureInfo)))
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the last successful operation result from the cache
             cacheMock.Setup(x => x.Get(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult());
             // Saving the newly produced successful result to the cache
             cacheMock.Setup(x => x.Set(
@@ -123,7 +128,7 @@ namespace AliceInventory.UnitTests
         public void ProcessDeleteEntry()
         {
             var userId = "user1";
-            var entryName = "груша";
+            var entryName = WordNormalizer.Normalize("груш");
             var stateQuantity = 15.2f;
             var entryQuantity = 15.2f;
             var resultQuantity = 15.2f;
@@ -131,11 +136,13 @@ namespace AliceInventory.UnitTests
             var stateUnitOfMeasure = Data.UnitOfMeasure.Kg;
             var entryUnitOfMeasure = Logic.UnitOfMeasure.Kg;
             var resultUnitOfMeasure = Logic.UnitOfMeasure.Kg;
-            var entries = new[]{
-                new Data.Entry(){
+            var entries = new[]
+            {
+                new Data.Entry()
+                {
                     Id = stateId,
                     UserId = userId,
-                    Name = "груши",
+                    Name = "груша",
                     UnitOfMeasure = stateUnitOfMeasure,
                     Quantity = stateQuantity
                 }
@@ -144,19 +151,20 @@ namespace AliceInventory.UnitTests
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
             // Returning all the user's entries
             storageMock.Setup(x => x.ReadAllEntries(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(entries);
             // Deleting the entry by its ID
             storageMock.Setup(x => x.DeleteEntry(
                 It.Is<Guid>(y => y == stateId)));
 
             var russianCulture = new CultureInfo("ru-RU");
-            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+            var userInput = new Logic.UserInput
+                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
 
             // The command as returned from the parser
-            var parsedCommand = new Logic.Parser.ParsedCommand
+            var parsedCommand = new ParsedCommand
             {
-                Type = Logic.Parser.ParsedPhraseType.Delete,
+                Type = ParsedPhraseType.Delete,
                 Data = new Logic.ParsedEntry
                 {
                     Name = entryName,
@@ -167,17 +175,17 @@ namespace AliceInventory.UnitTests
 
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<Logic.UserInput>(y =>
-                    y.Raw == userInput.Raw
-                    && y.Prepared == userInput.Prepared
-                    && y.Button == userInput.Button
-                    && y.CultureInfo == userInput.CultureInfo)))
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the last successful operation result from the cache
             cacheMock.Setup(x => x.Get(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult());
             // Saving the newly produced successful result to the cache
             cacheMock.Setup(x => x.Set(
@@ -265,7 +273,7 @@ namespace AliceInventory.UnitTests
             string stateName,
             double stateQuantity,
             Logic.UnitOfMeasure stateUnit,
-            Logic.Parser.ParsedPhraseType entryType,
+            ParsedPhraseType entryType,
             string entryName,
             double? entryQuantity,
             Logic.UnitOfMeasure? entryUnit,
@@ -274,21 +282,28 @@ namespace AliceInventory.UnitTests
             string resultName,
             double resultQuantity,
             Logic.UnitOfMeasure resultUnit
-            )
+        )
         {
             var userId = "user1";
             var storageEntryId = new Guid(storageEntryIdString);
+            storageEntryName = WordNormalizer.Normalize(storageEntryName);
+            entryName = WordNormalizer.Normalize(entryName);
+            resultName = WordNormalizer.Normalize(resultName);
+            stateName = WordNormalizer.Normalize(stateName);
 
             // These are the entries already in storage
-            var entries = new[]{
-                new Data.Entry(){
+            var entries = new[]
+            {
+                new Data.Entry()
+                {
                     Id = storageEntryId,
                     UserId = userId,
                     Name = storageEntryName,
                     UnitOfMeasure = storageEntryUnit,
                     Quantity = storageEntryQuantity
                 },
-                new Data.Entry(){
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = storageEntryName + "text",
@@ -301,7 +316,7 @@ namespace AliceInventory.UnitTests
 
             // Returning entries from storage
             storageMock.Setup(x => x.ReadAllEntries(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(entries);
             // Accepting request for entry update
             storageMock.Setup(x => x.UpdateEntry(
@@ -309,10 +324,11 @@ namespace AliceInventory.UnitTests
                 It.Is<double>(y => Math.Abs(y - updateQuantity) < TOLERANCE)));
 
             var russianCulture = new CultureInfo("ru-RU");
-            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+            var userInput = new Logic.UserInput
+                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
 
             // The entry as recognized by the parser
-            var parsedCommand = new Logic.Parser.ParsedCommand
+            var parsedCommand = new ParsedCommand
             {
                 Type = entryType,
                 Data = new Logic.ParsedEntry
@@ -326,17 +342,17 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<Logic.UserInput>(y =>
-                    y.Raw == userInput.Raw
-                    && y.Prepared == userInput.Prepared
-                    && y.Button == userInput.Button
-                    && y.CultureInfo == userInput.CultureInfo)))
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
             cacheMock.Setup(x => x.Get(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult(
                     stateType,
                     new Logic.Entry
@@ -387,11 +403,16 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Hello, Logic.ProcessingResultType.GreetingRequested)]
-        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Help, Logic.ProcessingResultType.HelpRequested)]
-        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Exit, Logic.ProcessingResultType.ExitRequested)]
-        [InlineData(Logic.ProcessingResultType.ClearRequested, Logic.Parser.ParsedPhraseType.Decline, Logic.ProcessingResultType.Declined)]
-        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Clear, Logic.ProcessingResultType.ClearRequested)]
+        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Hello,
+            Logic.ProcessingResultType.GreetingRequested)]
+        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Help,
+            Logic.ProcessingResultType.HelpRequested)]
+        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Exit,
+            Logic.ProcessingResultType.ExitRequested)]
+        [InlineData(Logic.ProcessingResultType.ClearRequested, Logic.Parser.ParsedPhraseType.Decline,
+            Logic.ProcessingResultType.Declined)]
+        [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Clear,
+            Logic.ProcessingResultType.ClearRequested)]
         public void ProcessSimpleCommands(
             Logic.ProcessingResultType stateType,
             Logic.Parser.ParsedPhraseType entryType,
@@ -399,7 +420,8 @@ namespace AliceInventory.UnitTests
         {
             var userId = "user1";
             var russianCulture = new CultureInfo("ru-RU");
-            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+            var userInput = new Logic.UserInput
+                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
 
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
@@ -410,17 +432,17 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<Logic.UserInput>(y =>
-                    y.Raw == userInput.Raw
-                    && y.Prepared == userInput.Prepared
-                    && y.Button == userInput.Button
-                    && y.CultureInfo == userInput.CultureInfo)))
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
             cacheMock.Setup(x => x.Get(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult(stateType));
             // Accepting the result of the current completed logical operation
             cacheMock.Setup(x => x.Set(
@@ -455,22 +477,26 @@ namespace AliceInventory.UnitTests
         {
             var userId = "user1";
 
-            var entries = new[]{
-                new Data.Entry(){
+            var entries = new[]
+            {
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "груши",
                     UnitOfMeasure = Data.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 },
-                new Data.Entry(){
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
                     UnitOfMeasure = Data.UnitOfMeasure.Unit,
                     Quantity = 12
                 },
-                new Data.Entry(){
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
@@ -479,18 +505,22 @@ namespace AliceInventory.UnitTests
                 },
             };
 
-            var resultEntries = new[]{
-                new Logic.Entry(){
+            var resultEntries = new[]
+            {
+                new Logic.Entry()
+                {
                     Name = "груши",
                     UnitOfMeasure = Logic.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 },
-                new Logic.Entry(){
+                new Logic.Entry()
+                {
                     Name = "яблоки",
                     UnitOfMeasure = Logic.UnitOfMeasure.Unit,
                     Quantity = 12
                 },
-                new Logic.Entry(){
+                new Logic.Entry()
+                {
                     Name = "яблоки",
                     UnitOfMeasure = Logic.UnitOfMeasure.Kg,
                     Quantity = 12.5f
@@ -501,11 +531,12 @@ namespace AliceInventory.UnitTests
 
             // Returning entries from storage
             storageMock.Setup(x => x.ReadAllEntries(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(entries);
 
             var russianCulture = new CultureInfo("ru-RU");
-            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+            var userInput = new Logic.UserInput
+                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
 
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
@@ -516,29 +547,29 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                It.Is<Logic.UserInput>(y =>
-                    y.Raw == userInput.Raw
-                    && y.Prepared == userInput.Prepared
-                    && y.Button == userInput.Button
-                    && y.CultureInfo == userInput.CultureInfo)))
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
             cacheMock.Setup(x => x.Get(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult(Logic.ProcessingResultType.HelpRequested));
             // Accepting the result of the current completed logical operation
             cacheMock.Setup(x => x.Set(
                 It.Is<string>(y => y == userId),
                 It.Is<Logic.ProcessingResult>(y =>
                     y.Type == Logic.ProcessingResultType.ListRead
-                    && ((Logic.Entry[])y.Data).Length == entries.Length
-                    && ((Logic.Entry[])y.Data).Zip(resultEntries, (z1, z2) =>
-                         z1.Name == z2.Name
-                         && z1.Quantity == z2.Quantity
-                         && z1.UnitOfMeasure == z2.UnitOfMeasure).All(z => z)
-                    )));
+                    && ((Logic.Entry[]) y.Data).Length == entries.Length
+                    && ((Logic.Entry[]) y.Data).Zip(resultEntries, (z1, z2) =>
+                        z1.Name == z2.Name
+                        && z1.Quantity == z2.Quantity
+                        && z1.UnitOfMeasure == z2.UnitOfMeasure).All(z => z)
+                )));
 
             var sut = new Logic.InventoryDialogService(
                 storageMock.Object,
@@ -550,8 +581,8 @@ namespace AliceInventory.UnitTests
 
             // Checking the result
             Assert.Equal(Logic.ProcessingResultType.ListRead, result.Type);
-            Assert.Equal(resultEntries.Length, ((Logic.Entry[])result.Data).Length);
-            Assert.All(resultEntries.Zip((Logic.Entry[])result.Data, (expected, actual) => (expected, actual)),
+            Assert.Equal(resultEntries.Length, ((Logic.Entry[]) result.Data).Length);
+            Assert.All(resultEntries.Zip((Logic.Entry[]) result.Data, (expected, actual) => (expected, actual)),
                 x =>
                 {
                     Assert.Equal(x.expected.Name, x.actual.Name);
@@ -585,7 +616,8 @@ namespace AliceInventory.UnitTests
                 It.Is<string>(y => y == userId)));
 
             var russianCulture = new CultureInfo("ru-RU");
-            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+            var userInput = new Logic.UserInput
+                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
 
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
@@ -596,17 +628,17 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                            It.Is<Logic.UserInput>(y =>
-                                y.Raw == userInput.Raw
-                                && y.Prepared == userInput.Prepared
-                                && y.Button == userInput.Button
-                                && y.CultureInfo == userInput.CultureInfo)))
-                            .Returns(parsedCommand);
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
+                .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
             cacheMock.Setup(x => x.Get(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult(Logic.ProcessingResultType.ClearRequested));
             // Accepting the result of the current completed logical operation
             cacheMock.Setup(x => x.Set(
@@ -647,11 +679,12 @@ namespace AliceInventory.UnitTests
 
             // No email stored for user
             storageMock.Setup(x => x.ReadUserMail(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(string.Empty);
 
             var russianCulture = new CultureInfo("ru-RU");
-            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+            var userInput = new Logic.UserInput
+                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -661,17 +694,17 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                            It.Is<Logic.UserInput>(y =>
-                                y.Raw == userInput.Raw
-                                && y.Prepared == userInput.Prepared
-                                && y.Button == userInput.Button
-                                && y.CultureInfo == userInput.CultureInfo)))
-                            .Returns(parsedCommand);
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
+                .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
             cacheMock.Setup(x => x.Get(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult(Logic.ProcessingResultType.HelpRequested));
             // Accepting the result of the current completed logical operation
             cacheMock.Setup(x => x.Set(
@@ -708,22 +741,26 @@ namespace AliceInventory.UnitTests
         {
             var emailAddress = "some.mail@test.org";
             var userId = "user1";
-            var entries = new[]{
-                new Data.Entry(){
+            var entries = new[]
+            {
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "груши",
                     UnitOfMeasure = Data.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 },
-                new Data.Entry(){
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
                     UnitOfMeasure = Data.UnitOfMeasure.Unit,
                     Quantity = 12
                 },
-                new Data.Entry(){
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
@@ -732,18 +769,22 @@ namespace AliceInventory.UnitTests
                 },
             };
 
-            var resultEntries = new[]{
-                new Logic.Entry(){
+            var resultEntries = new[]
+            {
+                new Logic.Entry()
+                {
                     Name = "груши",
                     UnitOfMeasure = Logic.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 },
-                new Logic.Entry(){
+                new Logic.Entry()
+                {
                     Name = "яблоки",
                     UnitOfMeasure = Logic.UnitOfMeasure.Unit,
                     Quantity = 12
                 },
-                new Logic.Entry(){
+                new Logic.Entry()
+                {
                     Name = "яблоки",
                     UnitOfMeasure = Logic.UnitOfMeasure.Kg,
                     Quantity = 12.5f
@@ -758,11 +799,12 @@ namespace AliceInventory.UnitTests
                 It.Is<string>(y => y == emailAddress)));
             // Returning entries from storage
             storageMock.Setup(x => x.ReadAllEntries(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(entries);
 
             var russianCulture = new CultureInfo("ru-RU");
-            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+            var userInput = new Logic.UserInput
+                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
 
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
@@ -774,24 +816,24 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                            It.Is<Logic.UserInput>(y =>
-                                y.Raw == userInput.Raw
-                                && y.Prepared == userInput.Prepared
-                                && y.Button == userInput.Button
-                                && y.CultureInfo == userInput.CultureInfo)))
-                            .Returns(parsedCommand);
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
+                .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
             cacheMock.Setup(x => x.Get(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult(Logic.ProcessingResultType.HelpRequested));
             // Accepting the result of the current completed logical operation
             cacheMock.Setup(x => x.Set(
                 It.Is<string>(y => y == userId),
                 It.Is<Logic.ProcessingResult>(y =>
-                y.Type == Logic.ProcessingResultType.MailSent
-                && y.Data.ToString() == emailAddress)));
+                    y.Type == Logic.ProcessingResultType.MailSent
+                    && y.Data.ToString() == emailAddress)));
 
             var emailerMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
             // Send an email with all the user's entries
@@ -836,28 +878,35 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData(Logic.ProcessingResultType.HelpRequested, Logic.Parser.ParsedPhraseType.SendMail, Logic.ProcessingResultType.MailSent)]
-        [InlineData(Logic.ProcessingResultType.MailAdded, Logic.Parser.ParsedPhraseType.SendMail, Logic.ProcessingResultType.MailSent)]
-        public void ProcessSendListWithEmailStored(Logic.ProcessingResultType stateType, Logic.Parser.ParsedPhraseType entryType, Logic.ProcessingResultType resultType)
+        [InlineData(Logic.ProcessingResultType.HelpRequested, Logic.Parser.ParsedPhraseType.SendMail,
+            Logic.ProcessingResultType.MailSent)]
+        [InlineData(Logic.ProcessingResultType.MailAdded, Logic.Parser.ParsedPhraseType.SendMail,
+            Logic.ProcessingResultType.MailSent)]
+        public void ProcessSendListWithEmailStored(Logic.ProcessingResultType stateType,
+            Logic.Parser.ParsedPhraseType entryType, Logic.ProcessingResultType resultType)
         {
             var emailAddress = "some.mail@test.org";
             var userId = "user1";
-            var entries = new[]{
-                new Data.Entry(){
+            var entries = new[]
+            {
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "груши",
                     UnitOfMeasure = Data.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 },
-                new Data.Entry(){
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
                     UnitOfMeasure = Data.UnitOfMeasure.Unit,
                     Quantity = 12
                 },
-                new Data.Entry(){
+                new Data.Entry()
+                {
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Name = "яблоки",
@@ -866,18 +915,22 @@ namespace AliceInventory.UnitTests
                 },
             };
 
-            var resultEntries = new[]{
-                new Logic.Entry(){
+            var resultEntries = new[]
+            {
+                new Logic.Entry()
+                {
                     Name = "груши",
                     UnitOfMeasure = Logic.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 },
-                new Logic.Entry(){
+                new Logic.Entry()
+                {
                     Name = "яблоки",
                     UnitOfMeasure = Logic.UnitOfMeasure.Unit,
                     Quantity = 12
                 },
-                new Logic.Entry(){
+                new Logic.Entry()
+                {
                     Name = "яблоки",
                     UnitOfMeasure = Logic.UnitOfMeasure.Kg,
                     Quantity = 12.5f
@@ -887,15 +940,16 @@ namespace AliceInventory.UnitTests
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
 
             storageMock.Setup(x => x.ReadUserMail(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(emailAddress);
             // Returning entries from the storage
             storageMock.Setup(x => x.ReadAllEntries(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(entries);
 
             var russianCulture = new CultureInfo("ru-RU");
-            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+            var userInput = new Logic.UserInput
+                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -905,23 +959,23 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                                        It.Is<Logic.UserInput>(y =>
-                                            y.Raw == userInput.Raw
-                                            && y.Prepared == userInput.Prepared
-                                            && y.Button == userInput.Button
-                                            && y.CultureInfo == userInput.CultureInfo)))
-                                        .Returns(parsedCommand);
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
+                .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
             cacheMock.Setup(x => x.Get(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult(stateType));
             // Accepting the result of the current completed logical operation
             cacheMock.Setup(x => x.Set(
                 It.Is<string>(y => y == userId),
                 It.Is<Logic.ProcessingResult>(y =>
-                y.Type == resultType)));
+                    y.Type == resultType)));
 
             var emailerMock = new Mock<Logic.Email.IInventoryEmailService>(MockBehavior.Strict);
             // Send an email with all the user's entries
@@ -978,7 +1032,8 @@ namespace AliceInventory.UnitTests
                 It.Is<string>(y => y == emailAddress)));
 
             var russianCulture = new CultureInfo("ru-RU");
-            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+            var userInput = new Logic.UserInput
+                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -989,24 +1044,24 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                            It.Is<Logic.UserInput>(y =>
-                                y.Raw == userInput.Raw
-                                && y.Prepared == userInput.Prepared
-                                && y.Button == userInput.Button
-                                && y.CultureInfo == userInput.CultureInfo)))
-                            .Returns(parsedCommand);
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
+                .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
             cacheMock.Setup(x => x.Get(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult(Logic.ProcessingResultType.RequestedMail));
             // Accepting the result of the current completed logical operation
             cacheMock.Setup(x => x.Set(
                 It.Is<string>(y => y == userId),
                 It.Is<Logic.ProcessingResult>(y =>
-                y.Type == Logic.ProcessingResultType.MailAdded
-                && y.Data.ToString() == emailAddress)));
+                    y.Type == Logic.ProcessingResultType.MailAdded
+                    && y.Data.ToString() == emailAddress)));
 
             var sut = new Logic.InventoryDialogService(
                 storageMock.Object,
@@ -1045,13 +1100,14 @@ namespace AliceInventory.UnitTests
 
             // The deleted email address is returned as a result
             storageMock.Setup(x => x.ReadUserMail(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(emailAddress);
             storageMock.Setup(x => x.DeleteUserMail(
                 It.Is<string>(y => y == userId)));
 
             var russianCulture = new CultureInfo("ru-RU");
-            var userInput = new Logic.UserInput { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+            var userInput = new Logic.UserInput
+                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
 
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
@@ -1062,24 +1118,24 @@ namespace AliceInventory.UnitTests
             // Returning a parsed user command
             var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
             parserMock.Setup(x => x.ParseInput(
-                            It.Is<Logic.UserInput>(y =>
-                                y.Raw == userInput.Raw
-                                && y.Prepared == userInput.Prepared
-                                && y.Button == userInput.Button
-                                && y.CultureInfo == userInput.CultureInfo)))
-                            .Returns(parsedCommand);
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
+                .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
             // Returning the result of last successful logical operation
             cacheMock.Setup(x => x.Get(
-                It.Is<string>(y => y == userId)))
+                    It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult(Logic.ProcessingResultType.HelpRequested));
             // Accepting the result of the current completed logical operation
             cacheMock.Setup(x => x.Set(
                 It.Is<string>(y => y == userId),
                 It.Is<Logic.ProcessingResult>(y =>
-                y.Type == Logic.ProcessingResultType.MailDeleted
-                && y.Data.ToString() == emailAddress)));
+                    y.Type == Logic.ProcessingResultType.MailDeleted
+                    && y.Data.ToString() == emailAddress)));
 
             var sut = new Logic.InventoryDialogService(
                 storageMock.Object,
