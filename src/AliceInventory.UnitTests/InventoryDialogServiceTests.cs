@@ -123,7 +123,7 @@ namespace AliceInventory.UnitTests
         public void ProcessDeleteEntry()
         {
             var userId = "user1";
-            var entryName = "груши";
+            var entryName = "груша";
             var stateQuantity = 15.2f;
             var entryQuantity = 15.2f;
             var resultQuantity = 15.2f;
