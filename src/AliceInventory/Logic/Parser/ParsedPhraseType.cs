@@ -10,6 +10,7 @@
         Delete,
         More,
         Clear,
+        ReadItem,
         ReadList,
         SendMail,
         Mail,

@@ -43,6 +43,7 @@ namespace AliceInventory.Logic
                 [ParsedPhraseType.Decline] = ProcessDecline,
                 [ParsedPhraseType.Clear] = ProcessClear,
                 [ParsedPhraseType.ReadList] = ProcessReadList,
+                [ParsedPhraseType.ReadItem] = ProcessReadItem,
                 [ParsedPhraseType.SendMail] = ProcessSendMail,
                 [ParsedPhraseType.Mail] = ProcessAddMail,
                 [ParsedPhraseType.DeleteMail] = ProcessDeleteMail,
@@ -212,6 +213,18 @@ namespace AliceInventory.Logic
         {
             var entries = services.Storage.ReadAllEntries(args.UserId).ToLogic();
             return new ProcessingResult(ProcessingResultType.ListRead, entries);
+        }
+
+        private static ProcessingResult ProcessReadItem(Services services, ProcessingArgs args)
+        {
+            if (!(args.CommandData is ParsedEntry parsedEntry))
+                return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
+
+            var entry = ConvertToEntry(parsedEntry);
+
+            var entries = services.Storage.ReadAllEntries(args.UserId);
+            var res = entries.Where(x=>x.Name == entry.Name).ToArray().ToLogic();
+            return new ProcessingResult(ProcessingResultType.ItemRead, res);
         }
 
         private static ProcessingResult ProcessSendMail(Services services, ProcessingArgs args)
