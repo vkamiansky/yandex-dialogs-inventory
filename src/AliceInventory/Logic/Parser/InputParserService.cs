@@ -44,6 +44,12 @@ namespace AliceInventory.Logic.Parser
             new CommandTemplate(ParsedPhraseType.ReadList, x => x.Prepared, RegexHelper.ReadWord, RegexHelper.ListWord),
             new CommandTemplate(ParsedPhraseType.ReadList, x => x.Button, RegexHelper.ReadWord, RegexHelper.ListWord),
 
+
+            //Read Item
+            new CommandTemplate(ParsedPhraseType.ReadItem, x => x.Prepared, $"сколько {RegexHelper.EntryName}"),
+            new CommandTemplate(ParsedPhraseType.ReadItem, x => x.Prepared, RegexHelper.ReadWord, RegexHelper.EntryName),
+            new CommandTemplate(ParsedPhraseType.ReadItem, x => x.Button, RegexHelper.ReadWord, RegexHelper.EntryName),
+
             //Clear
             new CommandTemplate(ParsedPhraseType.Clear, x => x.Prepared, RegexHelper.ClearWord),
             new CommandTemplate(ParsedPhraseType.Clear, x => x.Button, RegexHelper.ClearWord),

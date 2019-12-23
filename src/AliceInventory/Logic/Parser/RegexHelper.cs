@@ -24,7 +24,7 @@ namespace AliceInventory.Logic.Parser
         public const string CancelWord =
             @"(?:отмен(?:а|и(?:ть)?|я(?:й|ю)))";
         public const string MoreWord =
-            @"(?:ещ(?:е|ё))";
+            @"(?:ещ(?:е|ё))";        
         public const string HelpWord =
             @"(?:помо(?:ги(?:те)?|щь)|хелп|спас(?:и|а(?:й(?:те)?))|выручай(?:те)?|что ты (?:уме|мож)ешь\??)";
         public const string ReadWord =
