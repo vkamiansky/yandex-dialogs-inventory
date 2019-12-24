@@ -72,6 +72,16 @@ namespace AliceInventory.Controllers.AliceResponseRender
             Buttons = MainButtons
         };
 
+        private static readonly ResponseTemplate InvalidCountEnteredTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate(
+                    "Извините, количество может быть только положительным")
+            },
+            Buttons = MainButtons
+        };
+
         private static readonly ResponseTemplate AddedTemplate = new ResponseTemplate()
         {
             TextAndSpeechTemplates = new[]
@@ -294,6 +304,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
             responseTemplates = new Dictionary<ResponseFormat, ResponseTemplate>
             {
                 [ResponseFormat.GreetingRequested] = GreetingRequestTemplate,
+                [ResponseFormat.InvalidCountEntered] = InvalidCountEnteredTemplate,
                 [ResponseFormat.Added] = AddedTemplate,
                 [ResponseFormat.AddCanceled] = AddCanceledTemplate,
                 [ResponseFormat.Deleted] = DeletedTemplate,
@@ -340,6 +351,13 @@ namespace AliceInventory.Controllers.AliceResponseRender
                         return new ResponseArgs()
                         {
                             ResponseType = ResponseFormat.GreetingRequested
+                        };
+                    }
+                case ProcessingResultType.InvalidCount:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.InvalidCountEntered
                         };
                     }
                 case ProcessingResultType.Declined:
@@ -424,23 +442,23 @@ namespace AliceInventory.Controllers.AliceResponseRender
 
                 case ProcessingResultType.ItemRead
                     when result.Data is Entry[] entries:
-                {
-                    if (entries.Length > 0)
                     {
-                        return new ResponseArgs()
+                        if (entries.Length > 0)
                         {
-                            ResponseType = ResponseFormat.ItemRead,
-                            Data = new object[] { entries.ToTextList() }
-                        };
-                    }
-                    else
-                    {
-                        return new ResponseArgs()
+                            return new ResponseArgs()
+                            {
+                                ResponseType = ResponseFormat.ItemRead,
+                                Data = new object[] { entries.ToTextList() }
+                            };
+                        }
+                        else
                         {
-                            ResponseType = ResponseFormat.EmptyItemRead
-                        };
+                            return new ResponseArgs()
+                            {
+                                ResponseType = ResponseFormat.EmptyItemRead
+                            };
+                        }
                     }
-                }
 
                 case ProcessingResultType.MailSent
                     when result.Data is string email:

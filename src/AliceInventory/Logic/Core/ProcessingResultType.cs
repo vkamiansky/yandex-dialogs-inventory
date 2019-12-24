@@ -4,6 +4,7 @@ namespace AliceInventory.Logic
     {
         GreetingRequested,
         Declined,
+        InvalidCount,
         Added,
         AddCanceled,
         Deleted,

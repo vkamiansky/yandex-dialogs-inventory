@@ -3,6 +3,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
     public enum ResponseFormat
     {
         GreetingRequested,
+        InvalidCountEntered,
         Declined,
         Added,
         AddCanceled,
