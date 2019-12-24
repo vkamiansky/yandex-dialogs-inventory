@@ -67,6 +67,26 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
+        [InlineData("сколько яблок", "яблоко")]
+        [InlineData("покажи сколько яблок", "яблоко")]
+        [InlineData("выведи яблоки", "яблоко")]
+        public void ReadItemPreparedParsing(string prepared, string entryName)
+        {
+            var input = new UserInput
+            {
+                Prepared = prepared,
+                CultureInfo = _defaultCulture
+            };
+            ParsedCommand parsedCommand = _parser.ParseInput(input);
+
+            Assert.Equal(ParsedPhraseType.ReadItem, parsedCommand.Type);
+
+            var data = parsedCommand.Data as ParsedEntry;
+
+            Assert.Equal(entryName, data?.Name);
+        }
+
+        [Theory]
         [InlineData("добавь 5 ак47", "ак47", 5, null)]
         [InlineData("добавь ак 47 3 штуки", "ак 47", 3, UnitOfMeasure.Unit)]
         [InlineData("ак 47 3,5 килограмма", "ак 47", 3.5, UnitOfMeasure.Kg)]
@@ -159,9 +179,6 @@ namespace AliceInventory.UnitTests
         [InlineData("зачитай список", ParsedPhraseType.ReadList)]
         [InlineData("читай список", ParsedPhraseType.ReadList)]
         [InlineData("что в списке", ParsedPhraseType.ReadList)]
-        [InlineData("сколько яблок", ParsedPhraseType.ReadItem)]
-        [InlineData("покажи яблоки", ParsedPhraseType.ReadItem)]
-        [InlineData("покажи сколько яблок", ParsedPhraseType.ReadItem)]
         [InlineData("да", ParsedPhraseType.Accept)]
         [InlineData("конечно", ParsedPhraseType.Accept)]
         [InlineData("конечно давай", ParsedPhraseType.Accept)]
