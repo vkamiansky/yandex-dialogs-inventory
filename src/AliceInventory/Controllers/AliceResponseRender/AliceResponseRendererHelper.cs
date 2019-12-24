@@ -155,6 +155,15 @@ namespace AliceInventory.Controllers.AliceResponseRender
             Buttons = MainButtons
         };
 
+        private static readonly ResponseTemplate ItemReadTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Ваш запрос:\n{0}"),
+            },
+            Buttons = MainButtons
+        };
+
         private static readonly ResponseTemplate EmptyListReadTemplate = new ResponseTemplate()
         {
             TextAndSpeechTemplates = new[]
@@ -162,6 +171,15 @@ namespace AliceInventory.Controllers.AliceResponseRender
                 new TextAndSpeechTemplate("Ваш список пуст"),
                 new TextAndSpeechTemplate("Пока здесь пусто"),
                 new TextAndSpeechTemplate("Пока ничего нет"),
+            },
+            Buttons = MainButtons
+        };
+
+        private static readonly ResponseTemplate NoItemReadTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("В списке такого не найдено")
             },
             Buttons = MainButtons
         };
@@ -286,7 +304,9 @@ namespace AliceInventory.Controllers.AliceResponseRender
                 [ResponseFormat.ExitRequested] = ExitRequestTemplate,
                 [ResponseFormat.HelpRequested] = HelpRequestTemplate,
                 [ResponseFormat.ListRead] = ListReadTemplate,
+                [ResponseFormat.ItemRead] = ItemReadTemplate,
                 [ResponseFormat.EmptyListRead] = EmptyListReadTemplate,
+                [ResponseFormat.EmptyItemRead] = NoItemReadTemplate,
                 [ResponseFormat.MailSent] = MailSentTemplate,
                 [ResponseFormat.MailRequest] = RequestMailTemplate,
                 [ResponseFormat.MailIsEmpty] = MailIsEmptyTemplate,
@@ -401,6 +421,26 @@ namespace AliceInventory.Controllers.AliceResponseRender
                             };
                         }
                     }
+
+                case ProcessingResultType.ItemRead
+                    when result.Data is Entry[] entries:
+                {
+                    if (entries.Length > 0)
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.ItemRead,
+                            Data = new object[] { entries.ToTextList() }
+                        };
+                    }
+                    else
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.EmptyItemRead
+                        };
+                    }
+                }
 
                 case ProcessingResultType.MailSent
                     when result.Data is string email:
