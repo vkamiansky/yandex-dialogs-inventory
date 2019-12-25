@@ -125,7 +125,7 @@ namespace AliceInventory.UnitTests
                 It.IsAny<Data.UnitOfMeasure>()), Times.Once);
         }
 
-        [Fact]
+       [Fact]
         public void ProcessDeleteEntry()
         {
             var userId = "user1";
@@ -228,6 +228,7 @@ namespace AliceInventory.UnitTests
                 It.IsAny<Guid>()), Times.Once);
         }
 
+
         [Theory]
         [InlineData(
             "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
@@ -265,6 +266,30 @@ namespace AliceInventory.UnitTests
             Logic.Parser.ParsedPhraseType.Cancel, null, null, null,
             12.5f,
             Logic.ProcessingResultType.AddCanceled, "груши", 3, Logic.UnitOfMeasure.Kg)]
+        [InlineData(
+            "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
+            Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Unit,
+            ParsedPhraseType.Multiply, "яблоки", 2d, Logic.UnitOfMeasure.Kg,
+            31d,
+            Logic.ProcessingResultType.Multiplied, "яблоки", 2d, Logic.UnitOfMeasure.Kg)]
+        [InlineData(
+            "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 30f, Data.UnitOfMeasure.Kg,
+            Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Unit,
+            ParsedPhraseType.Division, "яблоки", 2d, Logic.UnitOfMeasure.Kg,
+            15d,
+            Logic.ProcessingResultType.Divided, "яблоки", 2d, Logic.UnitOfMeasure.Kg)]
+        [InlineData(
+            "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
+            Logic.ProcessingResultType.Multiplied, "груши", 5, Logic.UnitOfMeasure.Unit,
+            ParsedPhraseType.Cancel, null,null,null,
+            3.1d,
+            Logic.ProcessingResultType.MultiplyCanceled, "груши", 5, Logic.UnitOfMeasure.Kg)]
+        [InlineData(
+            "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 5f, Data.UnitOfMeasure.Kg,
+            Logic.ProcessingResultType.Divided, "груши", 5, Logic.UnitOfMeasure.Unit,
+            ParsedPhraseType.Cancel, null, null, null,
+            25d,
+            Logic.ProcessingResultType.DivisionCanceled, "груши", 5, Logic.UnitOfMeasure.Kg)]
         public void ProcessEntryUpdateCommands(
             string storageEntryName,
             string storageEntryIdString,

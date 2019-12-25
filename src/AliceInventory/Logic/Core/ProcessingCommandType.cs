@@ -5,6 +5,8 @@ namespace AliceInventory.Logic
         SayHello,
         Add,
         Delete,
+        Multiply,
+        Division,
         Clear,
         RequestClear,
         ReadList,

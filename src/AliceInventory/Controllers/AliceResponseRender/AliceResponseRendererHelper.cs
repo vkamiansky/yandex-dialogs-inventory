@@ -124,6 +124,43 @@ namespace AliceInventory.Controllers.AliceResponseRender
             },
             Buttons = MainButtons
         };
+        private static readonly ResponseTemplate MultipliedTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Умножила \"{0}\" на {1}"),
+                new TextAndSpeechTemplate("Умножила"),
+            },
+            Buttons = MainButtons
+        };
+        private static readonly ResponseTemplate MultiplyCanceledTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Убрала"),
+                new TextAndSpeechTemplate("Отменила"),
+            },
+            Buttons = MainButtons
+        };
+        private static readonly ResponseTemplate DividedTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Разделила \"{0}\" на {1}"),
+                new TextAndSpeechTemplate("Разделила"),
+            },
+            Buttons = MainButtons
+        };
+        private static readonly ResponseTemplate DivisionCanceledTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Вернула"),
+                new TextAndSpeechTemplate("Вернула как было"),
+                new TextAndSpeechTemplate("Отменила"),
+            },
+            Buttons = MainButtons
+        };
 
         private static readonly ResponseTemplate AllExceptDeletedTemplate = new ResponseTemplate()
         {
@@ -319,6 +356,10 @@ namespace AliceInventory.Controllers.AliceResponseRender
                 [ResponseFormat.AddCanceled] = AddCanceledTemplate,
                 [ResponseFormat.Deleted] = DeletedTemplate,
                 [ResponseFormat.DeleteCanceled] = DeleteCanceledTemplate,
+                [ResponseFormat.Multiplied] = MultipliedTemplate,
+                [ResponseFormat.MultiplyCanceled] = MultiplyCanceledTemplate,
+                [ResponseFormat.Divided] = DividedTemplate,
+                [ResponseFormat.DivisionCanceled] = DivisionCanceledTemplate,
                 [ResponseFormat.AllExceptDeleted] = AllExceptDeletedTemplate,
                 [ResponseFormat.Cleared] = ClearedTemplate,
                 [ResponseFormat.ClearRequested] = ClearRequestedTemplate,
@@ -414,6 +455,42 @@ namespace AliceInventory.Controllers.AliceResponseRender
                             Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
                         };
                     }
+                case ProcessingResultType.Multiplied
+                    when result.Data is Entry entry:
+                {
+                    return new ResponseArgs()
+                    {
+                        ResponseType = ResponseFormat.Multiplied,
+                        Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                    };
+                }
+                case ProcessingResultType.MultiplyCanceled
+                    when result.Data is Entry entry:
+                {
+                    return new ResponseArgs()
+                    {
+                        ResponseType = ResponseFormat.MultiplyCanceled,
+                        Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                    };
+                }
+                case ProcessingResultType.Divided
+                    when result.Data is Entry entry:
+                {
+                    return new ResponseArgs()
+                    {
+                        ResponseType = ResponseFormat.Divided,
+                        Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                    };
+                }
+                case ProcessingResultType.DivisionCanceled
+                    when result.Data is Entry entry:
+                {
+                    return new ResponseArgs()
+                    {
+                        ResponseType = ResponseFormat.DivisionCanceled,
+                        Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                    };
+                }
                 case ProcessingResultType.AllExceptDeleted
                     when result.Data is Entry entry:
                     {
