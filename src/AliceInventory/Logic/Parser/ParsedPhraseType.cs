@@ -8,6 +8,8 @@
         Cancel,
         Add,
         Delete,
+        Multiply,
+        Division,
         DeleteAllExcept,
         More,
         Clear,

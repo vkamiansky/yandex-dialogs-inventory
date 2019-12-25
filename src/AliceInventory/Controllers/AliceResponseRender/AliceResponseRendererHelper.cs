@@ -72,6 +72,16 @@ namespace AliceInventory.Controllers.AliceResponseRender
             Buttons = MainButtons
         };
 
+        private static readonly ResponseTemplate InvalidCountEnteredTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate(
+                    "Извините, количество может быть только положительным")
+            },
+            Buttons = MainButtons
+        };
+
         private static readonly ResponseTemplate AddedTemplate = new ResponseTemplate()
         {
             TextAndSpeechTemplates = new[]
@@ -111,6 +121,43 @@ namespace AliceInventory.Controllers.AliceResponseRender
             {
                 new TextAndSpeechTemplate("Вернула \"{0}\" {1} {2}"),
                 new TextAndSpeechTemplate("Вернула"),
+            },
+            Buttons = MainButtons
+        };
+        private static readonly ResponseTemplate MultipliedTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Умножила \"{0}\" на {1}"),
+                new TextAndSpeechTemplate("Умножила"),
+            },
+            Buttons = MainButtons
+        };
+        private static readonly ResponseTemplate MultiplyCanceledTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Убрала"),
+                new TextAndSpeechTemplate("Отменила"),
+            },
+            Buttons = MainButtons
+        };
+        private static readonly ResponseTemplate DividedTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Разделила \"{0}\" на {1}"),
+                new TextAndSpeechTemplate("Разделила"),
+            },
+            Buttons = MainButtons
+        };
+        private static readonly ResponseTemplate DivisionCanceledTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Вернула"),
+                new TextAndSpeechTemplate("Вернула как было"),
+                new TextAndSpeechTemplate("Отменила"),
             },
             Buttons = MainButtons
         };
@@ -304,10 +351,15 @@ namespace AliceInventory.Controllers.AliceResponseRender
             responseTemplates = new Dictionary<ResponseFormat, ResponseTemplate>
             {
                 [ResponseFormat.GreetingRequested] = GreetingRequestTemplate,
+                [ResponseFormat.InvalidCountEntered] = InvalidCountEnteredTemplate,
                 [ResponseFormat.Added] = AddedTemplate,
                 [ResponseFormat.AddCanceled] = AddCanceledTemplate,
                 [ResponseFormat.Deleted] = DeletedTemplate,
                 [ResponseFormat.DeleteCanceled] = DeleteCanceledTemplate,
+                [ResponseFormat.Multiplied] = MultipliedTemplate,
+                [ResponseFormat.MultiplyCanceled] = MultiplyCanceledTemplate,
+                [ResponseFormat.Divided] = DividedTemplate,
+                [ResponseFormat.DivisionCanceled] = DivisionCanceledTemplate,
                 [ResponseFormat.AllExceptDeleted] = AllExceptDeletedTemplate,
                 [ResponseFormat.Cleared] = ClearedTemplate,
                 [ResponseFormat.ClearRequested] = ClearRequestedTemplate,
@@ -353,6 +405,13 @@ namespace AliceInventory.Controllers.AliceResponseRender
                             ResponseType = ResponseFormat.GreetingRequested
                         };
                     }
+                case ProcessingResultType.InvalidCount:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.InvalidCountEntered
+                        };
+                    }
                 case ProcessingResultType.Declined:
                     {
                         return new ResponseArgs()
@@ -396,6 +455,42 @@ namespace AliceInventory.Controllers.AliceResponseRender
                             Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
                         };
                     }
+                case ProcessingResultType.Multiplied
+                    when result.Data is Entry entry:
+                {
+                    return new ResponseArgs()
+                    {
+                        ResponseType = ResponseFormat.Multiplied,
+                        Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                    };
+                }
+                case ProcessingResultType.MultiplyCanceled
+                    when result.Data is Entry entry:
+                {
+                    return new ResponseArgs()
+                    {
+                        ResponseType = ResponseFormat.MultiplyCanceled,
+                        Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                    };
+                }
+                case ProcessingResultType.Divided
+                    when result.Data is Entry entry:
+                {
+                    return new ResponseArgs()
+                    {
+                        ResponseType = ResponseFormat.Divided,
+                        Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                    };
+                }
+                case ProcessingResultType.DivisionCanceled
+                    when result.Data is Entry entry:
+                {
+                    return new ResponseArgs()
+                    {
+                        ResponseType = ResponseFormat.DivisionCanceled,
+                        Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                    };
+                }
                 case ProcessingResultType.AllExceptDeleted
                     when result.Data is Entry entry:
                     {
@@ -443,23 +538,23 @@ namespace AliceInventory.Controllers.AliceResponseRender
 
                 case ProcessingResultType.ItemRead
                     when result.Data is Entry[] entries:
-                {
-                    if (entries.Length > 0)
                     {
-                        return new ResponseArgs()
+                        if (entries.Length > 0)
                         {
-                            ResponseType = ResponseFormat.ItemRead,
-                            Data = new object[] { entries.ToTextList() }
-                        };
-                    }
-                    else
-                    {
-                        return new ResponseArgs()
+                            return new ResponseArgs()
+                            {
+                                ResponseType = ResponseFormat.ItemRead,
+                                Data = new object[] { entries.ToTextList() }
+                            };
+                        }
+                        else
                         {
-                            ResponseType = ResponseFormat.EmptyItemRead
-                        };
+                            return new ResponseArgs()
+                            {
+                                ResponseType = ResponseFormat.EmptyItemRead
+                            };
+                        }
                     }
-                }
 
                 case ProcessingResultType.MailSent
                     when result.Data is string email:

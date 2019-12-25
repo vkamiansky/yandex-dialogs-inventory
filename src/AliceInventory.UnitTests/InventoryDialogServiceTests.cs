@@ -55,7 +55,7 @@ namespace AliceInventory.UnitTests
 
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
-                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
             // The command as returned from the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -125,7 +125,7 @@ namespace AliceInventory.UnitTests
                 It.IsAny<Data.UnitOfMeasure>()), Times.Once);
         }
 
-        [Fact]
+       [Fact]
         public void ProcessDeleteEntry()
         {
             var userId = "user1";
@@ -160,7 +160,7 @@ namespace AliceInventory.UnitTests
 
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
-                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
 
             // The command as returned from the parser
             var parsedCommand = new ParsedCommand
@@ -369,6 +369,30 @@ namespace AliceInventory.UnitTests
             Logic.Parser.ParsedPhraseType.Cancel, null, null, null,
             12.5f,
             Logic.ProcessingResultType.AddCanceled, "груши", 3, Logic.UnitOfMeasure.Kg)]
+        [InlineData(
+            "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
+            Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Unit,
+            ParsedPhraseType.Multiply, "яблоки", 2d, Logic.UnitOfMeasure.Kg,
+            31d,
+            Logic.ProcessingResultType.Multiplied, "яблоки", 2d, Logic.UnitOfMeasure.Kg)]
+        [InlineData(
+            "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 30f, Data.UnitOfMeasure.Kg,
+            Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Unit,
+            ParsedPhraseType.Division, "яблоки", 2d, Logic.UnitOfMeasure.Kg,
+            15d,
+            Logic.ProcessingResultType.Divided, "яблоки", 2d, Logic.UnitOfMeasure.Kg)]
+        [InlineData(
+            "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
+            Logic.ProcessingResultType.Multiplied, "груши", 5, Logic.UnitOfMeasure.Unit,
+            ParsedPhraseType.Cancel, null,null,null,
+            3.1d,
+            Logic.ProcessingResultType.MultiplyCanceled, "груши", 5, Logic.UnitOfMeasure.Kg)]
+        [InlineData(
+            "груши", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 5f, Data.UnitOfMeasure.Kg,
+            Logic.ProcessingResultType.Divided, "груши", 5, Logic.UnitOfMeasure.Unit,
+            ParsedPhraseType.Cancel, null, null, null,
+            25d,
+            Logic.ProcessingResultType.DivisionCanceled, "груши", 5, Logic.UnitOfMeasure.Kg)]
         public void ProcessEntryUpdateCommands(
             string storageEntryName,
             string storageEntryIdString,
@@ -430,7 +454,7 @@ namespace AliceInventory.UnitTests
 
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
-                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
 
             // The entry as recognized by the parser
             var parsedCommand = new ParsedCommand
@@ -508,6 +532,146 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
+        [InlineData(
+            "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
+            Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Unit,
+            Logic.Parser.ParsedPhraseType.Add, "яблоки", -12.511d, Logic.UnitOfMeasure.Kg,
+            28.011d,
+            Logic.ProcessingResultType.InvalidCount, "яблоки", 12.511d, Logic.UnitOfMeasure.Kg)]
+        [InlineData(
+            "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,
+            Logic.ProcessingResultType.Added, "груши", 3, Logic.UnitOfMeasure.Unit,
+            Logic.Parser.ParsedPhraseType.Delete, "яблоки", -12.2d, Logic.UnitOfMeasure.Kg,
+            3.3d,
+            Logic.ProcessingResultType.InvalidCount, "яблоки", 12.2d, Logic.UnitOfMeasure.Kg)]
+        public void ProcessEntryUpdateCommandsWithInvalidCount(
+            string storageEntryName,
+            string storageEntryIdString,
+            double storageEntryQuantity,
+            Data.UnitOfMeasure storageEntryUnit,
+            Logic.ProcessingResultType stateType,
+            string stateName,
+            double stateQuantity,
+            Logic.UnitOfMeasure stateUnit,
+            ParsedPhraseType entryType,
+            string entryName,
+            double? entryQuantity,
+            Logic.UnitOfMeasure? entryUnit,
+            double updateQuantity,
+            Logic.ProcessingResultType resultType,
+            string resultName,
+            double resultQuantity,
+            Logic.UnitOfMeasure resultUnit
+        )
+        {
+            var userId = "user1";
+            var storageEntryId = new Guid(storageEntryIdString);
+            storageEntryName = WordNormalizer.Normalize(storageEntryName);
+            entryName = WordNormalizer.Normalize(entryName);
+            resultName = WordNormalizer.Normalize(resultName);
+            stateName = WordNormalizer.Normalize(stateName);
+
+            // These are the entries already in storage
+            var entries = new[]
+            {
+                new Data.Entry()
+                {
+                    Id = storageEntryId,
+                    UserId = userId,
+                    Name = storageEntryName,
+                    UnitOfMeasure = storageEntryUnit,
+                    Quantity = storageEntryQuantity
+                },
+                new Data.Entry()
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    Name = storageEntryName + "text",
+                    UnitOfMeasure = storageEntryUnit,
+                    Quantity = storageEntryQuantity + 1
+                },
+            };
+
+            var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
+
+            // Returning entries from storage
+            storageMock.Setup(x => x.ReadAllEntries(
+                    It.Is<string>(y => y == userId)))
+                .Returns(entries);
+            // Accepting request for entry update
+            storageMock.Setup(x => x.UpdateEntry(
+                It.Is<Guid>(y => y == storageEntryId),
+                It.Is<double>(y => Math.Abs(y - updateQuantity) < TOLERANCE)));
+
+            var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+
+            // The entry as recognized by the parser
+            var parsedCommand = new ParsedCommand
+            {
+                Type = entryType,
+                Data = new Logic.ParsedEntry
+                {
+                    Unit = entryUnit,
+                    Name = entryName,
+                    Quantity = entryQuantity
+                }
+            };
+
+            // Returning a parsed user command
+            var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
+            parserMock.Setup(x => x.ParseInput(
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
+                .Returns(parsedCommand);
+
+            var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
+            // Returning the result of last successful logical operation
+            cacheMock.Setup(x => x.Get(
+                    It.Is<string>(y => y == userId)))
+                .Returns(new Logic.ProcessingResult(
+                    stateType,
+                    new Logic.Entry
+                    {
+                        Name = stateName,
+                        Quantity = stateQuantity,
+                        UnitOfMeasure = stateUnit
+                    }));
+            // Accepting the result of the current completed logical operation
+            cacheMock.Setup(x => x.Set(
+                It.Is<string>(y => y == userId),
+                It.Is<Logic.ProcessingResult>(y =>
+                    y.Type == resultType)));
+
+            var sut = new Logic.InventoryDialogService(
+                storageMock.Object,
+                parserMock.Object,
+                cacheMock.Object,
+                null);
+
+            var result = sut.ProcessInput(userId, userInput);
+
+            // Checking the result
+            var resultEntry = result.Data as Logic.Entry;
+            Assert.Equal(resultType, result.Type);
+
+            // Making sure no unnecessary calls have been made
+            parserMock.Verify(x => x.ParseInput(
+                It.IsAny<Logic.UserInput>()), Times.Once);
+
+            cacheMock.Verify(x => x.Get(
+                It.IsAny<string>()), Times.Once);
+            cacheMock.Verify(x => x.Set(
+                It.IsAny<string>(),
+                It.IsAny<Logic.ProcessingResult>()), Times.Once);
+
+        }
+
+        [Theory]
         [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Hello,
             Logic.ProcessingResultType.GreetingRequested)]
         [InlineData(Logic.ProcessingResultType.GreetingRequested, Logic.Parser.ParsedPhraseType.Help,
@@ -526,7 +690,7 @@ namespace AliceInventory.UnitTests
             var userId = "user1";
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
-                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
 
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
@@ -641,7 +805,7 @@ namespace AliceInventory.UnitTests
 
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
-                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
 
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
@@ -669,11 +833,11 @@ namespace AliceInventory.UnitTests
                 It.Is<string>(y => y == userId),
                 It.Is<Logic.ProcessingResult>(y =>
                     y.Type == Logic.ProcessingResultType.ListRead
-                    && ((Logic.Entry[]) y.Data).Length == entries.Length
-                    && ((Logic.Entry[]) y.Data).Zip(resultEntries, (z1, z2) =>
-                        z1.Name == z2.Name
-                        && z1.Quantity == z2.Quantity
-                        && z1.UnitOfMeasure == z2.UnitOfMeasure).All(z => z)
+                    && ((Logic.Entry[])y.Data).Length == entries.Length
+                    && ((Logic.Entry[])y.Data).Zip(resultEntries, (z1, z2) =>
+                       z1.Name == z2.Name
+                       && z1.Quantity == z2.Quantity
+                       && z1.UnitOfMeasure == z2.UnitOfMeasure).All(z => z)
                 )));
 
             var sut = new Logic.InventoryDialogService(
@@ -686,8 +850,8 @@ namespace AliceInventory.UnitTests
 
             // Checking the result
             Assert.Equal(Logic.ProcessingResultType.ListRead, result.Type);
-            Assert.Equal(resultEntries.Length, ((Logic.Entry[]) result.Data).Length);
-            Assert.All(resultEntries.Zip((Logic.Entry[]) result.Data, (expected, actual) => (expected, actual)),
+            Assert.Equal(resultEntries.Length, ((Logic.Entry[])result.Data).Length);
+            Assert.All(resultEntries.Zip((Logic.Entry[])result.Data, (expected, actual) => (expected, actual)),
                 x =>
                 {
                     Assert.Equal(x.expected.Name, x.actual.Name);
@@ -749,7 +913,7 @@ namespace AliceInventory.UnitTests
                     UnitOfMeasure = Logic.UnitOfMeasure.Kg,
                     Quantity = 15.2f
                 };
-            
+
 
             var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
 
@@ -806,7 +970,7 @@ namespace AliceInventory.UnitTests
             // Checking the result
             Assert.Equal(Logic.ProcessingResultType.ItemRead, result.Type);
             Assert.Equal(1, ((Logic.Entry[])result.Data).Length);
-            Assert.All(new List<Logic.Entry>(){resultEntries}.Zip((Logic.Entry[])result.Data, (expected, actual) => (expected, actual)),
+            Assert.All(new List<Logic.Entry>() { resultEntries }.Zip((Logic.Entry[])result.Data, (expected, actual) => (expected, actual)),
                 x =>
                 {
                     Assert.Equal(x.expected.Name, x.actual.Name);
@@ -841,7 +1005,7 @@ namespace AliceInventory.UnitTests
 
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
-                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
 
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
@@ -908,7 +1072,7 @@ namespace AliceInventory.UnitTests
 
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
-                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -1028,7 +1192,7 @@ namespace AliceInventory.UnitTests
 
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
-                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
 
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
@@ -1173,7 +1337,7 @@ namespace AliceInventory.UnitTests
 
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
-                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -1257,7 +1421,7 @@ namespace AliceInventory.UnitTests
 
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
-                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -1331,7 +1495,7 @@ namespace AliceInventory.UnitTests
 
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
-                {Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture};
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
 
             // The entry as recognized by the parser
             var parsedCommand = new Logic.Parser.ParsedCommand

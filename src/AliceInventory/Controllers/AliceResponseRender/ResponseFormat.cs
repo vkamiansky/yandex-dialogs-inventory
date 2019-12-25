@@ -3,11 +3,16 @@ namespace AliceInventory.Controllers.AliceResponseRender
     public enum ResponseFormat
     {
         GreetingRequested,
+        InvalidCountEntered,
         Declined,
         Added,
         AddCanceled,
         Deleted,
         DeleteCanceled,
+        Multiplied,
+        MultiplyCanceled,
+        Divided,
+        DivisionCanceled,
         AllExceptDeleted,
         ClearRequested,
         Cleared,

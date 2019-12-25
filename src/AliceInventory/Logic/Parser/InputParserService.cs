@@ -132,6 +132,20 @@ namespace AliceInventory.Logic.Parser
             new CommandTemplateWithEntry(ParsedPhraseType.Add, x => x.Prepared,
                 RegexHelper.AddWord, RegexHelper.EntryName),
 
+            // Multiply
+            new CommandTemplateWithEntry(ParsedPhraseType.Multiply, x => x.Prepared,
+                $"умножь {RegexHelper.EntryName} на {RegexHelper.EntryQuantity}"),
+            new CommandTemplateWithEntry(ParsedPhraseType.Multiply, x => x.Prepared,
+                $"увеличь {RegexHelper.EntryName} в {RegexHelper.EntryQuantity} раз"),
+            new CommandTemplateWithEntry(ParsedPhraseType.Multiply, x => x.Prepared,
+                $"умножь {RegexHelper.EntryName} в {RegexHelper.EntryQuantity} раз"),
+
+            // Division
+            new CommandTemplateWithEntry(ParsedPhraseType.Division, x => x.Prepared,
+                $"раздели {RegexHelper.EntryName} на {RegexHelper.EntryQuantity}"),
+            new CommandTemplateWithEntry(ParsedPhraseType.Division, x => x.Prepared,
+                $"уменьши {RegexHelper.EntryName} в {RegexHelper.EntryQuantity} раз"),
+
             //Low priority command
             new CommandTemplateWithEntry(ParsedPhraseType.Add, x => x.Prepared,
                 RegexHelper.EntryName, RegexHelper.EntryQuantity, RegexHelper.EntryUnit),

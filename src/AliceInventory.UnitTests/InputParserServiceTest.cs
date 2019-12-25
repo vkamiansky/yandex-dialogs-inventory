@@ -67,6 +67,46 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
+        [InlineData("умножь яблоки на 5", "яблоко", 5)]
+        [InlineData("увеличь яблоки в 5 раз", "яблоко", 5)]
+        public void MultiplyPreparedParsing(string prepared, string entryName, double? entryQuantity)
+        {
+            var input = new UserInput
+            {
+                Prepared = prepared,
+                CultureInfo = _defaultCulture
+            };
+            ParsedCommand parsedCommand = _parser.ParseInput(input);
+
+            Assert.Equal(ParsedPhraseType.Multiply, parsedCommand.Type);
+
+            var data = parsedCommand.Data as ParsedEntry;
+
+            Assert.Equal(entryName, data?.Name);
+            Assert.Equal(entryQuantity, data?.Quantity);
+        }
+
+        [Theory]
+        [InlineData("уменьши яблоки в 5 раз", "яблоко", 5)]
+        [InlineData("раздели яблоки на 5", "яблоко", 5)]
+        public void DivisionPreparedParsing(string prepared, string entryName, double? entryQuantity)
+        {
+            var input = new UserInput
+            {
+                Prepared = prepared,
+                CultureInfo = _defaultCulture
+            };
+            ParsedCommand parsedCommand = _parser.ParseInput(input);
+
+            Assert.Equal(ParsedPhraseType.Division, parsedCommand.Type);
+
+            var data = parsedCommand.Data as ParsedEntry;
+
+            Assert.Equal(entryName, data?.Name);
+            Assert.Equal(entryQuantity, data?.Quantity);
+        }
+
+        [Theory]
         [InlineData("сколько яблок", "яблоко")]
         [InlineData("покажи сколько яблок", "яблоко")]
         [InlineData("выведи яблоки", "яблоко")]
