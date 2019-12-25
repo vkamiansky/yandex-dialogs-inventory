@@ -235,7 +235,7 @@ namespace AliceInventory.Logic
             var entry = ConvertToEntry(parsedEntry);
 
             var entries = services.Storage.ReadAllEntries(args.UserId);
-            var res = entries.Where(x=>x.Name == entry.Name).ToArray().ToLogic();
+            var res = entries.Where(x => x.Name == entry.Name).ToArray().ToLogic();
             return new ProcessingResult(ProcessingResultType.ItemRead, res);
         }
 
@@ -300,6 +300,7 @@ namespace AliceInventory.Logic
         {
             try
             {
+                if (entry.Quantity <= 0) return new ProcessingResult(ProcessingResultType.InvalidCount);
                 var entries = storage.ReadAllEntries(userId);
                 var dbEntry = entries.FirstOrDefault(e =>
                     e.Name == entry.Name && e.UnitOfMeasure == entry.UnitOfMeasure.ToData());
@@ -325,6 +326,7 @@ namespace AliceInventory.Logic
         {
             try
             {
+                if (entry.Quantity <= 0) return new ProcessingResult(ProcessingResultType.InvalidCount);
                 var entries = storage.ReadAllEntries(userId);
                 var dataUnitOfMeasure = entry.UnitOfMeasure.ToData();
                 var dbEntry = entries.FirstOrDefault(e =>
