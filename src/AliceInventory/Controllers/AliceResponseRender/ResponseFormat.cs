@@ -8,6 +8,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
         AddCanceled,
         Deleted,
         DeleteCanceled,
+        AllExceptDeleted,
         ClearRequested,
         Cleared,
         ListRead,

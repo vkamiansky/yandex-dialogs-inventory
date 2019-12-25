@@ -115,6 +115,16 @@ namespace AliceInventory.Controllers.AliceResponseRender
             Buttons = MainButtons
         };
 
+        private static readonly ResponseTemplate AllExceptDeletedTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Удалила всё кроме \"{0}\""),
+                new TextAndSpeechTemplate("Оставила только \"{0}\""),
+            },
+            Buttons = MainButtons
+        };
+
         private static readonly ResponseTemplate ClearRequestedTemplate = new ResponseTemplate()
         {
             TextAndSpeechTemplates = new[]
@@ -298,6 +308,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
                 [ResponseFormat.AddCanceled] = AddCanceledTemplate,
                 [ResponseFormat.Deleted] = DeletedTemplate,
                 [ResponseFormat.DeleteCanceled] = DeleteCanceledTemplate,
+                [ResponseFormat.AllExceptDeleted] = AllExceptDeletedTemplate,
                 [ResponseFormat.Cleared] = ClearedTemplate,
                 [ResponseFormat.ClearRequested] = ClearRequestedTemplate,
                 [ResponseFormat.Declined] = DeclinedTemplate,
@@ -385,7 +396,15 @@ namespace AliceInventory.Controllers.AliceResponseRender
                             Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
                         };
                     }
-
+                case ProcessingResultType.AllExceptDeleted
+                    when result.Data is Entry entry:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.AllExceptDeleted,
+                            Data = new object[] { entry.Name }
+                        };
+                    }
                 case ProcessingResultType.ClearRequested:
                     {
                         return new ResponseArgs()

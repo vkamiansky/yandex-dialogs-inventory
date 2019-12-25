@@ -8,6 +8,7 @@
         Cancel,
         Add,
         Delete,
+        DeleteAllExcept,
         More,
         Clear,
         ReadItem,

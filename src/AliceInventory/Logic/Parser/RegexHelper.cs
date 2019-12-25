@@ -13,6 +13,10 @@ namespace AliceInventory.Logic.Parser
             @"(?:(?:за|в|над?|п(?:о|ри)|до)?(?:плюс|с(?:оедин)|ки|лож|мест|бав)(?:н)?(?:л|им?|ь)?(?:ай|яй|ть|те|\sка)?)";
         public const string DeleteWord =
             @"(?:(?:вы|у)?(?:дал|бер|брос|бра|тащ|сотр|изъя|ничтож|стер|стир|таск)(?:ива|ова|ева|ыва)?(?:ай|у|е|и|й|ь)?(?:ть)?(?:те|\sка)?)";
+        public const string ExceptWord =
+            @"(?:кроме)";
+        public const string AllWord =
+            @"(?:вс(?:е|ё))";
         public const string ClearWord =
             @"(?:(?:о|вы)чист(?:и|(?:ит)?ь))";
         public const string HelloPattern =
@@ -34,7 +38,7 @@ namespace AliceInventory.Logic.Parser
         public const string ExitWord =
             @"(?:п(?:ока|рощай)|выход|хватит|закончить)";
         public const string ListWord =
-            @"(?:вс(?:е|ё)|спис(?:ок|ке)|опись|(?:от|у)ч(?:е|ё)т|итог(?:е|о)?|результате?)";
+            @"(?:спис(?:ок|ке)|опись|(?:от|у)ч(?:е|ё)т|итог(?:е|о)?|результате?)";
         public const string MailWord =
             @"(?:(?:мо(?:я|й|ю|ё|е)\s)?(?:почт(?:а|у|ой)|(?:и|е)?мейл|e?mail|мыло))";
 

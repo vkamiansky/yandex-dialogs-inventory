@@ -8,6 +8,7 @@ namespace AliceInventory.Logic
         AddCanceled,
         Deleted,
         DeleteCanceled,
+        AllExceptDeleted,
         ClearRequested,
         Cleared,
         ListRead,

@@ -37,6 +37,7 @@ namespace AliceInventory.Logic
                 [ParsedPhraseType.Hello] = ProcessGreeting,
                 [ParsedPhraseType.Add] = ProcessAdd,
                 [ParsedPhraseType.Delete] = ProcessDelete,
+                [ParsedPhraseType.DeleteAllExcept] = ProcessDeleteAllExcept,
                 [ParsedPhraseType.More] = ProcessMore,
                 [ParsedPhraseType.Cancel] = ProcessCancel,
                 [ParsedPhraseType.Accept] = ProcessAccept,
@@ -129,6 +130,17 @@ namespace AliceInventory.Logic
 
             var entry = ConvertToEntry(parsedEntry);
             return SubtractMaterial(services.Storage, args.UserId, entry);
+        }
+
+        private static ProcessingResult ProcessDeleteAllExcept(Services services, ProcessingArgs args)
+        {
+            if (!(args.CommandData is ParsedEntry parsedEntry))
+                return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
+
+            var entry = ConvertToEntry(parsedEntry);
+            services.Storage.DeleteAllEntries(args.UserId);
+            services.Storage.CreateEntry(args.UserId, entry.Name, entry.Quantity, entry.UnitOfMeasure.ToData());
+            return new ProcessingResult(ProcessingResultType.AllExceptDeleted, entry);
         }
 
         private static ProcessingResult ProcessCancel(Services services, ProcessingArgs args)
