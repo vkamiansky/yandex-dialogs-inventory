@@ -228,6 +228,110 @@ namespace AliceInventory.UnitTests
                 It.IsAny<Guid>()), Times.Once);
         }
 
+        [Fact]
+        public void ProcessDeleteAllExceptEntry()
+        {
+            var userId = "user1";
+            
+            var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
+
+            // Deleting all the user's entries from storage
+            storageMock.Setup(x => x.DeleteAllEntries(
+                It.Is<string>(y => y == userId)));
+
+            var entryName = WordNormalizer.Normalize("яблоки");
+            var entryQuantity = 12.123d;
+            var entryId = Guid.NewGuid();
+            var dataUnitOfMeasure = Data.UnitOfMeasure.Kg;
+            var entries = new[]
+            {
+                new Data.Entry(){ }
+            };
+
+            storageMock.Setup(x => x.ReadAllEntries(
+                    It.Is<string>(y => y == userId)))
+                .Returns(entries);
+            // Creating a new entry and returning its ID
+            storageMock.Setup(x => x.CreateEntry(
+                    It.Is<string>(y => y == userId),
+                    It.Is<string>(y => y == entryName),
+                    It.Is<double>(y => Math.Abs(y - entryQuantity) < TOLERANCE),
+                    It.Is<Data.UnitOfMeasure>(y => y == dataUnitOfMeasure)))
+                .Returns(entryId);
+
+            // The command as returned from the parser
+            var parsedCommand = new Logic.Parser.ParsedCommand
+            {
+                Type = Logic.Parser.ParsedPhraseType.Add,
+                Data = new Logic.ParsedEntry
+                {
+                    Name = entryName,
+                    Quantity = entryQuantity,
+                    Unit = Logic.UnitOfMeasure.Kg
+                }
+            };
+
+            var russianCulture = new CultureInfo("ru-RU");
+            var userInput = new Logic.UserInput
+            { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+
+            var parserMock = new Mock<Logic.IInputParserService>(MockBehavior.Strict);
+            parserMock.Setup(x => x.ParseInput(
+                    It.Is<Logic.UserInput>(y =>
+                        y.Raw == userInput.Raw
+                        && y.Prepared == userInput.Prepared
+                        && y.Button == userInput.Button
+                        && y.CultureInfo == userInput.CultureInfo)))
+                .Returns(parsedCommand);
+
+            var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
+            // Returning the last successful operation result from the cache
+            cacheMock.Setup(x => x.Get(
+                    It.Is<string>(y => y == userId)))
+                .Returns(new Logic.ProcessingResult());
+            // Saving the newly produced successful result to the cache
+            cacheMock.Setup(x => x.Set(
+                It.Is<string>(y => y == userId),
+                It.Is<Logic.ProcessingResult>(y =>
+                    y.Type == Logic.ProcessingResultType.Added
+                    && (y.Data as Logic.Entry).Name == entryName
+                    && (y.Data as Logic.Entry).Quantity == entryQuantity
+                    && (y.Data as Logic.Entry).UnitOfMeasure == Logic.UnitOfMeasure.Kg)));
+
+            var sut = new Logic.InventoryDialogService(
+                storageMock.Object,
+                parserMock.Object,
+                cacheMock.Object,
+                null);
+
+            var result = sut.ProcessInput(userId, userInput);
+
+            // Checking the result
+            var resultEntry = result.Data as Logic.Entry;
+            Assert.Equal(Logic.ProcessingResultType.Added, result.Type);
+            Assert.Equal(entryName, resultEntry.Name);
+            Assert.Equal(entryQuantity, resultEntry.Quantity);
+            Assert.Equal(Logic.UnitOfMeasure.Kg, resultEntry.UnitOfMeasure);
+
+            // Making sure no unnecessary calls have been made
+            parserMock.Verify(x => x.ParseInput(
+                It.IsAny<Logic.UserInput>()), Times.Once);
+
+            cacheMock.Verify(x => x.Get(
+                It.IsAny<string>()), Times.Once);
+            cacheMock.Verify(x => x.Set(
+                It.IsAny<string>(),
+                It.IsAny<Logic.ProcessingResult>()), Times.Once);
+
+            //storageMock.Verify(x => x.ReadAllEntries(
+            //    It.IsAny<string>()), Times.Once);
+            storageMock.Verify(x => x.CreateEntry(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<double>(),
+                It.IsAny<Data.UnitOfMeasure>()), Times.Once);
+        }
+
         [Theory]
         [InlineData(
             "яблоки", "e8973c01-03f0-44c9-a226-ab79507cd6e8", 15.5f, Data.UnitOfMeasure.Kg,

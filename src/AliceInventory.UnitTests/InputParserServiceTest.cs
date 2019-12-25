@@ -165,6 +165,27 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
+        [InlineData("удалить все кроме яблок", "яблоко")]
+        [InlineData("очистить все кроме груш", "груша")]
+        [InlineData("очисти кроме яблок", "яблоко")]
+        [InlineData("убери кроме груш", "груша")]
+        public void DeleteAllExceptPreparedParsing(string prepared, string entryName)
+        {
+            var input = new UserInput
+            {
+                Prepared = prepared,
+                CultureInfo = _defaultCulture
+            };
+            ParsedCommand parsedCommand = _parser.ParseInput(input);
+
+            Assert.Equal(ParsedPhraseType.DeleteAllExcept, parsedCommand.Type);
+
+            var data = parsedCommand.Data as ParsedEntry;
+
+            Assert.Equal(entryName, data?.Name);
+        }
+
+        [Theory]
         [InlineData("покажи", ParsedPhraseType.ReadList)]
         [InlineData("список", ParsedPhraseType.ReadList)]
         [InlineData("учёт", ParsedPhraseType.ReadList)]

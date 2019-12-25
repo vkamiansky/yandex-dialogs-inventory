@@ -64,6 +64,16 @@ namespace AliceInventory.Logic.Parser
             new CommandTemplate(ParsedPhraseType.Exit, x => x.Prepared, RegexHelper.ExitWord),
             new CommandTemplate(ParsedPhraseType.Exit, x => x.Button, RegexHelper.ExitWord),
 
+            //Delete all except one item
+            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
+                RegexHelper.ClearWord, RegexHelper.AllWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
+            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
+                RegexHelper.ClearWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
+            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
+                RegexHelper.DeleteWord, RegexHelper.AllWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
+            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
+                RegexHelper.DeleteWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
+
             //Delete
             new CommandTemplateWithEntry(ParsedPhraseType.Delete, x => x.Prepared,
                 RegexHelper.DeleteWord, RegexHelper.EntryName, RegexHelper.EntryQuantity, RegexHelper.EntryUnit),
@@ -77,16 +87,6 @@ namespace AliceInventory.Logic.Parser
                 RegexHelper.DeleteWord, RegexHelper.EntryUnit, RegexHelper.EntryName),
             new CommandTemplateWithEntry(ParsedPhraseType.Delete, x => x.Prepared,
                 RegexHelper.DeleteWord, RegexHelper.EntryName),
-
-            //Delete all except one item
-            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
-                RegexHelper.ClearWord, RegexHelper.AllWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
-                RegexHelper.ClearWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
-                RegexHelper.DeleteWord, RegexHelper.AllWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
-            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
-                RegexHelper.DeleteWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
             
             //More
             new CommandTemplateWithEntry(ParsedPhraseType.More, x => x.Prepared,
