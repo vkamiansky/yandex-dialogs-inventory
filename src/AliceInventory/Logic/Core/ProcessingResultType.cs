@@ -20,6 +20,7 @@ namespace AliceInventory.Logic
         ItemRead,
         MailSent,
         RequestedMail,
+        ShowMail,
         MailAdded,
         MailDeleted,
         HelpRequested,

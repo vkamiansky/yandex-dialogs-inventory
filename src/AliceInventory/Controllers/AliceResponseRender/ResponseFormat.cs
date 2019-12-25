@@ -21,6 +21,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
         EmptyListRead,
         EmptyItemRead,
         MailSent,
+        ShowMail,
         MailRequest,
         MailAdded,
         MailDeleted,

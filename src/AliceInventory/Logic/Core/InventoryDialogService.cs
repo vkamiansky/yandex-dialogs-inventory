@@ -48,6 +48,7 @@ namespace AliceInventory.Logic
                 [ParsedPhraseType.ReadList] = ProcessReadList,
                 [ParsedPhraseType.ReadItem] = ProcessReadItem,
                 [ParsedPhraseType.SendMail] = ProcessSendMail,
+                [ParsedPhraseType.ShowMail] = ProcessShowMail,
                 [ParsedPhraseType.Mail] = ProcessAddMail,
                 [ParsedPhraseType.DeleteMail] = ProcessDeleteMail,
                 [ParsedPhraseType.Help] = ProcessHelp,
@@ -270,6 +271,16 @@ namespace AliceInventory.Logic
         {
             var entries = services.Storage.ReadAllEntries(args.UserId).ToLogic();
             return new ProcessingResult(ProcessingResultType.ListRead, entries);
+        }
+        private static ProcessingResult ProcessShowMail(Services services, ProcessingArgs args)
+        {
+            if(services.Storage.ReadUserMail(args.UserId)!=null)
+            {
+                 var email = services.Storage.ReadUserMail(args.UserId);
+                 return new ProcessingResult(ProcessingResultType.ShowMail,email);
+
+            }else return ProcessingResultType.Error;
+           
         }
 
         private static ProcessingResult ProcessReadItem(Services services, ProcessingArgs args)

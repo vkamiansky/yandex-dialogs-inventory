@@ -343,6 +343,27 @@ namespace AliceInventory.UnitTests
 
             Assert.Equal(expectedEmail, email);
         }
+        [Theory]
+        [InlineData("Покажи мыло", ParsedPhraseType.ShowMail, "somemail@ya.ru")]
+        [InlineData("Покажи почту", ParsedPhraseType.ShowMail, "somemail@ya.ru")]
+        [InlineData("Какой у меня адрес", ParsedPhraseType.ShowMail, "somemail@ya.ru")]
+        [InlineData("Какое у меня мыло", ParsedPhraseType.ShowMail, "somemail@ya.ru")]
+        public void ShowMailParsingTest(string prepared, ParsedPhraseType phraseType, string expectedEmail)
+        {
+             var input = new UserInput
+            {
+                Prepared = prepared,
+                CultureInfo = _defaultCulture
+            };
+            var parsedCommand = _parser.ParseInput(input);
+
+            Assert.Equal(phraseType, parsedCommand.Type);
+
+            var email = parsedCommand.Data as string;
+
+            Assert.Equal(expectedEmail, email);
+
+        }
 
         [Theory]
         [InlineData("Удали мыло", ParsedPhraseType.DeleteMail, null)]

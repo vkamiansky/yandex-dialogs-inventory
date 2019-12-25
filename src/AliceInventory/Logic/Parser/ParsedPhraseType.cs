@@ -17,6 +17,7 @@
         ReadList,
         SendMail,
         Mail,
+        ShowMail,
         DeleteMail,
         Help,
         Exit,

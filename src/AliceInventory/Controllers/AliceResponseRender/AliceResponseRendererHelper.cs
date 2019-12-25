@@ -241,6 +241,17 @@ namespace AliceInventory.Controllers.AliceResponseRender
             Buttons = MainButtons
         };
 
+          private static readonly ResponseTemplate ShowMailTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Ваш адрес \"{0}\""),
+                new TextAndSpeechTemplate("Ваша почта \"{0}\""),
+            },
+            Buttons = MainButtons
+        };
+      
+
         private static readonly ResponseTemplate MailSentTemplate = new ResponseTemplate()
         {
             TextAndSpeechTemplates = new[]
@@ -370,6 +381,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
                 [ResponseFormat.ItemRead] = ItemReadTemplate,
                 [ResponseFormat.EmptyListRead] = EmptyListReadTemplate,
                 [ResponseFormat.EmptyItemRead] = NoItemReadTemplate,
+                [ResponseFormat.ShowMail] = ShowMailTemplate,
                 [ResponseFormat.MailSent] = MailSentTemplate,
                 [ResponseFormat.MailRequest] = RequestMailTemplate,
                 [ResponseFormat.MailIsEmpty] = MailIsEmptyTemplate,

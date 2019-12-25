@@ -10,6 +10,10 @@ namespace AliceInventory.Logic.Parser
             //Email
             new CommandTemplate(ParsedPhraseType.SendMail, x => x.Prepared,
                 RegexHelper.SendWord, RegexHelper.MailWord),
+            new CommandTemplate(ParsedPhraseType.ShowMail, x => x.Prepared,
+                RegexHelper.ReadWord, RegexHelper.MailWord),
+            new CommandTemplate(ParsedPhraseType.ShowMail, x => x.Prepared,
+                RegexHelper.ReadWord, "у меня",RegexHelper.MailWord),
             new CommandTemplateWithEmail(ParsedPhraseType.SendMail, x => x.Raw,
                 RegexHelper.SendWord, RegexHelper.Email),
             new CommandTemplate(ParsedPhraseType.SendMail, x => x.Prepared,
