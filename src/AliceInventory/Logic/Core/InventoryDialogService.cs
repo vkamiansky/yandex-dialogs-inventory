@@ -279,7 +279,7 @@ namespace AliceInventory.Logic
                  var email = services.Storage.ReadUserMail(args.UserId);
                  return new ProcessingResult(ProcessingResultType.ShowMail,email);
 
-            }else return ProcessingResultType.Error;
+            }else return ProcessingResultType.RequestedMail;
            
         }
 
