@@ -47,7 +47,7 @@ namespace AliceInventory.Logic.Parser
         /// "Давай добавим 5 яблок" - слово "давай" можно проигнорировать,
         /// но если же у нас только слово "Давай", то это можно воспринять, как согласие.
         /// </summary>
-        public const string CanBeIgnoreWordPattern = @"(?:ещ(?:е|ё)|конечно|давай)";
+        public const string CanBeIgnoreWordPattern = @"(?:ещ(?:е|ё)|конечно|давай|пожалуйста)";
 
         /// <summary>
         /// IgnoreWord - слова, которые должны быть проигнорированы.
