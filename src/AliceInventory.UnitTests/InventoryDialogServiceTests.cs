@@ -56,6 +56,7 @@ namespace AliceInventory.UnitTests
             var russianCulture = new CultureInfo("ru-RU");
             var userInput = new Logic.UserInput
             { Raw = "raw", Prepared = "prepared", Button = "button", CultureInfo = russianCulture };
+
             // The command as returned from the parser
             var parsedCommand = new Logic.Parser.ParsedCommand
             {
@@ -232,26 +233,42 @@ namespace AliceInventory.UnitTests
         public void ProcessDeleteAllExceptEntry()
         {
             var userId = "user1";
-            
-            var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
-
-            // Deleting all the user's entries from storage
-            storageMock.Setup(x => x.DeleteAllEntries(
-                It.Is<string>(y => y == userId)));
-
             var entryName = WordNormalizer.Normalize("яблоки");
             var entryQuantity = 12.123d;
             var entryId = Guid.NewGuid();
             var dataUnitOfMeasure = Data.UnitOfMeasure.Kg;
             var entries = new[]
             {
-                new Data.Entry(){ }
+                new Data.Entry()
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    Name = "груши",
+                    UnitOfMeasure = Data.UnitOfMeasure.Kg,
+                    Quantity = 15.2f
+                },
+                new Data.Entry()
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    Name = entryName,
+                    UnitOfMeasure = Data.UnitOfMeasure.Unit,
+                    Quantity = 12
+                },
             };
 
+            var storageMock = new Mock<Data.IUserDataStorage>(MockBehavior.Strict);
+
+            // Reading all the user's entries from storage
             storageMock.Setup(x => x.ReadAllEntries(
                     It.Is<string>(y => y == userId)))
                 .Returns(entries);
-            // Creating a new entry and returning its ID
+
+            // Deleting all the user's entries from storage
+            storageMock.Setup(x => x.DeleteAllEntries(
+                It.Is<string>(y => y == userId)));
+
+            // Adding an entry and returning its ID
             storageMock.Setup(x => x.CreateEntry(
                     It.Is<string>(y => y == userId),
                     It.Is<string>(y => y == entryName),
@@ -285,10 +302,12 @@ namespace AliceInventory.UnitTests
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
+
             // Returning the last successful operation result from the cache
             cacheMock.Setup(x => x.Get(
                     It.Is<string>(y => y == userId)))
                 .Returns(new Logic.ProcessingResult());
+
             // Saving the newly produced successful result to the cache
             cacheMock.Setup(x => x.Set(
                 It.Is<string>(y => y == userId),
@@ -323,8 +342,9 @@ namespace AliceInventory.UnitTests
                 It.IsAny<string>(),
                 It.IsAny<Logic.ProcessingResult>()), Times.Once);
 
-            //storageMock.Verify(x => x.ReadAllEntries(
-            //    It.IsAny<string>()), Times.Once);
+            storageMock.Verify(x => x.ReadAllEntries(
+                It.IsAny<string>()), Times.Once);
+
             storageMock.Verify(x => x.CreateEntry(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
@@ -447,6 +467,7 @@ namespace AliceInventory.UnitTests
             storageMock.Setup(x => x.ReadAllEntries(
                     It.Is<string>(y => y == userId)))
                 .Returns(entries);
+
             // Accepting request for entry update
             storageMock.Setup(x => x.UpdateEntry(
                 It.Is<Guid>(y => y == storageEntryId),
@@ -479,6 +500,7 @@ namespace AliceInventory.UnitTests
                 .Returns(parsedCommand);
 
             var cacheMock = new Mock<Logic.Cache.IResultCache>(MockBehavior.Strict);
+
             // Returning the result of last successful logical operation
             cacheMock.Setup(x => x.Get(
                     It.Is<string>(y => y == userId)))

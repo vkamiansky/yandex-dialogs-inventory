@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using EP.Ner;
 using EP.Ner.Core;
 using EP.Morph;
-using EP.;
+using EP;
 
 namespace AliceInventory.Logic.Parser
 {
@@ -22,7 +22,6 @@ namespace AliceInventory.Logic.Parser
                 
                 var valueParts = word.Trim().Split();
                 var result = new StringBuilder();
-                proc;
                 foreach (var valuePart in valueParts)
                 {
                     var ar = proc.Process(new SourceOfAnalysis(valuePart));
