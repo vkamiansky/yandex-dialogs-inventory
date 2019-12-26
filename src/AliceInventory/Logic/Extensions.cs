@@ -17,6 +17,8 @@ namespace AliceInventory.Logic
                     return "шт";
                 case Logic.UnitOfMeasure.Box:
                 return "ящиков";
+                case Logic.UnitOfMeasure.Pack:
+                return "пачек";
                 default:
                     return "error";
             }
@@ -61,6 +63,8 @@ namespace AliceInventory.Logic
                     return Logic.UnitOfMeasure.L;
                 case Data.UnitOfMeasure.Box:
                     return Logic.UnitOfMeasure.Box;
+                case Data.UnitOfMeasure.Pack:
+                    return Logic.UnitOfMeasure.Pack;
                 default:
                     return Logic.UnitOfMeasure.Unit;
             }
