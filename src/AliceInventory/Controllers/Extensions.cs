@@ -27,6 +27,10 @@ namespace AliceInventory.Controllers
                     return "л";
                 case Logic.UnitOfMeasure.Unit:
                     return "шт";
+                case Logic.UnitOfMeasure.Box:
+                    return "ящиков";
+                case Logic.UnitOfMeasure.Pack:
+                    return "упаковок";
                 default:
                     return "error";
             }

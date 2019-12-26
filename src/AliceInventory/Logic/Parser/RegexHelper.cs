@@ -64,7 +64,9 @@ namespace AliceInventory.Logic.Parser
         public const string UnitPattern = @"шт(?:ук|ука|уки|уку|уковин)?|единиц(?:а|у|ы)?";
         public const string KgPattern = @"к(?:г|илограмм(?:а|ов)?)";
         public const string LiterPattern = @"л(?:итр(?:а|ов)?)?";
-        public const string UnitOfMeasurePattern = UnitPattern + "|" + KgPattern + "|" + LiterPattern;
+        public const string BoxPattern = @"ящик(?:а|ов|)|короб(?:ок|ки|ку)";
+        public const string PackPattern = @"упаков(?:ок|ки|ку)|пач(?:ек|ку|ки)";
+        public const string UnitOfMeasurePattern = UnitPattern + "|" + KgPattern + "|" + LiterPattern + "|" + BoxPattern + "|"+ PackPattern;
         public static readonly string EntryUnit = AddGroupName(EntryUnitGroupName, UnitOfMeasurePattern);
         public const string EntryNamePattern = @".{2}.+?";
         public static readonly string EntryName = AddGroupName(EntryNameGroupName, EntryNamePattern);
@@ -80,7 +82,10 @@ namespace AliceInventory.Logic.Parser
             {
                 [UnitOfMeasure.Unit] = UnitPattern,
                 [UnitOfMeasure.Kg] = KgPattern,
-                [UnitOfMeasure.L] = LiterPattern
+                [UnitOfMeasure.L] = LiterPattern,
+                [UnitOfMeasure.Box] = BoxPattern,
+                [UnitOfMeasure.Pack] = PackPattern,
+
             };
         }
 

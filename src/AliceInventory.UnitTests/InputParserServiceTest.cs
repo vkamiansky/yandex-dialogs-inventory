@@ -37,6 +37,17 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
+        [InlineData("добавь 3 пачки пельменей", "пельмень", 3, UnitOfMeasure.Pack)]
+        [InlineData("добавь 1 пачку пельменей", "пельмень", 1, UnitOfMeasure.Pack)]
+          [InlineData("добавь 8 пачек пельменей", "пельмень", 8, UnitOfMeasure.Pack)]
+        [InlineData("добавь 3 упаковки таблеток", "таблетка", 3, UnitOfMeasure.Pack)]
+        [InlineData("добавь 1 упаковку таблеток", "таблетка", 1, UnitOfMeasure.Pack)]
+        [InlineData("добавь яблок 1 ящик", "яблоко", 1, UnitOfMeasure.Box)]
+        [InlineData("добавь ещё яблок 1 ящик", "яблоко", 1, UnitOfMeasure.Box)]
+        [InlineData("Прибавь 3 ящика яблок", "яблоко", 3, UnitOfMeasure.Box)]
+        [InlineData("добавь яблок 1 коробку", "яблоко", 1, UnitOfMeasure.Box)]
+        [InlineData("добавь ещё яблок 1 коробку", "яблоко", 1, UnitOfMeasure.Box)]
+        [InlineData("Прибавь 3 коробки яблок", "яблоко", 3, UnitOfMeasure.Box)]
         [InlineData("добавь яблок 1 килограмм", "яблоко", 1, UnitOfMeasure.Kg)]
         [InlineData("добавь ещё яблок 1 килограмм", "яблоко", 1, UnitOfMeasure.Kg)]
         [InlineData("добавь яблок ещё 1 килограмм", "яблоко", 1, UnitOfMeasure.Kg)]

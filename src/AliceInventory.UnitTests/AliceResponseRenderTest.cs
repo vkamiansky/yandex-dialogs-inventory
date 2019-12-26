@@ -29,6 +29,8 @@ namespace AliceInventory.UnitTests
             new Entry(){ Name = "яблоки", Quantity = 10, UnitOfMeasure = UnitOfMeasure.Kg },
             new Entry(){ Name = "арбузы", Quantity = 10, UnitOfMeasure = UnitOfMeasure.L },
             new Entry(){ Name = "молоко", Quantity = 10, UnitOfMeasure = UnitOfMeasure.Unit },
+            new Entry(){Name = "груши",Quantity = 10, UnitOfMeasure = UnitOfMeasure.Box},
+            new Entry(){Name = "таблетки",Quantity = 10, UnitOfMeasure = UnitOfMeasure.Pack}
         };
 
         private static readonly Session sessionExample = new Session()
