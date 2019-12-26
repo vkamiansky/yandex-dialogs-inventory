@@ -34,6 +34,9 @@
     <Reference Include="EP.Morphology.Core">
       <HintPath>..\..\EP_lib\EP.Morphology.Core.dll</HintPath>
     </Reference>
+    <Reference Include="EP.Analyzer.Goods.Core">
+      <HintPath>..\..\EP_lib\EP.Analyzer.Goods.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 
