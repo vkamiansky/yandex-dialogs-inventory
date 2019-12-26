@@ -37,28 +37,28 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("добавь 3 пачки пельменей", "пельмень", 3, UnitOfMeasure.Pack)]
-        [InlineData("добавь 1 пачку пельменей", "пельмень", 1, UnitOfMeasure.Pack)]
-          [InlineData("добавь 8 пачек пельменей", "пельмень", 8, UnitOfMeasure.Pack)]
-        [InlineData("добавь 3 упаковки таблеток", "таблетка", 3, UnitOfMeasure.Pack)]
-        [InlineData("добавь 1 упаковку таблеток", "таблетка", 1, UnitOfMeasure.Pack)]
-        [InlineData("добавь яблок 1 ящик", "яблоко", 1, UnitOfMeasure.Box)]
-        [InlineData("добавь ещё яблок 1 ящик", "яблоко", 1, UnitOfMeasure.Box)]
-        [InlineData("Прибавь 3 ящика яблок", "яблоко", 3, UnitOfMeasure.Box)]
-        [InlineData("добавь яблок 1 коробку", "яблоко", 1, UnitOfMeasure.Box)]
-        [InlineData("добавь ещё яблок 1 коробку", "яблоко", 1, UnitOfMeasure.Box)]
-        [InlineData("Прибавь 3 коробки яблок", "яблоко", 3, UnitOfMeasure.Box)]
-        [InlineData("добавь яблок 1 килограмм", "яблоко", 1, UnitOfMeasure.Kg)]
-        [InlineData("добавь ещё яблок 1 килограмм", "яблоко", 1, UnitOfMeasure.Kg)]
-        [InlineData("добавь яблок ещё 1 килограмм", "яблоко", 1, UnitOfMeasure.Kg)]
-        [InlineData("яблоки 2 килограмма", "яблоко", 2, UnitOfMeasure.Kg)]
-        [InlineData("Прибавь 3 единицы яблок", "яблоко", 3, UnitOfMeasure.Unit)]
-        [InlineData("Прибавь 3 шт яблок", "яблоко", 3, UnitOfMeasure.Unit)]
-        [InlineData("4 литра яблок", "яблоко", 4, UnitOfMeasure.L)]
-        [InlineData("Плюс 5 яблок", "яблоко", 5, null)]
-        [InlineData("6 яблок", "яблоко", 6, null)]
-        [InlineData("Килограмм яблок", "яблоко", null, UnitOfMeasure.Kg)]
-        [InlineData("закинь яблоко", "яблоко", null, null)]
+        [InlineData("добавь 3 пачки пельменей", "пельмени", 3, UnitOfMeasure.Pack)]
+        [InlineData("добавь 1 пачку пельменей", "пельмени", 1, UnitOfMeasure.Pack)]
+          [InlineData("добавь 8 пачек пельменей", "пельмени", 8, UnitOfMeasure.Pack)]
+        [InlineData("добавь 3 упаковки таблеток", "таблетки", 3, UnitOfMeasure.Pack)]
+        [InlineData("добавь 1 упаковку таблеток", "таблетки", 1, UnitOfMeasure.Pack)]
+        [InlineData("добавь яблок 1 ящик", "яблоки", 1, UnitOfMeasure.Box)]
+        [InlineData("добавь ещё яблок 1 ящик", "яблоки", 1, UnitOfMeasure.Box)]
+        [InlineData("Прибавь 3 ящика яблок", "яблоки", 3, UnitOfMeasure.Box)]
+        [InlineData("добавь яблок 1 коробку", "яблоки", 1, UnitOfMeasure.Box)]
+        [InlineData("добавь ещё яблок 1 коробку", "яблоки", 1, UnitOfMeasure.Box)]
+        [InlineData("Прибавь 3 коробки яблок", "яблоки", 3, UnitOfMeasure.Box)]
+        [InlineData("добавь яблок 1 килограмм", "яблоки", 1, UnitOfMeasure.Kg)]
+        [InlineData("добавь ещё яблок 1 килограмм", "яблоки", 1, UnitOfMeasure.Kg)]
+        [InlineData("добавь яблок ещё 1 килограмм", "яблоки", 1, UnitOfMeasure.Kg)]
+        [InlineData("яблоки 2 килограмма", "яблоки", 2, UnitOfMeasure.Kg)]
+        [InlineData("Прибавь 3 единицы яблок", "яблоки", 3, UnitOfMeasure.Unit)]
+        [InlineData("Прибавь 3 шт яблок", "яблоки", 3, UnitOfMeasure.Unit)]
+        [InlineData("4 литра яблок", "яблоки", 4, UnitOfMeasure.L)]
+        [InlineData("Плюс 5 яблок", "яблоки", 5, null)]
+        [InlineData("6 яблок", "яблоки", 6, null)]
+        [InlineData("Килограмм яблок", "яблоки", null, UnitOfMeasure.Kg)]
+        [InlineData("закинь яблоко", "яблоки", null, null)]
         public void AddPreparedParsing(string prepared, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
         {
             var input = new UserInput
@@ -78,8 +78,8 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("умножь яблоки на 5", "яблоко", 5)]
-        [InlineData("увеличь яблоки в 5 раз", "яблоко", 5)]
+        [InlineData("умножь яблоки на 5", "яблоки", 5)]
+        [InlineData("увеличь яблоки в 5 раз", "яблоки", 5)]
         public void MultiplyPreparedParsing(string prepared, string entryName, double? entryQuantity)
         {
             var input = new UserInput
@@ -98,8 +98,8 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("уменьши яблоки в 5 раз", "яблоко", 5)]
-        [InlineData("раздели яблоки на 5", "яблоко", 5)]
+        [InlineData("уменьши яблоки в 5 раз", "яблоки", 5)]
+        [InlineData("раздели яблоки на 5", "яблоки", 5)]
         public void DivisionPreparedParsing(string prepared, string entryName, double? entryQuantity)
         {
             var input = new UserInput
@@ -118,9 +118,9 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("сколько яблок", "яблоко")]
-        [InlineData("покажи сколько яблок", "яблоко")]
-        [InlineData("выведи яблоки", "яблоко")]
+        [InlineData("сколько яблок", "яблоки")]
+        [InlineData("покажи сколько яблок", "яблоки")]
+        [InlineData("выведи яблоки", "яблоки")]
         public void ReadItemPreparedParsing(string prepared, string entryName)
         {
             var input = new UserInput
@@ -142,8 +142,8 @@ namespace AliceInventory.UnitTests
         [InlineData("добавь ак 47 3 штуки", "ак 47", 3, UnitOfMeasure.Unit)]
         [InlineData("ак 47 3,5 килограмма", "ак 47", 3.5, UnitOfMeasure.Kg)]
         [InlineData("добавь молоко 1 литр 5 штук", "молоко 1 литр", 5, UnitOfMeasure.Unit)]
-        [InlineData("ну давай добавим 5 кг яблок", "яблоко", 5, UnitOfMeasure.Kg)]
-        [InlineData("добавь яблок 4", "яблоко", 4, null)]
+        [InlineData("ну давай добавим 5 кг яблок", "яблоки", 5, UnitOfMeasure.Kg)]
+        [InlineData("добавь яблок 4", "яблоки", 4, null)]
         public void SpecificAddPreparedParsing(string prepared, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
         {
             var input = new UserInput
@@ -167,8 +167,8 @@ namespace AliceInventory.UnitTests
         [InlineData("еще ак 47 3 штуки", "ак 47", 3, UnitOfMeasure.Unit)]
         [InlineData("ещё ак 47 3,5 килограмма", "ак 47", 3.5, UnitOfMeasure.Kg)]
         [InlineData("ещё молоко 1 литр 5 штук", "молоко 1 литр", 5, UnitOfMeasure.Unit)]
-        [InlineData("ну ещё 5 кг яблок", "яблоко", 5, UnitOfMeasure.Kg)]
-        [InlineData("ещё яблок 4", "яблоко", 4, null)]
+        [InlineData("ну ещё 5 кг яблок", "яблоки", 5, UnitOfMeasure.Kg)]
+        [InlineData("ещё яблок 4", "яблоки", 4, null)]
         public void MorePreparedParsing(string prepared, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
         {
             var input = new UserInput
@@ -188,15 +188,15 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("удали яблок 1 килограмм", "яблоко", 1, UnitOfMeasure.Kg)]
-        [InlineData("ещё удали яблок 1 килограмм", "яблоко", 1, UnitOfMeasure.Kg)]
-        [InlineData("убери 2 килограмм яблок", "яблоко", 2, UnitOfMeasure.Kg)]
-        [InlineData("убери ка 3 яблока", "яблоко", 3, null)]
-        [InlineData("убери ещё 3 яблока", "яблоко", 3, null)]
-        [InlineData("убери яблок 5", "яблоко", 5, null)]
+        [InlineData("удали яблок 1 килограмм", "яблоки", 1, UnitOfMeasure.Kg)]
+        [InlineData("ещё удали яблок 1 килограмм", "яблоки", 1, UnitOfMeasure.Kg)]
+        [InlineData("убери 2 килограмм яблок", "яблоки", 2, UnitOfMeasure.Kg)]
+        [InlineData("убери ка 3 яблока", "яблоки", 3, null)]
+        [InlineData("убери ещё 3 яблока", "яблоки", 3, null)]
+        [InlineData("убери яблок 5", "яблоки", 5, null)]
         [InlineData("убери молоко", "молоко", null, null)]
-        [InlineData("давай убери яблок 3 штуки", "яблоко", 3, UnitOfMeasure.Unit)]
-        [InlineData("сотри килограмм яблок", "яблоко", null, UnitOfMeasure.Kg)]
+        [InlineData("давай убери яблок 3 штуки", "яблоки", 3, UnitOfMeasure.Unit)]
+        [InlineData("сотри килограмм яблок", "яблоки", null, UnitOfMeasure.Kg)]
         public void DeletePreparedParsing(string prepared, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
         {
             var input = new UserInput
@@ -216,10 +216,10 @@ namespace AliceInventory.UnitTests
         }
 
         [Theory]
-        [InlineData("удалить все кроме яблок", "яблоко")]
-        [InlineData("очистить все кроме груш", "груша")]
-        [InlineData("очисти кроме яблок", "яблоко")]
-        [InlineData("убери кроме груш", "груша")]
+        [InlineData("удалить все кроме яблок", "яблоки")]
+        [InlineData("очистить все кроме груш", "груши")]
+        [InlineData("очисти кроме яблок", "яблоки")]
+        [InlineData("убери кроме груш", "груши")]
         public void DeleteAllExceptPreparedParsing(string prepared, string entryName)
         {
             var input = new UserInput

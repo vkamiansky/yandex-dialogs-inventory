@@ -27,7 +27,7 @@ namespace AliceInventory.Logic.Parser
                     for (var t = ar.FirstToken; t != null; t = t.Next)
                     {
                         var npt = NounPhraseHelper.TryParse(t, NounPhraseParseAttr.AdjectiveCanBeLast);
-                        result += npt?.GetMorphVariant(MorphCase.Nominative, false).ToLower() ??
+                        result += npt?.GetMorphVariant(MorphCase.Nominative, true).ToLower() ??
                                   t.GetNormalCaseText().ToLower();
                     }
 
