@@ -164,9 +164,8 @@ namespace AliceInventory.UnitTests
 
         [Theory]
         [InlineData("ещё 5 ак47", "ак47", 5, null)]
-        [InlineData("еще ак 47 3 штуки", "ак 47", 3, UnitOfMeasure.Unit)]
+        [InlineData("еще ак47 3 штуки", "ак 47", 3, UnitOfMeasure.Unit)]
         [InlineData("ещё ак 47 3,5 килограмма", "ак 47", 3.5, UnitOfMeasure.Kg)]
-        [InlineData("ещё молоко 1 литр 5 штук", "молоко 1 литр", 5, UnitOfMeasure.Unit)]
         [InlineData("ну ещё 5 кг яблок", "яблоки", 5, UnitOfMeasure.Kg)]
         [InlineData("ещё яблок 4", "яблоки", 4, null)]
         public void MorePreparedParsing(string prepared, string entryName, double? entryQuantity, UnitOfMeasure? entryUnitOfMeasure)
@@ -191,7 +190,7 @@ namespace AliceInventory.UnitTests
         [InlineData("удали яблок 1 килограмм", "яблоки", 1, UnitOfMeasure.Kg)]
         [InlineData("ещё удали яблок 1 килограмм", "яблоки", 1, UnitOfMeasure.Kg)]
         [InlineData("убери 2 килограмм яблок", "яблоки", 2, UnitOfMeasure.Kg)]
-        [InlineData("убери ка 3 яблока", "яблоки", 3, null)]
+        [InlineData("убери ка 3 яблоки", "яблоки", 3, null)]
         [InlineData("убери ещё 3 яблока", "яблоки", 3, null)]
         [InlineData("убери яблок 5", "яблоки", 5, null)]
         [InlineData("убери молоко", "молоко", null, null)]
