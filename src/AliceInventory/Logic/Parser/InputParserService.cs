@@ -47,6 +47,8 @@ namespace AliceInventory.Logic.Parser
             new CommandTemplate(ParsedPhraseType.ReadList, x => x.Prepared, RegexHelper.ListWord),
             new CommandTemplate(ParsedPhraseType.ReadList, x => x.Prepared, RegexHelper.ReadWord, RegexHelper.ListWord),
             new CommandTemplate(ParsedPhraseType.ReadList, x => x.Button, RegexHelper.ReadWord, RegexHelper.ListWord),
+            new CommandTemplate(ParsedPhraseType.ReadList, x => x.Prepared, RegexHelper.ReadWord, RegexHelper.AllWord),
+            new CommandTemplate(ParsedPhraseType.ReadList, x => x.Button, RegexHelper.ReadWord, RegexHelper.AllWord),
             
             //Read Item
             new CommandTemplateWithEntry(ParsedPhraseType.ReadItem, x => x.Prepared, RegexHelper.ReadWord, RegexHelper.ReadWord, RegexHelper.EntryName),
