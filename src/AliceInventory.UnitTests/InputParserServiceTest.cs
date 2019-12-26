@@ -219,6 +219,8 @@ namespace AliceInventory.UnitTests
         [InlineData("очистить все кроме груш", "груши")]
         [InlineData("очисти кроме яблок", "яблоки")]
         [InlineData("убери кроме груш", "груши")]
+        [InlineData("оставь яблоки", "яблоки")]
+        [InlineData("оставить только груши", "груши")]
         public void DeleteAllExceptPreparedParsing(string prepared, string entryName)
         {
             var input = new UserInput

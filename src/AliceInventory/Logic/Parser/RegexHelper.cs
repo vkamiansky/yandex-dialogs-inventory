@@ -19,6 +19,8 @@ namespace AliceInventory.Logic.Parser
             @"(?:вс(?:е|ё))";
         public const string ClearWord =
             @"(?:(?:о|вы)чист(?:и|(?:ит)?ь))";
+        public const string LeaveWord =
+            @"(?:остав(?:ь|(?:ить)))";
         public const string HelloPattern =
             @"(?:привет(?:ик|ствую)?|здравствуй(?:те)?|хай|хеллоу)";
         public const string AcceptWord =

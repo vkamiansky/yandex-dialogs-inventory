@@ -85,6 +85,10 @@ namespace AliceInventory.Logic.Parser
                 RegexHelper.DeleteWord, RegexHelper.AllWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
             new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
                 RegexHelper.DeleteWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
+            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
+                RegexHelper.LeaveWord, "только", RegexHelper.EntryName),
+            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
+                RegexHelper.LeaveWord, RegexHelper.EntryName),
 
             //Delete
             new CommandTemplateWithEntry(ParsedPhraseType.Delete, x => x.Prepared,
