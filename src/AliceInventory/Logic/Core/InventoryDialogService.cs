@@ -155,13 +155,29 @@ namespace AliceInventory.Logic
 
         private static ProcessingResult ProcessDeleteAllExcept(Services services, ProcessingArgs args)
         {
-            if (!(args.CommandData is ParsedEntry parsedEntry))
-                return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
+            try
+            {
+                if (!(args.CommandData is ParsedEntry parsedEntry))
+                    return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
 
-            var entry = ConvertToEntry(parsedEntry);
-            services.Storage.DeleteAllEntries(args.UserId);
-            services.Storage.CreateEntry(args.UserId, entry.Name, entry.Quantity, entry.UnitOfMeasure.ToData());
-            return new ProcessingResult(ProcessingResultType.AllExceptDeleted, entry);
+                var entry = ConvertToEntry(parsedEntry);
+
+                var entries = services.Storage.ReadAllEntries(args.UserId);
+                var dataUnitOfMeasure = entry.UnitOfMeasure.ToData();
+                var dbEntry = entries.FirstOrDefault(e =>
+                    e.Name == entry.Name && e.UnitOfMeasure == dataUnitOfMeasure);
+
+                if (dbEntry is null)
+                    return new EntryNotFoundInDatabaseError(entry.Name, entry.UnitOfMeasure);
+
+                services.Storage.DeleteAllEntries(args.UserId);
+                services.Storage.CreateEntry(args.UserId, entry.Name, entry.Quantity, entry.UnitOfMeasure.ToData());
+                return new ProcessingResult(ProcessingResultType.AllExceptDeleted, entry);
+            }
+            catch (Exception e)
+            {
+                return new ProcessingResult(e);
+            }
         }
 
         private static ProcessingResult ProcessCancel(Services services, ProcessingArgs args)
@@ -382,7 +398,8 @@ namespace AliceInventory.Logic
         {
             try
             {
-                if (entry.Quantity <= 0) return new ProcessingResult(ProcessingResultType.InvalidCount);
+                if (entry.Quantity <= 0) 
+                    return new ProcessingResult(ProcessingResultType.InvalidCount);
                 var entries = storage.ReadAllEntries(userId);
                 var dataUnitOfMeasure = entry.UnitOfMeasure.ToData();
                 var dbEntry = entries.FirstOrDefault(e =>

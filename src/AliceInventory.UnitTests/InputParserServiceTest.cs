@@ -39,7 +39,7 @@ namespace AliceInventory.UnitTests
         [Theory]
         [InlineData("добавь 3 пачки пельменей", "пельмени", 3, UnitOfMeasure.Pack)]
         [InlineData("добавь 1 пачку пельменей", "пельмени", 1, UnitOfMeasure.Pack)]
-          [InlineData("добавь 8 пачек пельменей", "пельмени", 8, UnitOfMeasure.Pack)]
+        [InlineData("добавь 8 пачек пельменей", "пельмени", 8, UnitOfMeasure.Pack)]
         [InlineData("добавь 3 упаковки таблеток", "таблетки", 3, UnitOfMeasure.Pack)]
         [InlineData("добавь 1 упаковку таблеток", "таблетки", 1, UnitOfMeasure.Pack)]
         [InlineData("добавь яблок 1 ящик", "яблоки", 1, UnitOfMeasure.Box)]
