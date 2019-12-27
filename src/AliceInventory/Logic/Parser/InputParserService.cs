@@ -10,6 +10,10 @@ namespace AliceInventory.Logic.Parser
             //Email
             new CommandTemplate(ParsedPhraseType.SendMail, x => x.Prepared,
                 RegexHelper.SendWord, RegexHelper.MailWord),
+            new CommandTemplate(ParsedPhraseType.ShowMail, x => x.Prepared,
+                RegexHelper.ReadWord, RegexHelper.MailWord),
+            new CommandTemplate(ParsedPhraseType.ShowMail, x => x.Prepared,
+                RegexHelper.ReadWord, "у меня",RegexHelper.MailWord),
             new CommandTemplateWithEmail(ParsedPhraseType.SendMail, x => x.Raw,
                 RegexHelper.SendWord, RegexHelper.Email),
             new CommandTemplate(ParsedPhraseType.SendMail, x => x.Prepared,
@@ -43,6 +47,11 @@ namespace AliceInventory.Logic.Parser
             new CommandTemplate(ParsedPhraseType.ReadList, x => x.Prepared, RegexHelper.ListWord),
             new CommandTemplate(ParsedPhraseType.ReadList, x => x.Prepared, RegexHelper.ReadWord, RegexHelper.ListWord),
             new CommandTemplate(ParsedPhraseType.ReadList, x => x.Button, RegexHelper.ReadWord, RegexHelper.ListWord),
+            
+            //Read Item
+            new CommandTemplateWithEntry(ParsedPhraseType.ReadItem, x => x.Prepared, RegexHelper.ReadWord, RegexHelper.ReadWord, RegexHelper.EntryName),
+            new CommandTemplateWithEntry(ParsedPhraseType.ReadItem, x => x.Prepared, RegexHelper.ReadWord, RegexHelper.EntryName),
+            new CommandTemplateWithEntry(ParsedPhraseType.ReadItem, x => x.Button, RegexHelper.ReadWord, RegexHelper.EntryName),
 
 
             //Read Item
@@ -55,6 +64,8 @@ namespace AliceInventory.Logic.Parser
             new CommandTemplate(ParsedPhraseType.Clear, x => x.Button, RegexHelper.ClearWord),
             new CommandTemplate(ParsedPhraseType.Clear, x => x.Prepared, RegexHelper.ClearWord, RegexHelper.ListWord),
             new CommandTemplate(ParsedPhraseType.Clear, x => x.Button, RegexHelper.ClearWord, RegexHelper.ListWord),
+            new CommandTemplate(ParsedPhraseType.Clear, x => x.Prepared, RegexHelper.ClearWord, RegexHelper.AllWord),
+            new CommandTemplate(ParsedPhraseType.Clear, x => x.Button, RegexHelper.ClearWord, RegexHelper.AllWord),
 
             //Greeting
             new CommandTemplate(ParsedPhraseType.Hello, x => x.Prepared, RegexHelper.HelloPattern),
@@ -62,6 +73,16 @@ namespace AliceInventory.Logic.Parser
             new CommandTemplate(ParsedPhraseType.Help, x => x.Button, RegexHelper.HelpWord),
             new CommandTemplate(ParsedPhraseType.Exit, x => x.Prepared, RegexHelper.ExitWord),
             new CommandTemplate(ParsedPhraseType.Exit, x => x.Button, RegexHelper.ExitWord),
+
+            //Delete all except one item
+            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
+                RegexHelper.ClearWord, RegexHelper.AllWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
+            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
+                RegexHelper.ClearWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
+            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
+                RegexHelper.DeleteWord, RegexHelper.AllWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
+            new CommandTemplateWithEntry(ParsedPhraseType.DeleteAllExcept, x => x.Prepared,
+                RegexHelper.DeleteWord, RegexHelper.ExceptWord, RegexHelper.EntryName),
 
             //Delete
             new CommandTemplateWithEntry(ParsedPhraseType.Delete, x => x.Prepared,
@@ -120,6 +141,20 @@ namespace AliceInventory.Logic.Parser
                 RegexHelper.AddWord, RegexHelper.EntryName, RegexHelper.EntryQuantity),
             new CommandTemplateWithEntry(ParsedPhraseType.Add, x => x.Prepared,
                 RegexHelper.AddWord, RegexHelper.EntryName),
+
+            // Multiply
+            new CommandTemplateWithEntry(ParsedPhraseType.Multiply, x => x.Prepared,
+                $"умножь {RegexHelper.EntryName} на {RegexHelper.EntryQuantity}"),
+            new CommandTemplateWithEntry(ParsedPhraseType.Multiply, x => x.Prepared,
+                $"увеличь {RegexHelper.EntryName} в {RegexHelper.EntryQuantity} раз"),
+            new CommandTemplateWithEntry(ParsedPhraseType.Multiply, x => x.Prepared,
+                $"умножь {RegexHelper.EntryName} в {RegexHelper.EntryQuantity} раз"),
+
+            // Division
+            new CommandTemplateWithEntry(ParsedPhraseType.Division, x => x.Prepared,
+                $"раздели {RegexHelper.EntryName} на {RegexHelper.EntryQuantity}"),
+            new CommandTemplateWithEntry(ParsedPhraseType.Division, x => x.Prepared,
+                $"уменьши {RegexHelper.EntryName} в {RegexHelper.EntryQuantity} раз"),
 
             //Low priority command
             new CommandTemplateWithEntry(ParsedPhraseType.Add, x => x.Prepared,

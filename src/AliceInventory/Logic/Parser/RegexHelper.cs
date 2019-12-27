@@ -13,6 +13,10 @@ namespace AliceInventory.Logic.Parser
             @"(?:(?:за|в|над?|п(?:о|ри)|до)?(?:плюс|с(?:оедин)|ки|лож|мест|бав)(?:н)?(?:л|им?|ь)?(?:ай|яй|ть|те|\sка)?)";
         public const string DeleteWord =
             @"(?:(?:вы|у)?(?:дал|бер|брос|бра|тащ|сотр|изъя|ничтож|стер|стир|таск)(?:ива|ова|ева|ыва)?(?:ай|у|е|и|й|ь)?(?:ть)?(?:те|\sка)?)";
+        public const string ExceptWord =
+            @"(?:кроме)";
+        public const string AllWord =
+            @"(?:вс(?:е|ё))";
         public const string ClearWord =
             @"(?:(?:о|вы)чист(?:и|(?:ит)?ь))";
         public const string HelloPattern =
@@ -28,15 +32,15 @@ namespace AliceInventory.Logic.Parser
         public const string HelpWord =
             @"(?:помо(?:ги(?:те)?|щь)|хелп|спас(?:и|а(?:й(?:те)?))|выручай(?:те)?|что ты (?:уме|мож)ешь\??)";
         public const string ReadWord =
-            @"(?:пока(?:жи|зать)|выведи|(?:за|про)?читай)";
+            @"(?:пока(?:жи|зать)|как(?:ая|ой)|выведи|(?:за|про)?читай|сколько)";
         public const string SendWord =
             @"(?:(?:отправ(?:ь(?:те)?|ить|ляй)|вы(?:шли|слать)|(?:пере|по)(?:шли|слать)|ски(?:дывай|нь))(?:\sка)?)";
         public const string ExitWord =
             @"(?:п(?:ока|рощай)|выход|хватит|закончить)";
         public const string ListWord =
-            @"(?:вс(?:е|ё)|спис(?:ок|ке)|опись|(?:от|у)ч(?:е|ё)т|итог(?:е|о)?|результате?)";
+            @"(?:спис(?:ок|ке)|опись|(?:от|у)ч(?:е|ё)т|итог(?:е|о)?|результате?)";
         public const string MailWord =
-            @"(?:(?:мо(?:я|й|ю|ё|е)\s)?(?:почт(?:а|у|ой)|(?:и|е)?мейл|e?mail|мыло))";
+            @"(?:(?:мо(?:я|й|ю|ё|е)\s)?(?:почт(?:а|у|ой)|(?:и|е)?мейл|e?mail|мыло|адрес))";
 
         /// <summary>
         /// CanBeIgnoreWordPattern - шаблон слов, которые в большинстве случаев могут быть проигнорированы.
@@ -60,7 +64,9 @@ namespace AliceInventory.Logic.Parser
         public const string UnitPattern = @"шт(?:ук|ука|уки|уку|уковин)?|единиц(?:а|у|ы)?";
         public const string KgPattern = @"к(?:г|илограмм(?:а|ов)?)";
         public const string LiterPattern = @"л(?:итр(?:а|ов)?)?";
-        public const string UnitOfMeasurePattern = UnitPattern + "|" + KgPattern + "|" + LiterPattern;
+        public const string BoxPattern = @"ящик(?:а|ов|)|короб(?:ок|ки|ку)";
+        public const string PackPattern = @"упаков(?:ок|ки|ку)|пач(?:ек|ку|ки)";
+        public const string UnitOfMeasurePattern = UnitPattern + "|" + KgPattern + "|" + LiterPattern + "|" + BoxPattern + "|"+ PackPattern;
         public static readonly string EntryUnit = AddGroupName(EntryUnitGroupName, UnitOfMeasurePattern);
         public const string EntryNamePattern = @".{2}.+?";
         public static readonly string EntryName = AddGroupName(EntryNameGroupName, EntryNamePattern);
@@ -76,7 +82,10 @@ namespace AliceInventory.Logic.Parser
             {
                 [UnitOfMeasure.Unit] = UnitPattern,
                 [UnitOfMeasure.Kg] = KgPattern,
-                [UnitOfMeasure.L] = LiterPattern
+                [UnitOfMeasure.L] = LiterPattern,
+                [UnitOfMeasure.Box] = BoxPattern,
+                [UnitOfMeasure.Pack] = PackPattern,
+
             };
         }
 

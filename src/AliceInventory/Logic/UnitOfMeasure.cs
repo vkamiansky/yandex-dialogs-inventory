@@ -5,5 +5,7 @@ namespace AliceInventory.Logic
         Unit,
         Kg,
         L,
+        Box,
+        Pack,
     }
 }

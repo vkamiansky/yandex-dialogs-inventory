@@ -12,11 +12,13 @@ namespace AliceInventory.Logic.Parser
     {
         public static string Normalize(string word)
         {
+            if (word == null) return null;
             var newWord = "";
             ProcessorService.Initialize();
+            var t1 = ProcessorService.IsInitialized;
             using (var proc = ProcessorService.CreateProcessor())
             {
-                if (word == null) return null;
+                
                 var valueParts = word.Trim().Split();
                 var result = "";
                 foreach (var valuePart in valueParts)
@@ -25,7 +27,7 @@ namespace AliceInventory.Logic.Parser
                     for (var t = ar.FirstToken; t != null; t = t.Next)
                     {
                         var npt = NounPhraseHelper.TryParse(t, NounPhraseParseAttr.AdjectiveCanBeLast);
-                        result += npt?.GetMorphVariant(MorphCase.Nominative, false).ToLower() ??
+                        result += npt?.GetMorphVariant(MorphCase.Nominative, true).ToLower() ??
                                   t.GetNormalCaseText().ToLower();
                     }
 
@@ -34,6 +36,7 @@ namespace AliceInventory.Logic.Parser
 
                 newWord = result.Trim();
             }
+            
 
             return newWord;
 

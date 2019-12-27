@@ -37,6 +37,9 @@ namespace AliceInventory.Logic
                 [ParsedPhraseType.Hello] = ProcessGreeting,
                 [ParsedPhraseType.Add] = ProcessAdd,
                 [ParsedPhraseType.Delete] = ProcessDelete,
+                [ParsedPhraseType.Multiply] = ProcessMultiply,
+                [ParsedPhraseType.Division] = ProcessDivision,
+                [ParsedPhraseType.DeleteAllExcept] = ProcessDeleteAllExcept,
                 [ParsedPhraseType.More] = ProcessMore,
                 [ParsedPhraseType.Cancel] = ProcessCancel,
                 [ParsedPhraseType.Accept] = ProcessAccept,
@@ -45,6 +48,7 @@ namespace AliceInventory.Logic
                 [ParsedPhraseType.ReadList] = ProcessReadList,
                 [ParsedPhraseType.ReadItem] = ProcessReadItem,
                 [ParsedPhraseType.SendMail] = ProcessSendMail,
+                [ParsedPhraseType.ShowMail] = ProcessShowMail,
                 [ParsedPhraseType.Mail] = ProcessAddMail,
                 [ParsedPhraseType.DeleteMail] = ProcessDeleteMail,
                 [ParsedPhraseType.Help] = ProcessHelp,
@@ -131,6 +135,35 @@ namespace AliceInventory.Logic
             return SubtractMaterial(services.Storage, args.UserId, entry);
         }
 
+        private static ProcessingResult ProcessMultiply(Services services, ProcessingArgs args)
+        {
+            if (!(args.CommandData is ParsedEntry parsedEntry))
+                return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
+
+            var entry = ConvertToEntry(parsedEntry);
+            return MultiplyMaterial(services.Storage, args.UserId, entry);
+        }
+
+        private static ProcessingResult ProcessDivision(Services services, ProcessingArgs args)
+        {
+            if (!(args.CommandData is ParsedEntry parsedEntry))
+                return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
+
+            var entry = ConvertToEntry(parsedEntry);
+            return DivisionMaterial(services.Storage, args.UserId, entry);
+        }
+
+        private static ProcessingResult ProcessDeleteAllExcept(Services services, ProcessingArgs args)
+        {
+            if (!(args.CommandData is ParsedEntry parsedEntry))
+                return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
+
+            var entry = ConvertToEntry(parsedEntry);
+            services.Storage.DeleteAllEntries(args.UserId);
+            services.Storage.CreateEntry(args.UserId, entry.Name, entry.Quantity, entry.UnitOfMeasure.ToData());
+            return new ProcessingResult(ProcessingResultType.AllExceptDeleted, entry);
+        }
+
         private static ProcessingResult ProcessCancel(Services services, ProcessingArgs args)
         {
             var state = args.State;
@@ -161,6 +194,31 @@ namespace AliceInventory.Logic
 
                         return new ProcessingResult(ProcessingResultType.DeleteCanceled, stateEntry);
                     }
+
+                case ProcessingResultType.Multiplied:
+                {
+                    if (!(state.Data is Entry stateEntry))
+                        return new UnexpectedTypeException(state.Data, typeof(Entry));
+
+                    var result = DivisionMaterial(services.Storage, args.UserId, stateEntry);
+
+                    if (result.Type != ProcessingResultType.Divided)
+                        return result;
+
+                    return new ProcessingResult(ProcessingResultType.MultiplyCanceled, stateEntry);
+                }
+                case ProcessingResultType.Divided:
+                {
+                    if (!(state.Data is Entry stateEntry))
+                        return new UnexpectedTypeException(state.Data, typeof(Entry));
+
+                    var result = MultiplyMaterial(services.Storage, args.UserId, stateEntry);
+
+                    if (result.Type != ProcessingResultType.Multiplied)
+                        return result;
+
+                    return new ProcessingResult(ProcessingResultType.DivisionCanceled, stateEntry);
+                }
 
                 default:
                     return ProcessingResultType.Error;
@@ -213,6 +271,28 @@ namespace AliceInventory.Logic
         {
             var entries = services.Storage.ReadAllEntries(args.UserId).ToLogic();
             return new ProcessingResult(ProcessingResultType.ListRead, entries);
+        }
+        private static ProcessingResult ProcessShowMail(Services services, ProcessingArgs args)
+        {
+            if(services.Storage.ReadUserMail(args.UserId)!=null)
+            {
+                 var email = services.Storage.ReadUserMail(args.UserId);
+                 return new ProcessingResult(ProcessingResultType.ShowMail,email);
+
+            }else return ProcessingResultType.Error;
+           
+        }
+
+        private static ProcessingResult ProcessReadItem(Services services, ProcessingArgs args)
+        {
+            if (!(args.CommandData is ParsedEntry parsedEntry))
+                return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
+
+            var entry = ConvertToEntry(parsedEntry);
+
+            var entries = services.Storage.ReadAllEntries(args.UserId);
+            var res = entries.Where(x => x.Name == entry.Name).ToArray().ToLogic();
+            return new ProcessingResult(ProcessingResultType.ItemRead, res);
         }
 
         private static ProcessingResult ProcessReadItem(Services services, ProcessingArgs args)
@@ -288,6 +368,7 @@ namespace AliceInventory.Logic
         {
             try
             {
+                if (entry.Quantity <= 0) return new ProcessingResult(ProcessingResultType.InvalidCount);
                 var entries = storage.ReadAllEntries(userId);
                 var dbEntry = entries.FirstOrDefault(e =>
                     e.Name == entry.Name && e.UnitOfMeasure == entry.UnitOfMeasure.ToData());
@@ -313,6 +394,7 @@ namespace AliceInventory.Logic
         {
             try
             {
+                if (entry.Quantity <= 0) return new ProcessingResult(ProcessingResultType.InvalidCount);
                 var entries = storage.ReadAllEntries(userId);
                 var dataUnitOfMeasure = entry.UnitOfMeasure.ToData();
                 var dbEntry = entries.FirstOrDefault(e =>
@@ -332,6 +414,51 @@ namespace AliceInventory.Logic
                     storage.UpdateEntry(dbEntry.Id, dbEntry.Quantity - entry.Quantity);
 
                 return new ProcessingResult(ProcessingResultType.Deleted, entry);
+            }
+            catch (Exception e)
+            {
+                return new ProcessingResult(e);
+            }
+        }
+
+        private static ProcessingResult MultiplyMaterial(IUserDataStorage storage, string userId, Entry entry)
+        {
+            try
+            {
+                if (entry.Quantity <= 0) return new ProcessingResult(ProcessingResultType.InvalidCount);
+                var entries = storage.ReadAllEntries(userId);
+                var dbEntry = entries.FirstOrDefault(e => e.Name == entry.Name);
+
+                if (dbEntry is null)
+                    return new EntryNotFoundInDatabaseError(entry.Name, entry.UnitOfMeasure);
+
+                storage.UpdateEntry(dbEntry.Id, dbEntry.Quantity * entry.Quantity);
+                entry.UnitOfMeasure = dbEntry.UnitOfMeasure.ToLogic();
+
+                return new ProcessingResult(ProcessingResultType.Multiplied, entry);
+            }
+            catch (Exception e)
+            {
+                return new ProcessingResult(e);
+            }
+        }
+
+        private static ProcessingResult DivisionMaterial(IUserDataStorage storage, string userId, Entry entry)
+        {
+            try
+            {
+                if (entry.Quantity <= 0) return new ProcessingResult(ProcessingResultType.InvalidCount);
+                var entries = storage.ReadAllEntries(userId);
+                var dbEntry = entries.FirstOrDefault(e => e.Name == entry.Name);
+
+                if (dbEntry is null)
+                    return new EntryNotFoundInDatabaseError(entry.Name, entry.UnitOfMeasure);
+
+                storage.UpdateEntry(dbEntry.Id, dbEntry.Quantity / entry.Quantity);
+
+                entry.UnitOfMeasure = dbEntry.UnitOfMeasure.ToLogic();
+
+                return new ProcessingResult(ProcessingResultType.Divided, entry);
             }
             catch (Exception e)
             {
