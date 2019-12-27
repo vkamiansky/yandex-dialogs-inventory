@@ -92,6 +92,16 @@ namespace AliceInventory.Controllers.AliceResponseRender
             },
             Buttons = MainButtonsWithCancel
         };
+        private static readonly ResponseTemplate AddedManyTemplate = new ResponseTemplate()
+        {
+            TextAndSpeechTemplates = new[]
+            {
+                new TextAndSpeechTemplate("Добавлено:\n{0}"),
+                new TextAndSpeechTemplate("Добавила:\n{0}"),
+                new TextAndSpeechTemplate("Плюс:\n{0}"),
+            },
+            Buttons = MainButtonsWithCancel
+        };
 
         private static readonly ResponseTemplate AddCanceledTemplate = new ResponseTemplate()
         {
@@ -364,6 +374,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
                 [ResponseFormat.GreetingRequested] = GreetingRequestTemplate,
                 [ResponseFormat.InvalidCountEntered] = InvalidCountEnteredTemplate,
                 [ResponseFormat.Added] = AddedTemplate,
+                [ResponseFormat.AddedMany] = AddedManyTemplate,
                 [ResponseFormat.AddCanceled] = AddCanceledTemplate,
                 [ResponseFormat.Deleted] = DeletedTemplate,
                 [ResponseFormat.DeleteCanceled] = DeleteCanceledTemplate,
@@ -438,6 +449,15 @@ namespace AliceInventory.Controllers.AliceResponseRender
                         {
                             ResponseType = ResponseFormat.Added,
                             Data = new object[] { entry.Name, entry.Quantity, entry.UnitOfMeasure.ToText() }
+                        };
+                    }
+                case ProcessingResultType.AddedMany
+                    when result.Data is List<Entry> origEntries:
+                    {
+                        return new ResponseArgs()
+                        {
+                            ResponseType = ResponseFormat.AddedMany,
+                            Data = new object[] { origEntries.ToArray().ToTextList() }
                         };
                     }
                 case ProcessingResultType.AddCanceled

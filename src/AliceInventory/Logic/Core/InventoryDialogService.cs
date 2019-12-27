@@ -123,6 +123,36 @@ namespace AliceInventory.Logic
                 return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
 
             var entry = ConvertToEntry(parsedEntry);
+
+            var possibleEntries = entry.Name.Split(new string[] { " è " }, StringSplitOptions.None);
+            if (possibleEntries.Length > 1)
+            {
+                var entries = new List<Entry>();
+                foreach (var e in possibleEntries)
+                {
+                    var info = e.Split(' ');
+                    double res;
+                    switch (info.Length)
+                    {
+                        case 3:
+                            if (double.TryParse(info[0], out res))
+                                entries.Add(new Entry() { Name = info[2], Quantity = double.Parse(info[0]), UnitOfMeasure = UnitOfMeasure.Unit });
+                            else
+                                entries.Add(new Entry() { Name = info[0], Quantity = double.Parse(info[1]), UnitOfMeasure = UnitOfMeasure.Unit });
+                            break;
+                        case 2:
+                            if (double.TryParse(info[0], out res))
+                                entries.Add(new Entry() { Name = info[1], Quantity = double.Parse(info[0]), UnitOfMeasure = UnitOfMeasure.Unit });
+                            else
+                                entries.Add(new Entry() { Name = info[0], Quantity = double.Parse(info[1]), UnitOfMeasure = UnitOfMeasure.Unit });
+                            break;
+                        case 1:
+                            entries.Add(new Entry() { Name = info[0], Quantity = 1, UnitOfMeasure = UnitOfMeasure.Unit });
+                            break;
+                    }
+                }
+                return AddMaterials(services.Storage, args.UserId, entries);
+            }
             return AddMaterial(services.Storage, args.UserId, entry);
         }
 
@@ -387,6 +417,34 @@ namespace AliceInventory.Logic
                 }
 
                 return new ProcessingResult(ProcessingResultType.Added, entry);
+            }
+            catch (Exception e)
+            {
+                return new ProcessingResult(e);
+            }
+        }
+
+        private static ProcessingResult AddMaterials(IUserDataStorage storage, string userId, List<Entry> origEntries)
+        {
+            try
+            {
+                foreach (var entry in origEntries)
+                {
+                    if (entry.Quantity <= 0) return new ProcessingResult(ProcessingResultType.InvalidCount);
+                    var entries = storage.ReadAllEntries(userId);
+                    var dbEntry = entries.FirstOrDefault(e =>
+                        e.Name == entry.Name && e.UnitOfMeasure == entry.UnitOfMeasure.ToData());
+
+                    if (dbEntry is null)
+                    {
+                        storage.CreateEntry(userId, entry.Name, entry.Quantity, entry.UnitOfMeasure.ToData());
+                    }
+                    else
+                    {
+                        storage.UpdateEntry(dbEntry.Id, dbEntry.Quantity + entry.Quantity);
+                    }
+                }
+                return new ProcessingResult(ProcessingResultType.AddedMany, origEntries);
             }
             catch (Exception e)
             {

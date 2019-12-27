@@ -6,6 +6,7 @@ namespace AliceInventory.Logic
         Declined,
         InvalidCount,
         Added,
+        AddedMany,
         AddCanceled,
         Deleted,
         DeleteCanceled,

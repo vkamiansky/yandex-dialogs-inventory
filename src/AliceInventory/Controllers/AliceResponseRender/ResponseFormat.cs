@@ -6,6 +6,7 @@ namespace AliceInventory.Controllers.AliceResponseRender
         InvalidCountEntered,
         Declined,
         Added,
+        AddedMany,
         AddCanceled,
         Deleted,
         DeleteCanceled,
