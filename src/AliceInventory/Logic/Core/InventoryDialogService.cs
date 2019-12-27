@@ -124,6 +124,9 @@ namespace AliceInventory.Logic
 
             var entry = ConvertToEntry(parsedEntry);
 
+            // если запись прошла парсинг, но была преобразована к виду:
+            // "добавь €блоки 2 шт и бананы 3 шт" => "€блоки 2 шт и бананы", 3, "шт"
+
             var possibleEntries = entry.Name.Split(new string[] { " и " }, StringSplitOptions.None);
             if (possibleEntries.Length > 1)
             {
@@ -134,20 +137,56 @@ namespace AliceInventory.Logic
                     double res;
                     switch (info.Length)
                     {
+                        case 1: // "добавь бананы и €блоки"
+                            entries.Add(new Entry()
+                            {
+                                Name = info[0],
+                                Quantity = (e == possibleEntries.First() || e == possibleEntries.Last()) ? entry.Quantity : 1,
+                                UnitOfMeasure = (e == possibleEntries.First() || e == possibleEntries.Last()) ?
+                                    Enum.GetValues(typeof(UnitOfMeasure))
+                                                        .Cast<UnitOfMeasure>()
+                                                        .Where(m => m.ToHtml() == RegexHelper.ParseUnitOfMeasure(info[1]).ToHtml())
+                                                        .FirstOrDefault()
+                                    : UnitOfMeasure.Unit
+                            });
+                            break;
+                        case 2: // "добавь 2 €блока и 3 банана"
+                            if (double.TryParse(info[0], out res))
+                                entries.Add(new Entry() 
+                                { 
+                                    Name = info[1], 
+                                    Quantity = double.Parse(info[0]), 
+                                    UnitOfMeasure = UnitOfMeasure.Unit 
+                                });
+                            else
+                                entries.Add(new Entry() 
+                                { 
+                                    Name = info[0], 
+                                    Quantity = double.Parse(info[1]), 
+                                    UnitOfMeasure = UnitOfMeasure.Unit 
+                                });
+                            break;
                         case 3:
-                            if (double.TryParse(info[0], out res))
-                                entries.Add(new Entry() { Name = info[2], Quantity = double.Parse(info[0]), UnitOfMeasure = UnitOfMeasure.Unit });
-                            else
-                                entries.Add(new Entry() { Name = info[0], Quantity = double.Parse(info[1]), UnitOfMeasure = UnitOfMeasure.Unit });
-                            break;
-                        case 2:
-                            if (double.TryParse(info[0], out res))
-                                entries.Add(new Entry() { Name = info[1], Quantity = double.Parse(info[0]), UnitOfMeasure = UnitOfMeasure.Unit });
-                            else
-                                entries.Add(new Entry() { Name = info[0], Quantity = double.Parse(info[1]), UnitOfMeasure = UnitOfMeasure.Unit });
-                            break;
-                        case 1:
-                            entries.Add(new Entry() { Name = info[0], Quantity = 1, UnitOfMeasure = UnitOfMeasure.Unit });
+                            if (double.TryParse(info[0], out res)) // "2 штуки бананов"
+                                entries.Add(new Entry()
+                                {
+                                    Name = info[2],
+                                    Quantity = double.Parse(info[0]),
+                                    UnitOfMeasure = Enum.GetValues(typeof(UnitOfMeasure))
+                                                        .Cast<UnitOfMeasure>()
+                                                        .Where(m => m.ToHtml() == RegexHelper.ParseUnitOfMeasure(info[1]).ToHtml())
+                                                        .FirstOrDefault()
+                                });
+                            else // "бананы 2 штуки"
+                                entries.Add(new Entry()
+                                {
+                                    Name = info[0],
+                                    Quantity = double.Parse(info[1]),
+                                    UnitOfMeasure = Enum.GetValues(typeof(UnitOfMeasure))
+                                                        .Cast<UnitOfMeasure>()
+                                                        .Where(m => m.ToHtml() == RegexHelper.ParseUnitOfMeasure(info[2]).ToHtml())
+                                                        .FirstOrDefault()
+                                });
                             break;
                     }
                 }
