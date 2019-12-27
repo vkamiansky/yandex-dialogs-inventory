@@ -266,9 +266,9 @@ namespace AliceInventory.Controllers.AliceResponseRender
         {
             TextAndSpeechTemplates = new[]
             {
-                new TextAndSpeechTemplate("Отправила на \"{0}\""),
+                new TextAndSpeechTemplate("Отправила на \"{0}\"", "Отправила на почту"),
                 new TextAndSpeechTemplate("Отправлено"),
-                new TextAndSpeechTemplate("Проверьте на \"{0}\""),
+                new TextAndSpeechTemplate("Проверьте на \"{0}\"", "Проверьте на Вашей почте"),
             },
             Buttons = MainButtons
         };
