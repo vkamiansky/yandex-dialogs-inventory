@@ -295,18 +295,6 @@ namespace AliceInventory.Logic
             return new ProcessingResult(ProcessingResultType.ItemRead, res);
         }
 
-        private static ProcessingResult ProcessReadItem(Services services, ProcessingArgs args)
-        {
-            if (!(args.CommandData is ParsedEntry parsedEntry))
-                return new UnexpectedTypeException(args.CommandData, typeof(ParsedEntry));
-
-            var entry = ConvertToEntry(parsedEntry);
-
-            var entries = services.Storage.ReadAllEntries(args.UserId);
-            var res = entries.Where(x=>x.Name == entry.Name).ToArray().ToLogic();
-            return new ProcessingResult(ProcessingResultType.ItemRead, res);
-        }
-
         private static ProcessingResult ProcessSendMail(Services services, ProcessingArgs args)
         {
             var email = args.CommandData as string;
